@@ -17,7 +17,7 @@ These checks are created in M0 and run in CI.
 | # | Check | Pass condition |
 |---|---|---|
 | G1 | `make lint typecheck test contracts-check` | exit 0 |
-| G2 | `python scripts/check_scope.py <session-id>` | exit 0: every changed path is in that session's **allowed paths** (defined in `scripts/scope.yaml`, generated from this file at M0) **or** in the global allow-list that every session may touch: `docs/MILESTONES.md` (ticking boxes), `pyproject.toml` and `uv.lock` (adding a dependency the session needs), `.python-version`, `Makefile`, `.env.example`, `tests/**`. *(Global list added at M0: without it G2 and G6 contradicted each other, and no later session could add a dependency.)* |
+| G2 | `python scripts/check_scope.py <session-id>` | exit 0: every changed path is in that session's **allowed paths** (defined in `scripts/scope.yaml`, generated from this file at M0) **or** in the global allow-list that every session may touch: `docs/MILESTONES.md` (ticking boxes), `docs/STATUS.md` (session log: commands and results), `pyproject.toml` and `uv.lock` (adding a dependency the session needs), `.python-version`, `Makefile`, `.env.example`, `tests/**`. *(Global list added at M0: without it G2 and G6 contradicted each other, and no later session could add a dependency. `docs/STATUS.md` added 2026-09-26 at the tech lead's request.)* |
 | G3 | `git diff --name-only main...HEAD -- fixtures/expected` | empty (Claude Code never edits expected files) |
 | G4 | `git diff --quiet main...HEAD -- CLAUDE.md` | exit 0 (only the tech lead edits `CLAUDE.md`) |
 | G5 | `python scripts/check_scope.py --web-guard` | exit 0: `web/` does not exist unless tag `m3-done` exists |
@@ -72,11 +72,11 @@ These checks are created in M0 and run in CI.
 - [x] OQ-2/3 = yes: schema v1.1.0 applied; `EXAMPLE_company_a.json` validates as 1.0.0 and as 1.1.0.
 
 **Gate:**
-- [ ] G1–G6 pass. *Verified offline in the build workspace on Python 3.11 (ruff, strict mypy without the two stub packages, 66 tests, contract drift, scope, G2–G5). Tick after `uv lock && make ci` passes on Python 3.12 on the tech lead's machine.*
+- [x] G1–G6 pass. *2026-09-26: `uv lock && make ci` exit 0 on CPython 3.12.14 (macOS arm64): ruff, strict mypy, 66 tests, contract drift, scope file, web guard; `check_scope.py M0 --base main` exit 0. See docs/STATUS.md.*
 - [x] `pytest tests/test_smoke.py` passes: the schema loads and `EXAMPLE_company_a.json` validates.
 - [x] `pytest tests/test_no_network.py` passes: opening a socket raises.
 - [x] `python scripts/check_imports.py --forbid fitz,pdfplumber,httpx,anthropic,voyageai` exits 0 (no parsing or LLM code yet).
-- [ ] CI run for the commit is green (or `make ci` exits 0 if there is no remote yet). *Pending: needs `uv.lock`, which requires package-index access the build workspace does not have.*
+- [x] CI run for the commit is green (or `make ci` exits 0 if there is no remote yet). *No remote: `make ci` exit 0 with `uv.lock` committed.*
 - [ ] *Sign-off:* package layout matches ARCHITECTURE §2 (yes/no).
 
 ---
