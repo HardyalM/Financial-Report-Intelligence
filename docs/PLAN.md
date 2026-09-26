@@ -50,13 +50,14 @@ The v1 promise is deliberately narrow: **excellent on 2–3 labelled reports, de
 | Operating margin | `operating_profit / revenue` |
 | Current ratio | `current_assets / current_liabilities` |
 | Debt-to-equity | `total_debt / total_equity` |
-| ROCE | `operating_profit / (total_equity + total_debt)` |
+| ROCE | `operating_profit / (total_assets - current_liabilities)` |
 
 - Year-end balances, not averages, in v1.
-- `total_debt` = interest-bearing borrowings + lease liabilities if separately present, else borrowings only + a warning.
+- `total_debt` (debt-to-equity) = interest-bearing borrowings + lease liabilities if separately present, else borrowings only + a warning.
+- `total_equity` includes non-controlling interests.
 - A null required input gives a null ratio with reason `missing_input`.
 
-This plan does not change any of these. [OQ-1](OPEN_QUESTIONS.md) asks the tech lead whether to change the ROCE definition. If the answer is yes, the tech lead edits `CLAUDE.md`; code never does.
+The ROCE definition was changed by the tech lead on 2026-09-26 ([OQ-1](OPEN_QUESTIONS.md) = B), and the equity basis fixed ([OQ-11](OPEN_QUESTIONS.md) = A). Only the tech lead edits `CLAUDE.md`; code never does.
 
 ---
 
@@ -255,7 +256,8 @@ Label from the **consolidated (group)** statements only, never the parent-compan
 | `net_income` | Income statement | "Profit for the year" (total, before the split between owners and non-controlling interests) |
 | `current_assets` | Balance sheet | Total current assets, which may be an unlabelled subtotal line |
 | `current_liabilities` | Balance sheet | Total current liabilities, **stored positive** even if printed in brackets |
-| `total_assets` | Balance sheet | If not printed, leave null and record that in the notes file |
+| `total_assets` | Balance sheet | **ROCE input.** If not printed, leave it null and label `non_current_assets`; code derives total assets as non-current + current assets (SCHEMA §5) |
+| `non_current_assets` | Balance sheet | Proposed v1.1 id. Total non-current assets (may be an unlabelled subtotal) |
 | `total_equity` | Balance sheet | Total equity **including** non-controlling interests |
 | `equity_attributable_to_owners` | Balance sheet | Proposed v1.1 id. Label it so OQ-11 can go either way. |
 | `cash` | Balance sheet | Cash and cash equivalents as shown on the face |
@@ -281,7 +283,7 @@ Label from the **consolidated (group)** statements only, never the parent-compan
 
 ### 7.3 Before M3 — `fixtures/expected/company_a.ratios.json`
 
-Calculator-computed ratios for **both** periods using the locked formulas in `CLAUDE.md`. If OQ-1 is answered "B", also compute ROCE under option B, so the file supports whichever definition is locked. Format: [EVAL §3.2](EVAL.md).
+Calculator-computed ratios for **both** periods using the locked formulas in `CLAUDE.md` (ROCE = operating profit ÷ (total assets − current liabilities)). Format: [EVAL §3.2](EVAL.md).
 
 ### 7.4 Before M4.2 — `fixtures/expected/company_a.retrieval.json`
 

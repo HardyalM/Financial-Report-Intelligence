@@ -9,8 +9,18 @@
   "currency": "GBP",
   "unit_scale": 1000000,
   "periods": [
-    { "id": "2024", "label": "2024", "end_date": "2024-12-31", "is_restated": false },
-    { "id": "2023", "label": "2023", "end_date": "2023-12-31", "is_restated": false }
+    {
+      "id": "2024",
+      "label": "2024",
+      "end_date": "2024-12-31",
+      "is_restated": false
+    },
+    {
+      "id": "2023",
+      "label": "2023",
+      "end_date": "2023-12-31",
+      "is_restated": false
+    }
   ],
   "items": {
     "revenue": {
@@ -18,8 +28,22 @@
       "label_found": "Revenue",
       "statement": "income_statement",
       "values": [
-        { "period_id": "2024", "value": 12345.0, "page": 86, "raw_text": "12,345", "confidence": 1.0, "engine": "hand" },
-        { "period_id": "2023", "value": 11890.0, "page": 86, "raw_text": "11,890", "confidence": 1.0, "engine": "hand" }
+        {
+          "period_id": "2024",
+          "value": 12345.0,
+          "page": 86,
+          "raw_text": "12,345",
+          "confidence": 1.0,
+          "engine": "hand"
+        },
+        {
+          "period_id": "2023",
+          "value": 11890.0,
+          "page": 86,
+          "raw_text": "11,890",
+          "confidence": 1.0,
+          "engine": "hand"
+        }
       ]
     },
     "operating_profit": {
@@ -27,8 +51,22 @@
       "label_found": "Operating profit",
       "statement": "income_statement",
       "values": [
-        { "period_id": "2024", "value": 2100.0, "page": 86, "raw_text": "2,100", "confidence": 1.0, "engine": "hand" },
-        { "period_id": "2023", "value": 1980.0, "page": 86, "raw_text": "1,980", "confidence": 1.0, "engine": "hand" }
+        {
+          "period_id": "2024",
+          "value": 2100.0,
+          "page": 86,
+          "raw_text": "2,100",
+          "confidence": 1.0,
+          "engine": "hand"
+        },
+        {
+          "period_id": "2023",
+          "value": 1980.0,
+          "page": 86,
+          "raw_text": "1,980",
+          "confidence": 1.0,
+          "engine": "hand"
+        }
       ]
     },
     "current_assets": {
@@ -36,7 +74,14 @@
       "label_found": "Total current assets",
       "statement": "balance_sheet",
       "values": [
-        { "period_id": "2024", "value": 8000.0, "page": 88, "raw_text": "8,000", "confidence": 1.0, "engine": "hand" }
+        {
+          "period_id": "2024",
+          "value": 8000.0,
+          "page": 88,
+          "raw_text": "8,000",
+          "confidence": 1.0,
+          "engine": "hand"
+        }
       ]
     },
     "current_liabilities": {
@@ -44,7 +89,14 @@
       "label_found": "Total current liabilities",
       "statement": "balance_sheet",
       "values": [
-        { "period_id": "2024", "value": 5200.0, "page": 88, "raw_text": "5,200", "confidence": 1.0, "engine": "hand" }
+        {
+          "period_id": "2024",
+          "value": 5200.0,
+          "page": 88,
+          "raw_text": "5,200",
+          "confidence": 1.0,
+          "engine": "hand"
+        }
       ]
     },
     "total_equity": {
@@ -52,7 +104,14 @@
       "label_found": "Total equity",
       "statement": "balance_sheet",
       "values": [
-        { "period_id": "2024", "value": 9100.0, "page": 88, "raw_text": "9,100", "confidence": 1.0, "engine": "hand" }
+        {
+          "period_id": "2024",
+          "value": 9100.0,
+          "page": 88,
+          "raw_text": "9,100",
+          "confidence": 1.0,
+          "engine": "hand"
+        }
       ]
     },
     "total_debt": {
@@ -60,7 +119,29 @@
       "label_found": "Borrowings + lease liabilities",
       "statement": "balance_sheet",
       "values": [
-        { "period_id": "2024", "value": 3400.0, "page": 88, "raw_text": "3,400", "confidence": 1.0, "engine": "hand" }
+        {
+          "period_id": "2024",
+          "value": 3400.0,
+          "page": 88,
+          "raw_text": "3,400",
+          "confidence": 1.0,
+          "engine": "hand"
+        }
+      ]
+    },
+    "total_assets": {
+      "id": "total_assets",
+      "label_found": "Total assets",
+      "statement": "balance_sheet",
+      "values": [
+        {
+          "period_id": "2024",
+          "value": 20000.0,
+          "page": 88,
+          "raw_text": "20,000",
+          "confidence": 1.0,
+          "engine": "hand"
+        }
       ]
     }
   },

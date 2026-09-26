@@ -279,7 +279,7 @@ Happy path first, then the failure path at each stage.
   - A computed value is always displayed. Flags such as `negative_denominator` add context beside it and never replace it.
 - **Consequences.** The `CLAUDE.md` wording is honoured exactly; the UI can still say "Not applicable to banks".
 
-### ADR-009 — CI runs extraction goldens on committed excerpts (added at review; subject to OQ-10)
+### ADR-009 — CI runs extraction goldens on committed excerpts (added at review; accepted, OQ-10 = A)
 
 - **Context.** PDFs and `artifacts/` are git-ignored, so the draft's claim that "CI runs E1 on cached artefacts" was false: CI would have no inputs.
 - **Decision.** Commit a small `tests/golden/{company}/` for each golden:

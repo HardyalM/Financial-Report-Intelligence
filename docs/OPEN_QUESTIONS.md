@@ -25,7 +25,7 @@ Per `CLAUDE.md`: where the question is an accounting one, both options are set o
 - **If B:** you edit `CLAUDE.md` (it is locked; Claude Code must not) before M3, and `company_a.ratios.json` uses B as the locked value.
 - **Default if unanswered:** A stays locked; B is computed only as an eval `alternatives` entry and never shown in the UI.
 
-**Decision:** _________
+**Decision:** 2026-09-26: **B**, `operating_profit / (total_assets - current_liabilities)`. `CLAUDE.md` updated on the tech lead's instruction in the decisions commit.
 
 ---
 
@@ -41,7 +41,7 @@ Per `CLAUDE.md`: where the question is an accounting one, both options are set o
 
 **Recommendation: A, with the face-only reading.** **Default if unanswered:** B, which is honest but will null D/E for most companies.
 
-**Decision:** _________
+**Decision:** 2026-09-26: **A**, with the face-only reading of "separately present".
 
 ---
 
@@ -62,7 +62,7 @@ All are additive or conditional; every 1.0.0 pack stays valid.
 
 **Recommendation: A.** **Default if unanswered:** C.
 
-**Decision:** _________
+**Decision:** 2026-09-26: **A**, approve all. Schema v1.1.0 is applied as the first step of M0.
 
 ---
 
@@ -184,7 +184,7 @@ The PDFs and `artifacts/` are git-ignored, so CI has no inputs for E1 (EVAL §2)
 
 **Recommendation: A.** The excerpts are small, public and essential for regression safety. Revisit if the repository is made public and any issuer objects. **Default if unanswered:** B.
 
-**Decision:** _________
+**Decision:** 2026-09-26: **A**, commit statement-page excerpts to `tests/golden/`.
 
 ---
 
@@ -199,4 +199,4 @@ For most FTSE 100 groups, NCI is small and the two differ only slightly. For gro
 
 **Recommendation: A.** **Default if unanswered:** A (already the SCHEMA rule), with `equity_attributable_to_owners` labelled for reference.
 
-**Decision:** _________
+**Decision:** 2026-09-26: **A**, include non-controlling interests. With OQ-1 = B, this affects debt-to-equity only.

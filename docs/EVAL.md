@@ -61,10 +61,8 @@ A list of period objects in the same shape as `EXAMPLE_company_a.ratios.json`. A
   { "period_id": "FY2025", "formulas_locked": true,
     "ratios": {
       "operating_margin": { "value": 0.170109356, "formula": "operating_profit / revenue", "inputs": { "operating_profit": 2100.0, "revenue": 12345.0 } },
-      "current_ratio":    { "value": 1.538461538, "formula": "current_assets / current_liabilities", "inputs": { "current_assets": 8000.0, "current_liabilities": 5200.0 } }
-    },
-    "alternatives": {
-      "roce_option_b": { "value": 0.141891892, "formula": "operating_profit / (total_assets - current_liabilities)", "inputs": { "operating_profit": 2100.0, "total_assets": 20000.0, "current_liabilities": 5200.0 } }
+      "current_ratio":    { "value": 1.538461538, "formula": "current_assets / current_liabilities", "inputs": { "current_assets": 8000.0, "current_liabilities": 5200.0 } },
+      "roce":             { "value": 0.141891892, "formula": "operating_profit / (total_assets - current_liabilities)", "inputs": { "operating_profit": 2100.0, "total_assets": 20000.0, "current_liabilities": 5200.0 } }
     }
   },
   { "period_id": "FY2024", "formulas_locked": true, "ratios": { } }
@@ -74,7 +72,7 @@ A list of period objects in the same shape as `EXAMPLE_company_a.ratios.json`. A
 - The figures above are the fictional `EXAMPLE` numbers, shown for shape only.
 - Values are typed from a calculator to **at least 9 decimal places**. Tolerance is 1e-9 absolute.
 - A ratio that should be null is written `"value": null` with `"reason"` (`missing_input` or `division_by_zero`), and the null input shown as `null`. Applicability is written separately: `"applicability": "not_applicable"` with an `explanation` (ADR-008).
-- `alternatives` is used only if OQ-1 keeps option B under consideration. It is scored separately and never replaces a locked ratio.
+- An optional `alternatives` block may hold eval-only comparisons. It is scored separately and never replaces a locked ratio. (OQ-1 is decided, so v1 needs none.)
 
 ### 3.3 `{company}.retrieval.json`
 

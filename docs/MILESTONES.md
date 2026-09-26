@@ -17,7 +17,7 @@ These checks are created in M0 and run in CI.
 | # | Check | Pass condition |
 |---|---|---|
 | G1 | `make lint typecheck test contracts-check` | exit 0 |
-| G2 | `python scripts/check_scope.py <session-id>` | exit 0: every changed path is in that session's **allowed paths** (defined in `scripts/scope.yaml`, generated from this file at M0) |
+| G2 | `python scripts/check_scope.py <session-id>` | exit 0: every changed path is in that session's **allowed paths** (defined in `scripts/scope.yaml`, generated from this file at M0) **or** in the global allow-list that every session may touch: `docs/MILESTONES.md` (ticking boxes), `pyproject.toml` and `uv.lock` (adding a dependency the session needs), `.python-version`, `Makefile`, `.env.example`, `tests/**`. *(Global list added at M0: without it G2 and G6 contradicted each other, and no later session could add a dependency.)* |
 | G3 | `git diff --name-only main...HEAD -- fixtures/expected` | empty (Claude Code never edits expected files) |
 | G4 | `git diff --quiet main...HEAD -- CLAUDE.md` | exit 0 (only the tech lead edits `CLAUDE.md`) |
 | G5 | `python scripts/check_scope.py --web-guard` | exit 0: `web/` does not exist unless tag `m3-done` exists |

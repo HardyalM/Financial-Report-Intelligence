@@ -53,9 +53,15 @@ Document these in the UI and in code comments. Do not silently substitute.
 - **Operating margin** = `operating_profit / revenue`
 - **Current ratio** = `current_assets / current_liabilities`
 - **Debt-to-equity** = `total_debt / total_equity`
-- **ROCE** = `operating_profit / (total_equity + total_debt)`  
+- **ROCE** = `operating_profit / (total_assets - current_liabilities)`  
   Year-end balances, not averages, in v1.  
-  `total_debt` = interest-bearing borrowings + lease liabilities if separately present, else borrowings only + a warning.
+  (Changed 2026-09-26 by the tech lead: OQ-1 = B.)
+
+Input definitions:
+
+- `total_debt` (used by debt-to-equity) = interest-bearing borrowings + lease liabilities if separately present, else borrowings only + a warning.
+- `total_equity` = total equity **including** non-controlling interests (OQ-11 = A).
+- How each input is resolved from the statements (including when a total is derived from printed lines) is specified in `docs/SCHEMA.md` §5. Derived inputs record `derived_from`; nothing is estimated.
 
 If a required input is null, the ratio is null with reason `missing_input`.
 

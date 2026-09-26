@@ -39,11 +39,11 @@ Follow PLAN §6. Use the precomputed golden report, so nothing depends on live A
 ### The four from the quality bar
 
 **Q1. Which line items feed ROCE, and why year-end rather than average?**
-- Under the locked definition, ROCE = operating profit ÷ (total equity + total debt).
-  - Total debt is interest-bearing borrowings plus lease liabilities where they are shown separately on the balance sheet.
-  - Total equity includes minority interests, so that numerator and denominator cover the same group.
+- ROCE = operating profit ÷ (total assets − current liabilities): the standard UK definition of capital employed, the long-term funding the business uses.
+  - All inputs are printed totals on the consolidated balance sheet. If total assets isn't printed, it is derived as non-current plus current assets, and the screen shows that it was derived.
+  - I chose this over "equity plus debt" because it's the textbook definition, and because it doesn't depend on assembling total debt from four separate lines.
 - **Why year-end:** one annual report gives two balance sheets. An average capital figure is possible for the current year but not the prior year, so year-end keeps both years on the same basis. Averages come with multi-year series in v1.1.
-- *If OQ-1 changes the definition to (total assets − current liabilities), update this answer before any interview.*
+- **Debt-to-equity** uses total debt (borrowings plus lease liabilities shown separately) over total equity including minority interests, so both sides cover the same group.
 
 **Q2. What happens if the two parsers disagree?**
 - Both readings must first be found in the PDF's text layer. Then the text layer, not either parser, decides which row, column and year each number belongs to.

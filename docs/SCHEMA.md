@@ -11,7 +11,7 @@
 - The JSON Schema is canonical ([ADR-006](ARCHITECTURE.md#adr-006--json-schema-is-the-source-of-truth-for-contracts)). Pydantic and TypeScript types are generated from it; CI fails on drift.
 - A schema change needs a version change in `schema_version`, a note in `docs/ARCHITECTURE.md` (ADR section) and green golden tests.
 - **Additive, optional** fields bump the minor version. Anything that would make an existing valid pack invalid bumps the major version and is out of scope for v1.
-- The locked ratio inputs are `revenue`, `operating_profit`, `current_assets`, `current_liabilities`, `total_equity` and `total_debt`. They are never renamed.
+- The locked ratio inputs are `revenue`, `operating_profit`, `current_assets`, `current_liabilities`, `total_assets`, `total_equity` and `total_debt`. They are never renamed. (`total_assets` joined on 2026-09-26, when OQ-1 = B made ROCE `operating_profit / (total_assets - current_liabilities)`.)
 
 ---
 
@@ -129,7 +129,7 @@ A **publication confidence**, computed deterministically from the mapping method
 | `net_income` | Income statement | Profit for the year, total (owners + non-controlling interests) | Profit for the year; Profit for the financial year | Profit attributable to owners of the parent (a separate item if needed) |
 | `current_assets` | Balance sheet | Total current assets | Total current assets; an unlabelled subtotal under "Current assets" | Net current assets |
 | `current_liabilities` | Balance sheet | Total current liabilities | Total current liabilities; "Creditors: amounts falling due within one year" (Companies Act formats) | Net current liabilities |
-| `total_assets` | Balance sheet | Total assets | Total assets | "Total assets less current liabilities" (a separate proposed item) |
+| `total_assets` | Balance sheet | Total assets. **ROCE input.** If not printed, derived in code as `non_current_assets + current_assets` (`engine: derived`, `derived_from`), only when both are published | Total assets | "Total assets less current liabilities" (a separate proposed item) |
 | `total_equity` | Balance sheet | Total equity **including** non-controlling interests | Total equity; Total shareholders' equity (when no NCI line follows) | Equity attributable to owners of the parent |
 | `total_debt` | Balance sheet (derived) | Per `CLAUDE.md`: interest-bearing borrowings + lease liabilities if separately present, else borrowings only + warning | Rarely printed as one line; normally derived (§9) | Trade payables; derivative liabilities; provisions; pension deficits |
 | `cash` | Balance sheet | Cash and cash equivalents on the face | Cash and cash equivalents; Cash and short-term deposits | Restricted cash shown separately; cash in a cash flow statement |
@@ -146,7 +146,7 @@ A **publication confidence**, computed deterministically from the mapping method
 
 **Interpretations of `CLAUDE.md` made here (flagged, not silently chosen):**
 - "Separately present" is read as "separately presented **on the face** of the balance sheet", because v1 does not read notes for numbers. The alternative (face or notes) needs note extraction, which is v1.1. Confirm under [OQ-2](OPEN_QUESTIONS.md).
-- `total_equity` **includes** non-controlling interests, so that the denominator covers the same group whose debt is in the numerator. The alternative (equity attributable to owners) is [OQ-11](OPEN_QUESTIONS.md).
+- `total_equity` **includes** non-controlling interests, so that the denominator covers the same group whose debt is in the numerator. **Decided: OQ-11 = A** (2026-09-26), and now stated in `CLAUDE.md`.
 
 ---
 
