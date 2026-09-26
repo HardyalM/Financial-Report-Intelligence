@@ -165,7 +165,7 @@ Binary gates and checklists are in [MILESTONES.md](MILESTONES.md). The numbering
 | **M8.2** *(if OQ-4 = B)* | Bank ratios and reported metrics | Cost-to-income, loan-to-deposit; `ReportedMetric` from verified quotes | Against the bank's own figures |
 | **M8.3** | Honesty layer | Held-out run (label `company_c` now), `docs/RESULTS.md`, limitations page, README, INTERVIEW refresh | Would you say every sentence of RESULTS in an interview? |
 
-**Total:** 20 sessions, plus 2 optional. That is about **5–7 weeks** part-time, which is longer than the draft's estimate, because the draft's session sizes were not honest. M2 is still the long pole.
+**Total:** 19 sessions, plus 2 optional (21 rows). That is about **5–7 weeks** part-time, which is longer than the draft's estimate, because the draft's session sizes were not honest. M2 is still the long pole.
 
 **Ordering rules (from `CLAUDE.md`, enforced in CI):**
 - no `web/` directory before the `m3-done` tag

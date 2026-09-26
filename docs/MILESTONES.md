@@ -6,7 +6,7 @@
 - A gate item is either a **command with a stated pass condition** or a **yes/no tech-lead sign-off**. Nothing reads "looks good".
 - If any gate item fails, the session is not done. Use the recovery prompt in `prompts/03_MILESTONE_PROMPTS.md`.
 
-**Re-sized at review:** the draft's M2, M4, M5, M6, M7 and M8 were each larger than one session. The count is now 20 sessions, plus 2 optional (M2.6, M8.2).
+**Re-sized at review:** the draft's M2, M4, M5, M6, M7 and M8 were each larger than one session. The count is now 19 sessions, plus 2 optional (M2.6, M8.2).
 
 ---
 
