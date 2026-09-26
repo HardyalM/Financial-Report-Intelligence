@@ -1,0 +1,80 @@
+[
+  {
+    "period_id": "FY2024",
+    "formulas_locked": true,
+    "ratios": {
+      "operating_margin": {
+        "value": 0.154704497951,
+        "formula": "operating_profit / revenue",
+        "inputs": {
+          "operating_profit": 9400.0,
+          "revenue": 60761.0
+        }
+      },
+      "current_ratio": {
+        "value": 0.760640405802,
+        "formula": "current_assets / current_liabilities",
+        "inputs": {
+          "current_assets": 19194.0,
+          "current_liabilities": 25234.0
+        }
+      },
+      "debt_to_equity": {
+        "value": 1.421103968078,
+        "formula": "total_debt / total_equity",
+        "inputs": {
+          "total_debt": 32053.0,
+          "total_equity": 22555.0
+        }
+      },
+      "roce": {
+        "value": 0.172426443613,
+        "formula": "operating_profit / (total_assets - current_liabilities)",
+        "inputs": {
+          "operating_profit": 9400.0,
+          "total_assets": 79750.0,
+          "current_liabilities": 25234.0
+        }
+      }
+    }
+  },
+  {
+    "period_id": "FY2023",
+    "formulas_locked": true,
+    "ratios": {
+      "operating_margin": {
+        "value": 0.163713844708,
+        "formula": "operating_profit / revenue",
+        "inputs": {
+          "operating_profit": 9758.0,
+          "revenue": 59604.0
+        }
+      },
+      "current_ratio": {
+        "value": 0.761560386268,
+        "formula": "current_assets / current_liabilities",
+        "inputs": {
+          "current_assets": 17902.0,
+          "current_liabilities": 23507.0
+        }
+      },
+      "debt_to_equity": {
+        "value": 1.426603737238,
+        "formula": "total_debt / total_equity",
+        "inputs": {
+          "total_debt": 29622.0,
+          "total_equity": 20764.0
+        }
+      },
+      "roce": {
+        "value": 0.188527599065,
+        "formula": "operating_profit / (total_assets - current_liabilities)",
+        "inputs": {
+          "operating_profit": 9758.0,
+          "total_assets": 75266.0,
+          "current_liabilities": 23507.0
+        }
+      }
+    }
+  }
+]

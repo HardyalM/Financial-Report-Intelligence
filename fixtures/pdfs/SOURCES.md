@@ -4,8 +4,8 @@ The PDFs themselves are git-ignored. Record where each one came from so the fixt
 
 | File | Company | Report | Financial year end | Source URL | Downloaded |
 |---|---|---|---|---|---|
-| `company_a.pdf` | | Annual Report and Accounts | | | |
-| `company_b.pdf` | | Annual Report and Accounts | | | |
+| `company_a.pdf` | Unilever PLC | Annual Report and Accounts 2024 (305 PDF pages) | 31 December 2024 | https://www.unilever.com/files/unilever-annual-report-and-accounts-2024.pdf | 26 September 2026 |
+| `company_b.pdf` | Lloyds Banking Group plc | Annual Report and Accounts 2024 (338 PDF pages) | 31 December 2024 | https://www.lloydsbankinggroup.com/assets/pdfs/investors/financial-performance/lloyds-banking-group-plc/2024/q4/2024-lbg-annual-report.pdf | 26 September 2026 |
 
 Rules:
 

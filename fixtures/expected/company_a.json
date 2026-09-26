@@ -1,0 +1,345 @@
+{
+  "schema_version": "1.1.0",
+  "company_name": "Unilever PLC",
+  "document_type": "corporate",
+  "basis": "consolidated",
+  "balance_sheet_classified": true,
+  "source": {
+    "filename": "company_a.pdf",
+    "page_count": 305,
+    "parser_engines": [],
+    "sha256": "c15d7a38b41d7baef49e78a9db9bbb1deaeec685ec160d1b7478c062eef8d6f2"
+  },
+  "currency": "EUR",
+  "unit_scale": 1000000,
+  "periods": [
+    {
+      "id": "FY2024",
+      "label": "2024",
+      "end_date": "2024-12-31",
+      "is_restated": false
+    },
+    {
+      "id": "FY2023",
+      "label": "2023",
+      "end_date": "2023-12-31",
+      "is_restated": false
+    }
+  ],
+  "items": {
+    "revenue": {
+      "id": "revenue",
+      "label_found": "Turnover",
+      "statement": "income_statement",
+      "note_ref": null,
+      "values": [
+        {
+          "period_id": "FY2024",
+          "value": 60761.0,
+          "page": 141,
+          "raw_text": "60,761",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "138"
+        },
+        {
+          "period_id": "FY2023",
+          "value": 59604.0,
+          "page": 141,
+          "raw_text": "59,604",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "138"
+        }
+      ]
+    },
+    "operating_profit": {
+      "id": "operating_profit",
+      "label_found": "Operating profit",
+      "statement": "income_statement",
+      "note_ref": null,
+      "values": [
+        {
+          "period_id": "FY2024",
+          "value": 9400.0,
+          "page": 141,
+          "raw_text": "9,400",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "138"
+        },
+        {
+          "period_id": "FY2023",
+          "value": 9758.0,
+          "page": 141,
+          "raw_text": "9,758",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "138"
+        }
+      ]
+    },
+    "profit_before_tax": {
+      "id": "profit_before_tax",
+      "label_found": "Profit before taxation",
+      "statement": "income_statement",
+      "note_ref": null,
+      "values": [
+        {
+          "period_id": "FY2024",
+          "value": 8869.0,
+          "page": 141,
+          "raw_text": "8,869",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "138"
+        },
+        {
+          "period_id": "FY2023",
+          "value": 9339.0,
+          "page": 141,
+          "raw_text": "9,339",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "138"
+        }
+      ]
+    },
+    "net_income": {
+      "id": "net_income",
+      "label_found": "Net profit",
+      "statement": "income_statement",
+      "note_ref": null,
+      "values": [
+        {
+          "period_id": "FY2024",
+          "value": 6369.0,
+          "page": 141,
+          "raw_text": "6,369",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "138"
+        },
+        {
+          "period_id": "FY2023",
+          "value": 7140.0,
+          "page": 141,
+          "raw_text": "7,140",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "138"
+        }
+      ]
+    },
+    "current_assets": {
+      "id": "current_assets",
+      "label_found": null,
+      "statement": "balance_sheet",
+      "note_ref": null,
+      "values": [
+        {
+          "period_id": "FY2024",
+          "value": 19194.0,
+          "page": 143,
+          "raw_text": "19,194",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        },
+        {
+          "period_id": "FY2023",
+          "value": 17902.0,
+          "page": 143,
+          "raw_text": "17,902",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        }
+      ]
+    },
+    "current_liabilities": {
+      "id": "current_liabilities",
+      "label_found": null,
+      "statement": "balance_sheet",
+      "note_ref": null,
+      "values": [
+        {
+          "period_id": "FY2024",
+          "value": 25234.0,
+          "page": 143,
+          "raw_text": "25,234",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        },
+        {
+          "period_id": "FY2023",
+          "value": 23507.0,
+          "page": 143,
+          "raw_text": "23,507",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        }
+      ]
+    },
+    "total_assets": {
+      "id": "total_assets",
+      "label_found": "Total assets",
+      "statement": "balance_sheet",
+      "note_ref": null,
+      "values": [
+        {
+          "period_id": "FY2024",
+          "value": 79750.0,
+          "page": 143,
+          "raw_text": "79,750",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        },
+        {
+          "period_id": "FY2023",
+          "value": 75266.0,
+          "page": 143,
+          "raw_text": "75,266",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        }
+      ]
+    },
+    "total_equity": {
+      "id": "total_equity",
+      "label_found": "Total equity",
+      "statement": "balance_sheet",
+      "note_ref": null,
+      "values": [
+        {
+          "period_id": "FY2024",
+          "value": 22555.0,
+          "page": 143,
+          "raw_text": "22,555",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        },
+        {
+          "period_id": "FY2023",
+          "value": 20764.0,
+          "page": 143,
+          "raw_text": "20,764",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        }
+      ]
+    },
+    "financial_liabilities_current": {
+      "id": "financial_liabilities_current",
+      "label_found": "Financial liabilities",
+      "statement": "balance_sheet",
+      "note_ref": "15C",
+      "values": [
+        {
+          "period_id": "FY2024",
+          "value": 6987.0,
+          "page": 143,
+          "raw_text": "6,987",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        },
+        {
+          "period_id": "FY2023",
+          "value": 5087.0,
+          "page": 143,
+          "raw_text": "5,087",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        }
+      ]
+    },
+    "financial_liabilities_non_current": {
+      "id": "financial_liabilities_non_current",
+      "label_found": "Financial liabilities",
+      "statement": "balance_sheet",
+      "note_ref": "15C",
+      "values": [
+        {
+          "period_id": "FY2024",
+          "value": 25066.0,
+          "page": 143,
+          "raw_text": "25,066",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        },
+        {
+          "period_id": "FY2023",
+          "value": 24535.0,
+          "page": 143,
+          "raw_text": "24,535",
+          "confidence": 1.0,
+          "engine": "hand",
+          "page_label": "140"
+        }
+      ]
+    },
+    "total_debt": {
+      "id": "total_debt",
+      "label_found": null,
+      "statement": "balance_sheet",
+      "note_ref": "15C",
+      "values": [
+        {
+          "period_id": "FY2024",
+          "value": 32053.0,
+          "page": null,
+          "raw_text": null,
+          "confidence": 1.0,
+          "engine": "derived",
+          "derivation": "sum",
+          "derived_from": [
+            {
+              "item": "financial_liabilities_current",
+              "period_id": "FY2024"
+            },
+            {
+              "item": "financial_liabilities_non_current",
+              "period_id": "FY2024"
+            }
+          ]
+        },
+        {
+          "period_id": "FY2023",
+          "value": 29622.0,
+          "page": null,
+          "raw_text": null,
+          "confidence": 1.0,
+          "engine": "derived",
+          "derivation": "sum",
+          "derived_from": [
+            {
+              "item": "financial_liabilities_current",
+              "period_id": "FY2023"
+            },
+            {
+              "item": "financial_liabilities_non_current",
+              "period_id": "FY2023"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "warnings": [
+    {
+      "code": "lease_not_separately_presented",
+      "message": "Lease liabilities are inside 'Financial liabilities' on the face (note 15C). total_debt here is all financial liabilities, including derivatives and other financial liabilities; treatment to be settled before M2.4 (see labelling notes).",
+      "item": "total_debt",
+      "page": 143
+    }
+  ]
+}
