@@ -1,0 +1,26 @@
+{
+  "period_id": "2024",
+  "formulas_locked": true,
+  "ratios": {
+    "operating_margin": {
+      "value": 0.170109356,
+      "formula": "operating_profit / revenue",
+      "inputs": { "operating_profit": 2100.0, "revenue": 12345.0 }
+    },
+    "current_ratio": {
+      "value": 1.538461538,
+      "formula": "current_assets / current_liabilities",
+      "inputs": { "current_assets": 8000.0, "current_liabilities": 5200.0 }
+    },
+    "debt_to_equity": {
+      "value": 0.373626374,
+      "formula": "total_debt / total_equity",
+      "inputs": { "total_debt": 3400.0, "total_equity": 9100.0 }
+    },
+    "roce": {
+      "value": 0.168,
+      "formula": "operating_profit / (total_equity + total_debt)",
+      "inputs": { "operating_profit": 2100.0, "total_equity": 9100.0, "total_debt": 3400.0 }
+    }
+  }
+}
