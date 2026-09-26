@@ -64,19 +64,19 @@ These checks are created in M0 and run in CI.
 **Read first:** `CLAUDE.md`; PLAN §4–5; ARCHITECTURE §2 and §5; SCHEMA §1 and §9.
 **Allowed paths:** `pyproject.toml`, `Makefile`, `finintel/**`, `tests/**`, `scripts/**`, `.github/workflows/**`, `.env.example`, `README.md`, `schemas/statement_pack.schema.json` (only if OQ-2/3 approved).
 
-- [ ] pyproject (Python 3.12, ruff, mypy strict for `contracts/`, `ratios/`, `reconcile/`), pytest, hypothesis, pytest-socket.
-- [ ] Package skeleton per ARCHITECTURE §2; typed stubs raising `NotImplementedError`.
-- [ ] Contracts generated from the schema; `make contracts-check` detects drift.
-- [ ] `scripts/scope.yaml`, `scripts/check_scope.py`, `scripts/gate.py`; the standard gate G1–G6 wired into CI.
-- [ ] `.env.example` (names only); a `README.md` stub pointing to `docs/PLAN.md`.
-- [ ] If OQ-2/3 = yes: schema v1.1.0 applied.
+- [x] pyproject (Python 3.12, ruff, mypy **strict everywhere**), pytest, hypothesis. *Network blocking is a test fixture (`tests/conftest.py`) instead of pytest-socket: one dependency fewer, same gate.*
+- [x] Package skeleton per ARCHITECTURE §2; typed stubs raising `NotImplementedError` that name their session.
+- [x] Contracts generated from the schema by `scripts/gen_contracts.py` (standard library plus `ruff format`; *replaces datamodel-code-generator so generation runs offline and in CI*); `make contracts-check` detects drift.
+- [x] `scripts/scope.yaml` (generated from this file by `scripts/gen_scope.py`), `scripts/check_scope.py`, `scripts/check_imports.py`, `scripts/gate.py`; G1, G2–G5 wired into CI.
+- [x] `.env.example` (names only); a `README.md` stub pointing to `docs/PLAN.md`.
+- [x] OQ-2/3 = yes: schema v1.1.0 applied; `EXAMPLE_company_a.json` validates as 1.0.0 and as 1.1.0.
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] `pytest tests/test_smoke.py` passes: the schema loads and `EXAMPLE_company_a.json` validates.
-- [ ] `pytest tests/test_no_network.py` passes: opening a socket raises.
-- [ ] `python scripts/check_imports.py --forbid fitz,pdfplumber,httpx,anthropic,voyageai` exits 0 (no parsing or LLM code yet).
-- [ ] CI run for the commit is green (or `make ci` exits 0 if there is no remote yet).
+- [ ] G1–G6 pass. *Verified offline in the build workspace on Python 3.11 (ruff, strict mypy without the two stub packages, 66 tests, contract drift, scope, G2–G5). Tick after `uv lock && make ci` passes on Python 3.12 on the tech lead's machine.*
+- [x] `pytest tests/test_smoke.py` passes: the schema loads and `EXAMPLE_company_a.json` validates.
+- [x] `pytest tests/test_no_network.py` passes: opening a socket raises.
+- [x] `python scripts/check_imports.py --forbid fitz,pdfplumber,httpx,anthropic,voyageai` exits 0 (no parsing or LLM code yet).
+- [ ] CI run for the commit is green (or `make ci` exits 0 if there is no remote yet). *Pending: needs `uv.lock`, which requires package-index access the build workspace does not have.*
 - [ ] *Sign-off:* package layout matches ARCHITECTURE §2 (yes/no).
 
 ---

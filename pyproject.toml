@@ -1,0 +1,62 @@
+[project]
+name = "finintel"
+version = "0.1.0"
+description = "Financial Report Intelligence & RAG: deterministic statement extraction, locked ratios, grounded commentary."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pydantic>=2.8,<3",
+    "jsonschema>=4.23,<5",
+]
+
+[project.scripts]
+finintel = "finintel.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "hypothesis>=6.112",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "types-jsonschema",
+    "pyyaml>=6",
+    "types-PyYAML",
+]
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["finintel"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"schemas" = "finintel/_schemas"
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+# Generated from schemas/statement_pack.schema.json by `make contracts`; never edited by hand.
+"finintel/contracts/statement_pack.py" = ["ALL"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["finintel", "scripts", "tests"]
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+markers = [
+    "network: test may open sockets (integration only; never in the default CI run)",
+]

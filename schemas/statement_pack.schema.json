@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://local/schemas/statement_pack.schema.json",
   "title": "StatementPack",
+  "description": "Locked numeric contract. v1.1.0 is additive over v1.0.0: every valid 1.0.0 pack remains valid. Stricter rules apply only when schema_version is 1.1.0 (see docs/SCHEMA.md section 9).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -15,9 +16,24 @@
     "warnings"
   ],
   "properties": {
-    "schema_version": { "type": "string", "const": "1.0.0" },
+    "schema_version": { "type": "string", "enum": ["1.0.0", "1.1.0"] },
     "company_name": { "type": ["string", "null"] },
+    "document_type": {
+      "type": "string",
+      "enum": ["corporate", "bank", "nhs_trust", "other"],
+      "description": "v1.1.0. Drives alias maps and ratio applicability (EXTRACTION section 1.4)."
+    },
+    "basis": {
+      "type": "string",
+      "enum": ["consolidated", "company_only", "single_entity"],
+      "description": "v1.1.0. Which entity the statements describe."
+    },
+    "balance_sheet_classified": {
+      "type": "boolean",
+      "description": "v1.1.0. True when the balance sheet has current and non-current sections."
+    },
     "source": {
+      "title": "Source",
       "type": "object",
       "additionalProperties": false,
       "required": ["filename", "page_count"],
@@ -27,7 +43,9 @@
         "parser_engines": {
           "type": "array",
           "items": { "type": "string" }
-        }
+        },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "pipeline_version": { "type": "string" }
       }
     },
     "currency": { "type": "string", "minLength": 3, "maxLength": 3 },
@@ -40,6 +58,7 @@
       "type": "array",
       "minItems": 1,
       "items": {
+        "title": "Period",
         "type": "object",
         "additionalProperties": false,
         "required": ["id", "label", "end_date"],
@@ -47,7 +66,9 @@
           "id": { "type": "string" },
           "label": { "type": "string" },
           "end_date": { "type": ["string", "null"] },
-          "is_restated": { "type": "boolean", "default": false }
+          "is_restated": { "type": "boolean", "default": false },
+          "start_date": { "type": ["string", "null"] },
+          "weeks": { "type": "integer", "minimum": 1, "maximum": 53 }
         }
       }
     },
@@ -65,12 +86,23 @@
         "total_assets": { "$ref": "#/$defs/line_item" },
         "total_equity": { "$ref": "#/$defs/line_item" },
         "total_debt": { "$ref": "#/$defs/line_item" },
-        "cash": { "$ref": "#/$defs/line_item" }
+        "cash": { "$ref": "#/$defs/line_item" },
+        "borrowings_current": { "$ref": "#/$defs/line_item" },
+        "borrowings_non_current": { "$ref": "#/$defs/line_item" },
+        "lease_liabilities_current": { "$ref": "#/$defs/line_item" },
+        "lease_liabilities_non_current": { "$ref": "#/$defs/line_item" },
+        "total_liabilities": { "$ref": "#/$defs/line_item" },
+        "non_current_assets": { "$ref": "#/$defs/line_item" },
+        "net_current_assets": { "$ref": "#/$defs/line_item" },
+        "total_assets_less_current_liabilities": { "$ref": "#/$defs/line_item" },
+        "equity_attributable_to_owners": { "$ref": "#/$defs/line_item" },
+        "non_controlling_interests": { "$ref": "#/$defs/line_item" }
       }
     },
     "warnings": {
       "type": "array",
       "items": {
+        "title": "PackWarning",
         "type": "object",
         "additionalProperties": false,
         "required": ["code", "message"],
@@ -87,7 +119,20 @@
               "restated_comparative",
               "alias_weak",
               "bank_layout",
-              "public_sector_layout"
+              "public_sector_layout",
+              "arithmetic_check_failed",
+              "entity_scope_ambiguous",
+              "period_ambiguous",
+              "currency_ambiguous",
+              "not_digitally_born",
+              "lease_not_separately_presented",
+              "derived_value",
+              "human_override",
+              "human_override_unanchored",
+              "unit_confirmed_manually",
+              "unclassified_balance_sheet",
+              "document_type_ambiguous",
+              "reduced_verification"
             ]
           },
           "message": { "type": "string" },
@@ -97,6 +142,21 @@
       }
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "schema_version": { "const": "1.1.0" } },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "properties": {
+          "items": {
+            "patternProperties": { "^.*$": { "$ref": "#/$defs/line_item_strict_v110" } }
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
     "line_item": {
       "type": "object",
@@ -108,6 +168,10 @@
         "statement": {
           "type": ["string", "null"],
           "enum": ["income_statement", "balance_sheet", "other", null]
+        },
+        "note_ref": {
+          "type": ["string", "null"],
+          "description": "v1.1.0. Note reference printed beside the line, e.g. \"22\" or \"22.1\"."
         },
         "values": {
           "type": "array",
@@ -125,8 +189,75 @@
         "page": { "type": ["integer", "null"] },
         "raw_text": { "type": ["string", "null"] },
         "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
-        "engine": { "type": ["string", "null"] }
+        "engine": { "type": ["string", "null"] },
+        "page_label": {
+          "type": ["string", "null"],
+          "description": "v1.1.0. Printed folio of the page."
+        },
+        "bbox": {
+          "description": "v1.1.0. [x0, y0, x1, y1] in PDF points.",
+          "oneOf": [
+            { "type": "null" },
+            { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 }
+          ]
+        },
+        "derived_from": {
+          "type": "array",
+          "description": "v1.1.0. Components of a value computed in code (engine: derived).",
+          "items": {
+            "title": "DerivedComponent",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["item", "period_id"],
+            "properties": {
+              "item": { "type": "string" },
+              "period_id": { "type": "string" },
+              "assumed_zero": { "type": "boolean" }
+            }
+          }
+        },
+        "derivation": { "type": "string", "enum": ["sum"] }
       }
+    },
+    "line_item_strict_v110": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/period_value_strict_v110" }
+        }
+      }
+    },
+    "period_value_strict_v110": {
+      "description": "CLAUDE.md rule 2, enforced for 1.1.0 packs: a published value carries its page and printed text, unless it is derived, in which case it carries derived_from.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "value": { "type": "number" },
+              "engine": { "not": { "const": "derived" } }
+            },
+            "required": ["value"]
+          },
+          "then": {
+            "required": ["page", "raw_text"],
+            "properties": {
+              "page": { "type": "integer", "minimum": 1 },
+              "raw_text": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "engine": { "const": "derived" } },
+            "required": ["engine"]
+          },
+          "then": {
+            "required": ["derived_from", "derivation"],
+            "properties": { "derived_from": { "minItems": 1 } }
+          }
+        }
+      ]
     }
   }
 }
