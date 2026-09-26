@@ -86,18 +86,18 @@ These checks are created in M0 and run in CI.
 **Read first:** EXTRACTION §0–1; ADR-001; COST_AND_OPS §1; OQ-7.
 **Allowed paths:** `finintel/ingest/**`, `finintel/parse/text_layer*`, `finintel/parse/engines/pdfplumber*`, `finintel/parse/engines/azure_di*` (raw call and storage only), `finintel/cache/**`, `finintel/cli/**`, `tests/**`.
 
-- [ ] `finintel inspect <pdf>` writes `artifacts/inspect/{stem}/summary.json`, `pages.jsonl`, `text/`, `tables/` and thumbnails of keyword pages.
-- [ ] Azure DI raw call if a key exists; otherwise `parser_skipped: ["azure_di"]`.
-- [ ] Content-addressed cache.
-- [ ] The inspector's glob covers `fixtures/pdfs/` **only** (never `fixtures/holdout/`).
+- [x] `finintel inspect <pdf>` writes `artifacts/inspect/{stem}/summary.json`, `pages.jsonl`, `text/`, `tables/` and thumbnails of keyword pages. *(Also `outline.json`, and `tables/*.txt` for reading.)*
+- [x] Azure DI raw call if a key exists; otherwise `parser_skipped: ["azure_di"]`. *(A failed call is `parser_failed`, is never cached, and the run continues on the local engines.)*
+- [x] Content-addressed cache.
+- [x] The inspector's glob covers `fixtures/pdfs/` **only** (never `fixtures/holdout/`). *(Explicit holdout paths, directories and symlinks into it are refused with exit 3.)*
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] `finintel inspect fixtures/pdfs/company_a.pdf` and the same for `company_b.pdf` both exit 0.
-- [ ] `summary.json.page_count` equals `source.page_count` in `fixtures/expected/company_a.json`.
-- [ ] A second run prints `vendor_calls=0`.
-- [ ] Either `summary.json.parser_skipped` contains `azure_di`, or `azure/raw.json` exists.
-- [ ] `pytest tests/inspect -k "holdout"` passes: a test asserts that `fixtures/holdout/` is excluded.
+- [x] G1–G6 pass. *2026-09-26: `make ci` exit 0 (211 passed, 1 skipped: no fixture PDFs); `check_scope.py M1 --base m0` exit 0.*
+- [ ] `finintel inspect fixtures/pdfs/company_a.pdf` and the same for `company_b.pdf` both exit 0. *Blocked: `fixtures/pdfs/` has no PDFs (exit 1, "no such file").*
+- [ ] `summary.json.page_count` equals `source.page_count` in `fixtures/expected/company_a.json`. *Blocked: no PDF, and only `EXAMPLE_company_a.json` exists. `tests/inspect/test_fixture_pdfs.py` asserts it once both exist.*
+- [ ] A second run prints `vendor_calls=0`. *Verified on synthetic reports (tests); re-run on `company_a`.*
+- [ ] Either `summary.json.parser_skipped` contains `azure_di`, or `azure/raw.json` exists. *Both paths verified on synthetic reports (tests); re-run on `company_a`.*
+- [x] `pytest tests/inspect -k "holdout"` passes: a test asserts that `fixtures/holdout/` is excluded. *13 passed.*
 - [ ] *Sign-off:* the income statement and balance sheet pages appear among the top 10 keyword-hit pages of `pages.jsonl` (yes/no).
 
 ---

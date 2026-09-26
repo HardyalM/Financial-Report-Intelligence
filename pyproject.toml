@@ -7,6 +7,10 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     "pydantic>=2.8,<3",
     "jsonschema>=4.23,<5",
+    "pymupdf>=1.26",
+    "pdfplumber>=0.11",
+    "httpx>=0.27",
+    "structlog>=24.4",
 ]
 
 [project.scripts]
@@ -53,10 +57,21 @@ strict = true
 files = ["finintel", "scripts", "tests"]
 plugins = ["pydantic.mypy"]
 
+[[tool.mypy.overrides]]
+# PyMuPDF's public API is only partly annotated. These modules are the typed boundary around it:
+# everything they return is a typed model.
+module = ["finintel.parse.text_layer", "finintel.ingest.document", "tests.inspect.synthetic"]
+disallow_untyped_calls = false
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-q"
 markers = [
     "network: test may open sockets (integration only; never in the default CI run)",
+]
+filterwarnings = [
+    # PyMuPDF's SWIG bindings trigger these on import under Python 3.12; not actionable here.
+    "ignore:builtin type Swig.* has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning",
 ]

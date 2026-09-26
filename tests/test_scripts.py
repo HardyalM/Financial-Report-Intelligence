@@ -74,9 +74,22 @@ def test_forbidden_import_is_detected(tmp_path: Path) -> None:
     assert hits == ["pkg/bad.py imports anthropic", "pkg/bad.py imports fitz"]
 
 
-def test_finintel_has_no_parsing_or_llm_imports_yet() -> None:
-    forbidden = {"fitz", "pdfplumber", "httpx", "anthropic", "voyageai"}
-    assert check_imports.find_forbidden(ROOT / "finintel", forbidden) == []
+# Which modules may import which libraries. A new owner is added in the session that needs it.
+IMPORT_OWNERS = {
+    "pymupdf": ("finintel/parse/", "finintel/ingest/"),
+    "fitz": (),  # the legacy PyMuPDF name: use `import pymupdf`
+    "pdfplumber": ("finintel/parse/engines/pdfplumber_engine.py",),
+    "httpx": ("finintel/parse/engines/azure_di_engine.py",),
+    "anthropic": (),  # LLM calls arrive in M2.4 (finintel/llm/)
+    "voyageai": (),  # embeddings arrive in M4.2 (finintel/retrieval/)
+}
+
+
+@pytest.mark.parametrize(("module", "owners"), IMPORT_OWNERS.items())
+def test_stage_import_boundaries(module: str, owners: tuple[str, ...]) -> None:
+    hits = check_imports.find_forbidden(ROOT / "finintel", {module})
+    strays = [hit for hit in hits if not hit.startswith(owners)] if owners else hits
+    assert strays == []
 
 
 def test_gate_conditions(tmp_path: Path) -> None:

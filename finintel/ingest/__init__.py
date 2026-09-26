@@ -1,16 +1,29 @@
-"""Upload intake: SHA-256, size and encryption checks, digital-born score, storing the original."""
+"""Upload intake: size, signature and password checks, SHA-256, digital-born score."""
 
-from dataclasses import dataclass
-from pathlib import Path
+from finintel.ingest.digital_born import (
+    MIN_EXTRACTABLE_CHARS,
+    MIN_PASSING_PAGE_SHARE,
+    DigitalBornScore,
+    score_digital_born,
+)
+from finintel.ingest.document import (
+    MAX_UPLOAD_BYTES,
+    DocumentRecord,
+    IngestError,
+    IngestErrorCode,
+    ingest,
+    sha256_file,
+)
 
-from finintel._placeholders import not_yet
-
-
-@dataclass(frozen=True)
-class DocumentRecord:
-    """A stored upload. Fields are defined in M1."""
-
-
-def ingest(pdf_path: Path) -> DocumentRecord:
-    """Hash, check and store a PDF (EXTRACTION section 0)."""
-    not_yet("M1", "ingest")
+__all__ = [
+    "MAX_UPLOAD_BYTES",
+    "MIN_EXTRACTABLE_CHARS",
+    "MIN_PASSING_PAGE_SHARE",
+    "DigitalBornScore",
+    "DocumentRecord",
+    "IngestError",
+    "IngestErrorCode",
+    "ingest",
+    "score_digital_born",
+    "sha256_file",
+]
