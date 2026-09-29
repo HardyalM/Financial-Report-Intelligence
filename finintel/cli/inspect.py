@@ -23,7 +23,6 @@ import json
 import time
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from itertools import pairwise
 from pathlib import Path
 from typing import Any, TextIO
 
@@ -31,6 +30,7 @@ import structlog
 
 from finintel import PIPELINE_VERSION
 from finintel.cache import StageCache, StageKey
+from finintel.cli.common import FIXTURE_PDFS, HoldoutRefusedError, cached_text_layer, is_holdout
 from finintel.cli.dump import write_dump
 from finintel.cli.page_signals import (
     STATEMENT_KEYWORDS,
@@ -59,25 +59,14 @@ from finintel.parse.engines.pdfplumber_engine import (
     PdfplumberEngine,
     RawPageTables,
 )
-from finintel.parse.text_layer import (
-    EXTRACTOR,
-    TEXT_LAYER_VERSION,
-    TextLayer,
-    read_text_layer,
-    render_page_png,
-)
+from finintel.parse.text_layer import EXTRACTOR, TextLayer, render_page_png
 
 INSPECT_VERSION = "1"
 TOP_PAGES = 10
 TABLE_CANDIDATES = 20
 TABLE_CANDIDATES_MAX = 40
-FIXTURE_PDFS = Path("fixtures") / "pdfs"
 
 log = structlog.get_logger(__name__)
-
-
-class HoldoutRefusedError(Exception):
-    """The path is inside fixtures/holdout/, which no tool may read before M8.3."""
 
 
 class InspectUsageError(ValueError):
@@ -122,12 +111,6 @@ class _Trace:
 
 
 # ---------------------------------------------------------------------------- targets
-
-
-def is_holdout(path: Path) -> bool:
-    """True if the resolved path lies under a `fixtures/holdout` directory (symlinks followed)."""
-    parts = [p.lower() for p in path.resolve().parts]
-    return any(a == "fixtures" and b == "holdout" for a, b in pairwise(parts))
 
 
 def resolve_targets(paths: Sequence[Path], *, fixtures: bool) -> list[Path]:
@@ -230,9 +213,7 @@ def inspect_pdf(
 
 def _text_layer(pdf: Path, record: DocumentRecord, cache: StageCache, trace: _Trace) -> TextLayer:
     started = time.perf_counter()
-    key = StageKey.build(record.sha256, "text_layer", TEXT_LAYER_VERSION, {"extractor": EXTRACTOR})
-    data, hit = cache.memo(key, "text_layer.json", lambda: read_text_layer(pdf).to_json())
-    layer = TextLayer.from_json(data)
+    layer, hit = cached_text_layer(pdf, record.sha256, cache)
     trace.stage("text_layer", started, cache="hit" if hit else "miss")
     return layer
 

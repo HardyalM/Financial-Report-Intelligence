@@ -7,6 +7,50 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M2.1 — 2026-09-29 — green
+
+M2.1 green. company_a IS p.141 (printed 138), BS p.143 (printed 140): equal to the labels, folios too.
+Company pages 195-197 detected, none selected. company_b: bank, balance sheet unclassified. Next M2.2.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: **330 passed** |
+| `uv run python scripts/gate.py M2.1` | exit 0, 7/7 PASS |
+| `uv run finintel locate company_a --json` | IS [141] labels ['138']; BS [143] labels ['140']; corporate; classified |
+| `uv run finintel locate company_b --json` | exit 0; `document_type: bank`, `balance_sheet_classified: false`; parent company BS p.307 rejected |
+| `uv run pytest tests/locate/test_synthetic_specs.py tests/locate/test_goldens.py` | 11 passed (4 specs, 4 golden checks) |
+| `uv run python scripts/check_scope.py M2.1 --base m1` | exit 0 (with the amendment below) |
+| locate on a cached text layer | 0.4-0.5 s per report |
+
+Decisions recorded:
+- `total_debt` (tech lead, 2026-09-29): **strict**. A face line "Financial liabilities" that includes
+  derivatives and other financial liabilities is not "interest-bearing borrowings"; face-only v1 cannot
+  isolate borrowings, so `total_debt` = null with a specific warning and D/E = null (`missing_input`).
+  **Needed before M2.4:** the tech lead updates `fixtures/expected/company_a.json` (`total_debt` null,
+  plus warning) and `company_a.ratios.json` (D/E null, `reason: missing_input`). Code never edits them.
+- M0 layout sign-off: yes. M1 top-10 sign-off: yes (tech lead, 2026-09-29).
+- M2.1 allowed paths amended (MILESTONES): the gate calls `finintel locate` (finintel/cli) and the scripted
+  check in `scripts/gate.py`, which the original list did not allow.
+- Corporate vs other: "customer deposits" alone does not conflict with corporate (housebuilders,
+  retailers); "loans and advances to customers", or any two bank signals, does. Tested both ways.
+
+Fixed along the way (M1 bug): `PageText.width/height` came from PyMuPDF's rotated rect while word
+coordinates are unrotated, so "top of page" was wrong on landscape pages. Now unrotated, with
+`visual_bbox` for display space; `TEXT_LAYER_VERSION` 1 -> 2 so every cached text layer rebuilds.
+
+Evidence for EXTRACTION section 1.1 (thresholds unchanged; the tech lead owns that document):
+- Unilever statement pages have numeric-token share 0.26 / 0.29 < 0.30, so numeric density scores 0 on
+  both. They still reach 0.80 on title, bookmark, header and vocabulary.
+
+Carried into M2.2:
+- Unilever p.141 holds the income statement AND the statement of comprehensive income; "Net profit"
+  prints in both. The income-statement table must end at the "Consolidated statement of comprehensive
+  income" heading, or `net_income` gets two candidates.
+- Unilever's income statement has three value columns (2024, 2023, 2022); labels cover two.
+- Lloyds' statement of changes in equity continues onto p.220 ("continued" marker): multi-page merge.
+
+---
+
 ## M1 gate re-run — 2026-09-29 — green except sign-off
 
 M1 green on the real fixtures. Unilever 2024 (305 pp., EUR m) and Lloyds 2024 (338 pp., £m) both

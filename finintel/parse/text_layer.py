@@ -8,7 +8,9 @@ Conventions:
 - `page` is the 1-based PDF page index (SCHEMA section 4.1), never the printed folio. The folio,
   when the PDF defines page labels, is `PageText.label`.
 - Coordinates are PDF points in PyMuPDF page space: origin top-left, y grows downwards, on the
-  unrotated page. `PageText.rotation` records any /Rotate so later stages can derotate.
+  unrotated page. `PageText.width` and `height` are in the same unrotated space. The /Rotate
+  value is `PageText.rotation`; `PageText.visual_bbox` maps a box to the page as displayed, which
+  is what "the top of the page" means to a reader.
 - Words carry the (block, line) ids of PyMuPDF's reading-order blocks. Word, line and span come
   from one TextPage, so the ids agree across all three.
 """
@@ -25,7 +27,7 @@ import pymupdf
 from pydantic import BaseModel, ConfigDict
 
 #: Bump when extracted fields or their meaning change. Part of every text-layer cache key.
-TEXT_LAYER_VERSION = "1"
+TEXT_LAYER_VERSION = "2"  # 2: width/height in unrotated space
 #: The extracting library and version. A PyMuPDF upgrade can change extraction, so it is part of
 #: the cache key as well.
 EXTRACTOR = f"pymupdf {pymupdf.VersionBind}"
@@ -93,9 +95,9 @@ class PageText(_Frozen):
 
     page: int
     label: str | None
-    width: float
+    width: float  # unrotated, like every coordinate on the page
     height: float
-    rotation: int
+    rotation: int  # /Rotate: 0, 90, 180 or 270, clockwise
     words: tuple[Word, ...] = ()
     lines: tuple[Line, ...] = ()
     rules: tuple[Rule, ...] = ()
@@ -111,6 +113,26 @@ class PageText(_Frozen):
     @property
     def median_word_size(self) -> float | None:
         return median(w.size for w in self.words) if self.words else None
+
+    @property
+    def visual_size(self) -> tuple[float, float]:
+        """(width, height) of the page as displayed."""
+        if self.rotation in (90, 270):
+            return (self.height, self.width)
+        return (self.width, self.height)
+
+    def visual_bbox(self, bbox: BBox) -> BBox:
+        """Map an unrotated box to display coordinates (PyMuPDF's rotation matrix, inverted by
+        hand so no PyMuPDF object is needed downstream)."""
+        x0, y0, x1, y1 = bbox
+        w, h = self.width, self.height
+        if self.rotation == 90:
+            return (h - y1, x0, h - y0, x1)
+        if self.rotation == 180:
+            return (w - x1, h - y1, w - x0, h - y0)
+        if self.rotation == 270:
+            return (y0, w - x1, y1, w - x0)
+        return bbox
 
 
 class OutlineEntry(_Frozen):
@@ -172,6 +194,14 @@ def render_page_png(pdf_path: Path, page: int, dpi: int = 50) -> bytes:
         return png
 
 
+def _unrotated_size(page: pymupdf.Page) -> tuple[float, float]:
+    """PyMuPDF's `page.rect` is the displayed (rotated) page; words are unrotated."""
+    rect = page.rect
+    if int(page.rotation) in (90, 270):
+        return _r(rect.height), _r(rect.width)
+    return _r(rect.width), _r(rect.height)
+
+
 def _outline(toc: Sequence[Sequence[Any]]) -> tuple[OutlineEntry, ...]:
     entries = []
     for level, title, target in (entry[:3] for entry in toc):
@@ -183,15 +213,15 @@ def _outline(toc: Sequence[Sequence[Any]]) -> tuple[OutlineEntry, ...]:
 def _read_page_safely(doc: pymupdf.Document, index: int) -> PageText:
     page = doc[index]
     label = page.get_label() or None
-    rect = page.rect
+    width, height = _unrotated_size(page)
     try:
         return _read_page(page, index + 1, label)
     except Exception as exc:  # MuPDF raises several types for damaged content streams
         return PageText(
             page=index + 1,
             label=label,
-            width=_r(rect.width),
-            height=_r(rect.height),
+            width=width,
+            height=height,
             rotation=int(page.rotation),
             error=f"page_unreadable: {type(exc).__name__}",
         )
@@ -205,12 +235,12 @@ def _read_page(page: pymupdf.Page, number: int, label: str | None) -> PageText:
 
     words = tuple(_word(raw, blocks) for raw in raw_words)
     lines = tuple(_lines(blocks))
-    rect = page.rect
+    width, height = _unrotated_size(page)
     return PageText(
         page=number,
         label=label,
-        width=_r(rect.width),
-        height=_r(rect.height),
+        width=width,
+        height=height,
         rotation=int(page.rotation),
         words=words,
         lines=lines,

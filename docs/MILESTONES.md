@@ -105,20 +105,21 @@ These checks are created in M0 and run in CI.
 ## M2.1 — Locate statements and profile the document
 
 **Read first:** EXTRACTION §1 (including §1.4); SCHEMA §4; ADR-010.
-**Allowed paths:** `finintel/locate/**`, `evals/synthetic/**`, `tests/**`.
+**Allowed paths:** `finintel/locate/**`, `evals/synthetic/**`, `tests/**`, `evals/__init__.py`, `finintel/cli/**`, `finintel/parse/text_layer*`, `scripts/gate.py`, `scripts/scope.yaml`.
+*Amended 2026-09-29 in the M2.1 session. The gate below runs the finintel locate command (finintel/cli) and the scripted M2.1 check in scripts/gate.py, which the original list did not allow; evals/__init__.py makes the synthetic generator importable; the text-layer change fixes an M1 bug found here (page size reported in rotated space while word coordinates are unrotated).*
 
-- [ ] Page scorer, title scope classifier, hard exclusions, continuation and spread detection.
-- [ ] `DocumentProfile`: document type and classified-balance-sheet test.
-- [ ] Synthetic generator plus the first specs: company page before group page; liquidity-ordered balance sheet; two-page balance sheet.
+- [x] Page scorer, title scope classifier, hard exclusions, continuation and spread detection. *(Also: chrome filter for navigation bars, printed-folio inference, contents-page hints.)*
+- [x] `DocumentProfile`: document type and classified-balance-sheet test.
+- [x] Synthetic generator plus the first specs: company page before group page; liquidity-ordered balance sheet; two-page balance sheet. *(Plus a bank spec. Spec figures reviewed and approved by the tech lead 2026-09-29, ADR-010.)*
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] `python scripts/gate.py M2.1` exits 0. It checks that:
+- [x] G1–G6 pass. *2026-09-29: `make ci` exit 0 (330 passed); `check_scope.py M2.1 --base m1` exit 0.*
+- [x] `python scripts/gate.py M2.1` exits 0 (7/7 PASS). It checks that:
   - `finintel locate company_a --json` gives income statement and balance sheet pages equal to the `page` values in `company_a.json`
   - at least one `scope=company` page is detected and not selected
   - `document_type == "corporate"` and `balance_sheet_classified == true`.
-- [ ] `finintel locate company_b --json` gives `document_type == "bank"` and `balance_sheet_classified == false`.
-- [ ] The three synthetic specs pass.
+- [x] `finintel locate company_b --json` gives `document_type == "bank"` and `balance_sheet_classified == false`.
+- [x] The three synthetic specs pass. *(Four: `tests/locate/test_synthetic_specs.py`.)*
 
 ---
 

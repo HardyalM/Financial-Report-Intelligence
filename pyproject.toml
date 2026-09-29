@@ -54,13 +54,18 @@ select = ["E", "F", "I", "B", "UP", "N", "SIM", "RUF"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["finintel", "scripts", "tests"]
+files = ["finintel", "scripts", "tests", "evals"]
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
 # PyMuPDF's public API is only partly annotated. These modules are the typed boundary around it:
 # everything they return is a typed model.
-module = ["finintel.parse.text_layer", "finintel.ingest.document", "tests.inspect.synthetic"]
+module = [
+    "finintel.parse.text_layer",
+    "finintel.ingest.document",
+    "tests.inspect.synthetic",
+    "evals.synthetic.render",
+]
 disallow_untyped_calls = false
 
 [tool.pytest.ini_options]

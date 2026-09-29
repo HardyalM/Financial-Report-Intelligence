@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -110,7 +111,7 @@ def test_gate_missing_report_fails(tmp_path: Path) -> None:
 
 
 def test_gate_pending_and_command_only_sessions(tmp_path: Path) -> None:
-    assert gate.run("M2.1", tmp_path / "absent.json")[0] == 2
+    assert gate.run("M2.2", tmp_path / "absent.json")[0] == 2
     assert gate.run("M0", tmp_path / "absent.json")[0] == 0
 
 
@@ -121,3 +122,85 @@ def test_gate_evaluates_sums() -> None:
 
 def test_generated_contracts_are_up_to_date() -> None:
     assert gen_contracts.main(["--check"]) == 0
+
+
+def _located(pages: dict[str, tuple[int, ...]], kind: str, classified: bool, company: bool) -> Any:
+    from finintel.locate import (
+        DocumentProfile,
+        DocumentType,
+        LocateResult,
+        PageCandidate,
+        Scope,
+        StatementLocation,
+        StatementType,
+    )
+
+    statements = {
+        StatementType(k): StatementLocation(
+            statement_type=StatementType(k), status="found", pages=v
+        )
+        for k, v in pages.items()
+    }
+    candidates: tuple[PageCandidate, ...] = ()
+    if company:
+        candidates = (
+            PageCandidate(
+                page=197,
+                page_label=None,
+                statement_type=StatementType.BALANCE_SHEET,
+                title="Balance sheet",
+                scope=Scope.COMPANY,
+                scope_evidence="header",
+                score=1.0,
+                signals=(),
+                excluded="company-only",
+            ),
+        )
+    profile = DocumentProfile(
+        document_type=DocumentType(kind), balance_sheet_classified=classified, evidence={}
+    )
+    return LocateResult(
+        locator_version="1",
+        page_count=305,
+        folio_offset=3,
+        statements=statements,
+        candidates=candidates,
+        profile=profile,
+        warnings=(),
+    )
+
+
+def test_gate_m2_1_compares_located_pages_with_labels() -> None:
+    labels = {"items": {
+        "revenue": {"statement": "income_statement", "values": [{"page": 141}, {"page": 141}]},
+        "total_assets": {"statement": "balance_sheet", "values": [{"page": 143}]},
+        "total_debt": {"statement": "balance_sheet", "values": [{"page": None}]},
+    }}  # fmt: skip
+    good = {
+        "company_a": _located(
+            {"income_statement": (141,), "balance_sheet": (143,)}, "corporate", True, True
+        ),
+        "company_b": _located(
+            {"income_statement": (216,), "balance_sheet": (218,)}, "bank", False, True
+        ),
+    }
+    assert all(ok for ok, _ in gate.check_m21(good, labels))
+
+    wrong_page = {
+        **good,
+        "company_a": _located(
+            {"income_statement": (141,), "balance_sheet": (197,)}, "corporate", True, True
+        ),
+    }
+    failed = [text for ok, text in gate.check_m21(wrong_page, labels) if not ok]
+    assert failed == ["company_a balance_sheet: located [197] (found), labelled [143]"]
+
+    no_company = {
+        **good,
+        "company_a": _located(
+            {"income_statement": (141,), "balance_sheet": (143,)}, "corporate", True, False
+        ),
+    }
+    assert [ok for ok, text in gate.check_m21(no_company, labels) if "scope=company" in text] == [
+        False
+    ]

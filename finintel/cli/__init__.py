@@ -1,8 +1,10 @@
 """`finintel` command line.
 
     finintel inspect <pdf|dir>... [--fixtures]   M1 inspection dump (see finintel.cli.inspect)
+    finintel locate <pdf|fixture> [--json]       M2.1 statement pages and document profile
 
-Exit codes: 0 ok; 1 a document was refused or failed; 2 usage; 3 a held-out path was requested.
+Exit codes: 0 ok; 1 a document was refused or failed, or its statements need review; 2 usage;
+3 a held-out path was requested.
 The last line of `inspect` output is `vendor_calls=N`: paid vendor requests made by this run.
 """
 
@@ -12,9 +14,10 @@ import argparse
 import sys
 from pathlib import Path
 
+from finintel.cli import locate as locate_cmd
+from finintel.cli.common import HoldoutRefusedError
 from finintel.cli.inspect import (
     TOP_PAGES,
-    HoldoutRefusedError,
     InspectOptions,
     InspectUsageError,
     inspect_pdf,
@@ -67,6 +70,15 @@ def build_parser() -> argparse.ArgumentParser:
         default=MAX_UPLOAD_BYTES / 1_048_576,
         help="refuse files larger than this (default: the 50 MB upload limit)",
     )
+    locate = commands.add_parser(
+        "locate",
+        help="find the primary statement pages and profile the document (M2.1)",
+        description="Scores every page that names a statement, rejects company-only and "
+        "excluded pages with reasons, follows continuation pages, and decides document type.",
+    )
+    locate.add_argument("target", help='a PDF path, or a fixture name such as "company_a"')
+    locate.add_argument("--json", action="store_true", help="print the full result as JSON")
+    locate.add_argument("--cache-dir", type=Path, help="stage cache (default: artifacts/cache)")
     return parser
 
 
@@ -82,7 +94,30 @@ def main(argv: list[str] | None = None) -> int:
         print(f"finintel: {exc}", file=sys.stderr)
         return EXIT_USAGE
     configure_logging(settings.log_format, settings.log_level)
+    if args.command == "locate":
+        return _locate(args, settings)
     return _inspect(args, settings)
+
+
+def _locate(args: argparse.Namespace, settings: Settings) -> int:
+    try:
+        pdf, sha256, result = locate_cmd.locate_pdf(
+            args.target, args.cache_dir or settings.cache_dir
+        )
+    except HoldoutRefusedError as exc:
+        print(f"finintel locate: refused {exc}: held out until M8.3", file=sys.stderr)
+        return EXIT_HOLDOUT
+    except FileNotFoundError as exc:
+        print(f"finintel locate: {exc}", file=sys.stderr)
+        return EXIT_FAILED
+    except IngestError as exc:
+        print(f"finintel locate: refused ({exc.code.value}): {exc.message}", file=sys.stderr)
+        return EXIT_FAILED
+    if args.json:
+        locate_cmd.dump_json(pdf, sha256, result, sys.stdout)
+    else:
+        locate_cmd.report(pdf, result, sys.stdout)
+    return locate_cmd.exit_code(result)
 
 
 def _inspect(args: argparse.Namespace, settings: Settings) -> int:

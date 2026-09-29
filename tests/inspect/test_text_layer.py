@@ -8,7 +8,7 @@ import pytest
 
 from finintel.parse import text_layer
 from finintel.parse.text_layer import PageText, TextLayer, read_text_layer
-from tests.inspect.synthetic import encrypted_pdf
+from tests.inspect.synthetic import display_bbox, encrypted_pdf, rotated_pdf
 
 
 @pytest.fixture
@@ -128,3 +128,16 @@ def test_password_protected_pdf_is_refused(tmp_path: Path) -> None:
 def test_render_page_png(mini_pdf: Path) -> None:
     png = text_layer.render_page_png(mini_pdf, 3, dpi=30)
     assert png.startswith(b"\x89PNG\r\n\x1a\n")
+
+
+@pytest.mark.parametrize("rotation", [0, 90, 180, 270])
+def test_rotated_pages_keep_sizes_in_word_space_and_map_to_display(
+    tmp_path: Path, rotation: int
+) -> None:
+    """Regression: page size used to come from the rotated rect while words stayed unrotated."""
+    pdf = rotated_pdf(tmp_path / f"rotated_{rotation}.pdf", rotation)
+    page = read_text_layer(pdf).page(1)
+    assert (page.width, page.height, page.rotation) == (595.0, 842.0, rotation)
+    [word] = page.words
+    assert page.visual_bbox(word.bbox) == pytest.approx(display_bbox(pdf, word.bbox), abs=0.01)
+    assert page.visual_size == ((842.0, 595.0) if rotation in (90, 270) else (595.0, 842.0))

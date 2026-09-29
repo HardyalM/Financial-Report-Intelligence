@@ -62,11 +62,8 @@ def test_engine_declares_its_family(target: str, family: EngineFamily) -> None:
 
 
 def test_stubs_name_their_session() -> None:
-    from finintel.locate import locate_statements
     from finintel.ratios import compute_ratios
 
-    with pytest.raises(NotImplementedError, match=r"M2\.1"):
-        locate_statements(None)
     with pytest.raises(NotImplementedError, match="M3"):
         compute_ratios(None)  # type: ignore[arg-type]
 

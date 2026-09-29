@@ -1,6 +1,7 @@
 """Session gates that read the eval report (docs/MILESTONES.md, "Eval report contract").
 
     python scripts/gate.py M2.4 [--report artifacts/eval/latest/report.json]
+    python scripts/gate.py M2.1                      # runs the locator on the fixture PDFs
 
 Exit codes: 0 = all conditions hold; 1 = a condition fails or the report is missing;
 2 = this session's scripted check is not implemented yet (it is added in that session).
@@ -13,8 +14,12 @@ import argparse
 import ast
 import json
 import operator
+from collections.abc import Callable, Mapping
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from finintel.locate import LocateResult
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_REPORT = ROOT / "artifacts" / "eval" / "latest" / "report.json"
@@ -43,7 +48,7 @@ CONDITIONS: dict[str, list[str]] = {
     "M8.1": ["e1.matched + e1.honest_null == e1.labelled", "e1.silent_wrong == 0"],
 }
 # Scripted checks that compare pipeline output with labels; each is written in its own session.
-PENDING = {"M2.1", "M2.2", "M2.3", "M4.1", "M8.1"}
+PENDING = {"M2.2", "M2.3", "M4.1", "M8.1"}
 
 _COMPARE = {
     ast.Eq: operator.eq,
@@ -73,7 +78,92 @@ def evaluate(expression: str, report: dict[str, Any]) -> bool:
     return bool(_COMPARE[type(tree.ops[0])](value(tree.left), value(tree.comparators[0])))
 
 
+def check_m21(
+    results: Mapping[str, LocateResult], labels: Mapping[str, Any]
+) -> list[tuple[bool, str]]:
+    """M2.1: statement pages equal the labelled pages; company pages seen and rejected; profiles."""
+    from finintel.locate import DocumentType, Scope, StatementType
+
+    checks: list[tuple[bool, str]] = []
+    a, b = results["company_a"], results["company_b"]
+    for kind in (StatementType.INCOME_STATEMENT, StatementType.BALANCE_SHEET):
+        labelled = sorted(
+            {
+                v["page"]
+                for item in labels["items"].values()
+                if item.get("statement") == kind.value
+                for v in item["values"]
+                if v.get("page") is not None
+            }
+        )
+        location = a.statements[kind]
+        ok = location.status == "found" and sorted(location.pages) == labelled
+        located = f"located {list(location.pages)} ({location.status})"
+        checks.append((ok, f"company_a {kind.value}: {located}, labelled {labelled}"))
+    company = sorted({c.page for c in a.candidates if c.scope is Scope.COMPANY})
+    selected = any(c.selected for c in a.candidates if c.scope is Scope.COMPANY)
+    checks.append(
+        (
+            bool(company) and not selected,
+            f"company_a scope=company pages {company} detected, none selected",
+        )
+    )
+    checks.append(
+        (
+            a.profile.document_type is DocumentType.CORPORATE,
+            f"company_a document_type == corporate ({a.profile.document_type.value})",
+        )
+    )
+    checks.append(
+        (
+            a.profile.balance_sheet_classified is True,
+            f"company_a balance_sheet_classified == true ({a.profile.balance_sheet_classified})",
+        )
+    )
+    checks.append(
+        (
+            b.profile.document_type is DocumentType.BANK,
+            f"company_b document_type == bank ({b.profile.document_type.value})",
+        )
+    )
+    checks.append(
+        (
+            b.profile.balance_sheet_classified is False,
+            f"company_b balance_sheet_classified == false ({b.profile.balance_sheet_classified})",
+        )
+    )
+    return checks
+
+
+def gate_m21() -> tuple[int, list[str]]:
+    from finintel.cache import StageCache
+    from finintel.cli.common import cached_text_layer
+    from finintel.ingest import sha256_file
+    from finintel.locate import locate
+
+    results = {}
+    for name in ("company_a", "company_b"):
+        pdf = ROOT / "fixtures" / "pdfs" / f"{name}.pdf"
+        if not pdf.exists():
+            return 1, [f"FAIL  {pdf.relative_to(ROOT)} is missing (PLAN section 7.1)"]
+        layer, _ = cached_text_layer(
+            pdf, sha256_file(pdf), StageCache(ROOT / "artifacts" / "cache")
+        )
+        results[name] = locate(layer)
+    labels = json.loads(
+        (ROOT / "fixtures" / "expected" / "company_a.json").read_text(encoding="utf-8")
+    )
+    checks = check_m21(results, labels)
+    lines = [f"{'PASS' if ok else 'FAIL'}  {text}" for ok, text in checks]
+    return (0 if all(ok for ok, _ in checks) else 1), lines
+
+
+SCRIPTED: dict[str, Callable[[], tuple[int, list[str]]]] = {"M2.1": gate_m21}
+
+
 def run(session: str, report_path: Path) -> tuple[int, list[str]]:
+    if session in SCRIPTED:
+        return SCRIPTED[session]()
     lines: list[str] = []
     conditions = CONDITIONS.get(session, [])
     if conditions:

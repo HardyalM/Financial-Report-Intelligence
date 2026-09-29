@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from finintel.cli import page_signals as ps
+from finintel.locate import signals
 from finintel.parse.text_layer import Line, PageText, TextLayer, Word, read_text_layer
 
 
@@ -21,12 +22,12 @@ def layer(mini_pdf: Path) -> TextLayer:
      "2025", "0", "1,000,000"],
 )  # fmt: skip
 def test_numeric_tokens(token: str) -> None:
-    assert ps._NUMERIC.match(token)
+    assert signals.NUMERIC.match(token)
 
 
 @pytest.mark.parametrize("token", ["n/a", "12a", "1,23", "note", "(", "12,34,567", "£"])
 def test_non_numeric_tokens(token: str) -> None:
-    assert not ps._NUMERIC.match(token)
+    assert not signals.NUMERIC.match(token)
 
 
 @pytest.mark.parametrize(
@@ -36,17 +37,17 @@ def test_non_numeric_tokens(token: str) -> None:
      ("£ million", "£ million"), ("£ millions", "£ millions"), ("EURm", "eurm")],
 )  # fmt: skip
 def test_unit_tokens(text: str, unit: str) -> None:
-    matches = [ps.normalise(m.group(0)) for m in ps._UNIT.finditer(f"2025 {text} 2024")]
+    matches = [signals.normalise(m.group(0)) for m in signals.UNIT.finditer(f"2025 {text} 2024")]
     assert matches == [unit]
 
 
 @pytest.mark.parametrize("text", ["£more than", "£200m revenue", "$money", "€mbargo"])
 def test_prose_is_not_a_unit_token(text: str) -> None:
-    assert not ps._UNIT.search(text)
+    assert not signals.UNIT.search(text)
 
 
 def test_normalise() -> None:
-    assert ps.normalise("Directors\u2019  Report\n\ufb01nance") == "directors' report finance"
+    assert signals.normalise("Directors\u2019  Report\n\ufb01nance") == "directors' report finance"
 
 
 def test_keywords_match_across_line_breaks() -> None:
@@ -72,7 +73,7 @@ def test_narrative_page_mentions_but_is_not_titled(layer: TextLayer) -> None:
 
 
 def test_visual_rows_join_cells_from_different_blocks(layer: TextLayer) -> None:
-    rows = [[w.text for w in row] for row in ps.visual_rows(layer.page(3).words)]
+    rows = [[w.text for w in row] for row in signals.PageView(layer.page(3)).rows]
     assert ["Revenue", "3", "13,907.5", "12,345.0"] in rows
 
 

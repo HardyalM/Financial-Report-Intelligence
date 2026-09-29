@@ -1,0 +1,85 @@
+# Hazard: the consolidated balance sheet runs across two pages. The second page has no title,
+# only the same column headers. The locator must return both pages and say why it joined them.
+# Figures are fictional and exist only because this spec prints them.
+name: two_page_balance_sheet
+hazard: two-page balance sheet
+description: Consolidated balance sheet on pp.3-4; p.4 continues without a title.
+chrome: [Strategic report, Governance, Financial statements]
+folio_offset: -30  # printed folio = PDF page + 30
+pages:
+  - kind: narrative
+    header: Strategic report
+    title: Chief Executive's review
+
+  - kind: statement
+    statement: income_statement
+    title: Consolidated income statement
+    subtitle: For the year ended 31 March 2025
+    rows:
+      - {label: Revenue, note: "2", values: ["12,500", "11,800"]}
+      - {label: Cost of sales, values: ["(8,750)", "(8,300)"]}
+      - {label: Gross profit, style: subtotal, values: ["3,750", "3,500"], sum_of: [Revenue, Cost of sales]}
+      - {label: Administrative expenses, note: "3", values: ["(2,150)", "(2,020)"]}
+      - {label: Operating profit, note: "3", style: subtotal, values: ["1,600", "1,480"],
+         sum_of: [Gross profit, Administrative expenses]}
+      - {label: Finance income, note: "5", values: ["40", "25"]}
+      - {label: Finance costs, note: "5", values: ["(190)", "(175)"]}
+      - {label: Profit before taxation, style: subtotal, values: ["1,450", "1,330"],
+         sum_of: [Operating profit, Finance income, Finance costs]}
+      - {label: Taxation, note: "6", values: ["(363)", "(333)"]}
+      - {label: Profit for the year, style: total, values: ["1,087", "997"],
+         sum_of: [Profit before taxation, Taxation]}
+
+  - kind: statement
+    statement: balance_sheet
+    title: Consolidated balance sheet
+    subtitle: As at 31 March 2025
+    rows:
+      - {label: Non-current assets, style: section}
+      - {label: "Property, plant and equipment", note: "10", values: ["6,000", "5,800"]}
+      - {label: Right-of-use assets, note: "11", values: ["1,200", "1,150"]}
+      - {label: Intangible assets, note: "12", values: ["800", "820"]}
+      - {id: non_current_assets, style: subtotal, values: ["8,000", "7,770"],
+         sum_of: ["Property, plant and equipment", Right-of-use assets, Intangible assets]}
+      - {label: Current assets, style: section}
+      - {label: Inventories, note: "14", values: ["1,100", "1,050"]}
+      - {label: Trade and other receivables, note: "15", values: ["700", "680"]}
+      - {label: Cash and cash equivalents, note: "16", values: ["900", "770"]}
+      - {id: current_assets, style: subtotal, values: ["2,700", "2,500"],
+         sum_of: [Inventories, Trade and other receivables, Cash and cash equivalents]}
+      - {label: Total assets, style: total, values: ["10,700", "10,270"],
+         sum_of: [non_current_assets, current_assets]}
+
+  - kind: statement
+    statement: balance_sheet
+    continuation: true
+    rows:
+      - {label: Current liabilities, style: section}
+      - {label: Trade and other payables, note: "17", values: ["(2,400)", "(2,300)"]}
+      - {id: borrowings_current, label: Borrowings, note: "18", values: ["(300)", "(250)"]}
+      - {id: leases_current, label: Lease liabilities, note: "19", values: ["(150)", "(140)"]}
+      - {id: current_liabilities, style: subtotal, values: ["(2,850)", "(2,690)"],
+         sum_of: [Trade and other payables, borrowings_current, leases_current]}
+      - {label: Non-current liabilities, style: section}
+      - {id: borrowings_non_current, label: Borrowings, note: "18", values: ["(2,500)", "(2,600)"]}
+      - {id: leases_non_current, label: Lease liabilities, note: "19", values: ["(1,100)", "(1,080)"]}
+      - {id: non_current_liabilities, style: subtotal, values: ["(3,600)", "(3,680)"],
+         sum_of: [borrowings_non_current, leases_non_current]}
+      - {label: Net assets, style: total, values: ["4,250", "3,900"],
+         sum_of: [Total assets, current_liabilities, non_current_liabilities]}
+      - {label: Equity, style: section}
+      - {label: Share capital, note: "20", values: ["250", "250"]}
+      - {label: Retained earnings, values: ["4,000", "3,650"]}
+      - {label: Total equity, style: total, values: ["4,250", "3,900"],
+         sum_of: [Share capital, Retained earnings]}
+
+  - kind: narrative
+    title: Notes to the consolidated financial statements
+
+expect:
+  statements:
+    income_statement: {pages: [2], scope: group}
+    balance_sheet: {pages: [3, 4], scope: group}
+  document_type: corporate
+  balance_sheet_classified: true
+  folio_offset: -30

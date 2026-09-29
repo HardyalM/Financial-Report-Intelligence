@@ -215,3 +215,21 @@ def encrypted_pdf(path: Path, *, user_password: str | None) -> Path:
     )
     doc.close()
     return path
+
+
+def rotated_pdf(path: Path, rotation: int) -> Path:
+    """One page with a word near the unrotated top-left, displayed with /Rotate `rotation`."""
+    doc = pymupdf.open()
+    page = doc.new_page(width=A4[0], height=A4[1])
+    page.insert_text((60, 70), "Title", fontsize=14)
+    page.set_rotation(rotation)
+    doc.save(path)
+    doc.close()
+    return path
+
+
+def display_bbox(path: Path, bbox: tuple[float, float, float, float]) -> tuple[float, ...]:
+    """Where PyMuPDF itself displays an unrotated box on page 1 (the ground truth)."""
+    with pymupdf.open(path) as doc:
+        rect = pymupdf.Rect(bbox) * doc[0].rotation_matrix
+        return (rect.x0, rect.y0, rect.x1, rect.y1)

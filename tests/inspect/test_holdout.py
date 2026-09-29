@@ -10,13 +10,8 @@ from pathlib import Path
 import pytest
 
 from finintel.cli import main
-from finintel.cli.inspect import (
-    HoldoutRefusedError,
-    InspectOptions,
-    inspect_pdf,
-    is_holdout,
-    resolve_targets,
-)
+from finintel.cli.common import HoldoutRefusedError, is_holdout
+from finintel.cli.inspect import InspectOptions, inspect_pdf, resolve_targets
 
 ROOT = Path(__file__).resolve().parents[2]
 

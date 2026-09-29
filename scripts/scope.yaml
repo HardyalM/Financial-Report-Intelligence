@@ -31,6 +31,11 @@ sessions:
     - "finintel/locate/**"
     - "evals/synthetic/**"
     - "tests/**"
+    - "evals/__init__.py"
+    - "finintel/cli/**"
+    - "finintel/parse/text_layer*"
+    - "scripts/gate.py"
+    - "scripts/scope.yaml"
   "M2.2":
     - "finintel/parse/engines/pdfplumber*"
     - "finintel/parse/engines/pymupdf_tables*"

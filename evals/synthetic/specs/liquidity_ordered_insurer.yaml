@@ -1,0 +1,61 @@
+# Hazard: a liquidity-ordered statement of financial position (IAS 1.60) with no bank signals,
+# as an insurer prints it. No current/non-current split, so the current ratio does not apply, and
+# the document type is "other": corporate ratios are withheld until a reviewer sets the type.
+# Figures are fictional and exist only because this spec prints them.
+name: liquidity_ordered_insurer
+hazard: liquidity-ordered balance sheet (not a bank)
+description: Insurer-style unclassified balance sheet; document type other, classification false.
+chrome: [Strategic report, Governance, Financial statements]
+pages:
+  - kind: narrative
+    header: Strategic report
+    title: Chief Executive's review
+
+  - kind: statement
+    statement: income_statement
+    title: Consolidated income statement
+    subtitle: For the year ended 31 December 2025
+    rows:
+      - {label: Insurance revenue, note: "4", values: ["3,000", "2,800"]}
+      - {label: Insurance service expenses, note: "5", values: ["(2,400)", "(2,250)"]}
+      - {label: Insurance service result, style: subtotal, values: ["600", "550"],
+         sum_of: [Insurance revenue, Insurance service expenses]}
+      - {label: Net investment income, note: "6", values: ["350", "300"]}
+      - {label: Other operating expenses, values: ["(250)", "(240)"]}
+      - {label: Profit before tax, style: subtotal, values: ["700", "610"],
+         sum_of: [Insurance service result, Net investment income, Other operating expenses]}
+      - {label: Income tax expense, note: "7", values: ["(175)", "(152)"]}
+      - {label: Profit for the year, style: total, values: ["525", "458"],
+         sum_of: [Profit before tax, Income tax expense]}
+
+  - kind: statement
+    statement: balance_sheet
+    title: Consolidated statement of financial position
+    subtitle: As at 31 December 2025
+    rows:
+      - {label: Assets, style: section}
+      - {label: Cash and cash equivalents, note: "8", values: ["800", "750"]}
+      - {label: Financial investments, note: "9", values: ["9,000", "8,600"]}
+      - {label: Reinsurance contract assets, note: "10", values: ["1,200", "1,150"]}
+      - {label: Property and equipment, values: ["300", "310"]}
+      - {label: Total assets, style: total, values: ["11,300", "10,810"],
+         sum_of: [Cash and cash equivalents, Financial investments, Reinsurance contract assets,
+                  Property and equipment]}
+      - {label: Liabilities, style: section}
+      - {label: Insurance contract liabilities, note: "11", values: ["8,500", "8,200"]}
+      - {label: Borrowings, note: "12", values: ["600", "600"]}
+      - {label: Other liabilities, values: ["400", "380"]}
+      - {label: Total liabilities, style: total, values: ["9,500", "9,180"],
+         sum_of: [Insurance contract liabilities, Borrowings, Other liabilities]}
+      - {label: Equity, style: section}
+      - {label: Share capital, values: ["200", "200"]}
+      - {label: Retained earnings, values: ["1,600", "1,430"]}
+      - {label: Total equity, style: total, values: ["1,800", "1,630"],
+         sum_of: [Share capital, Retained earnings]}
+
+expect:
+  statements:
+    income_statement: {pages: [2], scope: group}
+    balance_sheet: {pages: [3], scope: group}
+  document_type: other
+  balance_sheet_classified: false
