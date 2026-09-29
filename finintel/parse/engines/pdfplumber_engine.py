@@ -1,27 +1,28 @@
 """PdfplumberEngine: the `pdfplumber` table engine (text_layer family).
 
-M1 provides raw table dumps for inspection: every table pdfplumber finds, under two strategies,
-with cell text and cell boxes exactly as returned. Normalisation into `StatementTable` (rows
-aligned to text-layer lines, note column, number grammar) is M2.2.
+Two outputs, both exactly as pdfplumber returns them:
+- `raw_tables` (M1): inspection dumps, per page, both strategies.
+- `parse` (M2.2): `ParsedTables` for the table builder, optionally clipped to statement regions.
 
-pdfplumber coordinates are PDF points, origin top-left, relative to the page's MediaBox. Each dump
-records the page bbox so M2.2 can reconcile any MediaBox/CropBox offset with the text layer.
+pdfplumber coordinates are PDF points, origin top-left. When the CropBox does not start at the
+MediaBox origin, cell boxes are shifted into the text layer's (CropBox) space.
 """
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
 import pdfplumber
 from pydantic import BaseModel, ConfigDict
 
-from finintel._placeholders import not_yet
-from finintel.parse.engines.base import EngineFamily, ParsedTables
+from finintel.parse.engines.base import EngineCell, EngineFamily, EngineTable, ParsedTables
 
 #: Bump when the dump format or the strategies change. Part of the raw-table cache key.
 RAW_TABLES_VERSION = "1"
+#: Bump when `parse` output changes. Part of the parsed-tables cache key.
+PARSE_VERSION = "1"
 
 #: "lines" finds ruled tables; "text" finds whitespace-aligned ones, typical of UK statements.
 STRATEGIES: dict[str, dict[str, Any]] = {
@@ -32,9 +33,9 @@ STRATEGIES: dict[str, dict[str, Any]] = {
 BBox = tuple[float, float, float, float]
 
 
-def _bbox(values: Sequence[float]) -> BBox:
-    x0, y0, x1, y1 = (round(float(v), 2) for v in values)
-    return (x0, y0, x1, y1)
+def _bbox(values: Sequence[float], dx: float = 0.0, dy: float = 0.0) -> BBox:
+    x0, y0, x1, y1 = values
+    return (round(x0 - dx, 2), round(y0 - dy, 2), round(x1 - dx, 2), round(y1 - dy, 2))
 
 
 class RawTable(BaseModel):
@@ -74,8 +75,73 @@ class PdfplumberEngine:
                 out.append(_page_tables(pdf.pages[number - 1], number))
         return out
 
-    def parse(self, pdf_path: Path, pages: list[int] | None = None) -> ParsedTables:
-        not_yet("M2.2", "PdfplumberEngine.parse (StatementTable normalisation)")
+    def parse(
+        self,
+        pdf_path: Path,
+        pages: Sequence[int] | None = None,
+        clips: Mapping[int, Sequence[BBox]] | None = None,
+    ) -> ParsedTables:
+        tables: list[EngineTable] = []
+        errors: list[str] = []
+        with pdfplumber.open(pdf_path) as pdf:
+            total = len(pdf.pages)
+            numbers = list(pages) if pages is not None else list(range(1, total + 1))
+            for number in numbers:
+                if not 1 <= number <= total:
+                    raise IndexError(f"page {number} outside 1..{total}")
+                page = pdf.pages[number - 1]
+                dx, dy = float(page.cropbox[0]), float(page.cropbox[1])
+                regions: Sequence[BBox | None] = (clips or {}).get(number) or [None]
+                for clip in regions:
+                    try:
+                        area = page.crop(_within(page, clip, dx, dy)) if clip else page
+                        for strategy, settings in STRATEGIES.items():
+                            tables.extend(
+                                _engine_table(number, strategy, clip, t, dx, dy)
+                                for t in area.find_tables(settings)
+                            )
+                    except Exception as exc:  # pdfminer raises a zoo of types on damaged pages
+                        errors.append(f"p.{number}: page_unreadable: {type(exc).__name__}")
+        return ParsedTables(
+            engine=self.name,
+            engine_version=self.version,
+            family=self.family,
+            tables=tuple(tables),
+            errors=tuple(errors),
+        )
+
+
+def _within(page: Any, clip: BBox, dx: float, dy: float) -> BBox:
+    """A text-layer clip box in pdfplumber page space, clamped to the page."""
+    px0, ptop, px1, pbottom = page.bbox
+    x0, y0, x1, y1 = clip
+    return (max(px0, x0 + dx), max(ptop, y0 + dy), min(px1, x1 + dx), min(pbottom, y1 + dy))
+
+
+def _engine_table(
+    page: int, strategy: str, clip: BBox | None, table: Any, dx: float, dy: float
+) -> EngineTable:
+    texts = table.extract()
+    cells = [
+        EngineCell(
+            row=r,
+            col=c,
+            text=texts[r][c] if r < len(texts) and c < len(texts[r]) else None,
+            bbox=_bbox(box, dx, dy) if box is not None else None,
+        )
+        for r, row in enumerate(table.rows)
+        for c, box in enumerate(row.cells)
+    ]
+    n_cols = max((len(row.cells) for row in table.rows), default=0)
+    return EngineTable(
+        page=page,
+        strategy=strategy,
+        clip=clip,
+        bbox=_bbox(table.bbox, dx, dy),
+        n_rows=len(table.rows),
+        n_cols=n_cols,
+        cells=tuple(cells),
+    )
 
 
 def _page_tables(page: Any, number: int) -> RawPageTables:

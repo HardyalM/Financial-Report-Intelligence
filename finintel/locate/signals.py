@@ -32,6 +32,7 @@ TITLE_SIZE_RATIO = 1.2  # x the page's median word size
 HEADER_REGION = 0.5  # column headers sit in the top half
 CHROME_PAGE_SHARE = 0.25  # a line on at least this share of pages is navigation, not content
 CHROME_MIN_PAGES = 3
+SUPERSCRIPT_RATIO = 0.75  # glyphs smaller than this x the median size are superscripts
 
 
 def normalise(text: str) -> str:
@@ -170,22 +171,43 @@ class PageView:
 
 
 def _rows(words: Sequence[tuple[Word, BBox]]) -> Iterable[list[tuple[Word, BBox]]]:
+    """Group words into printed rows by vertical centre. Superscripts and other undersized glyphs
+    (footnote markers such as "(a)") sit higher than their line; they join the row they overlap
+    instead of starting a row of their own."""
     if not words:
         return
     sizes = sorted(w.size for w, _ in words)
-    tolerance = max(2.0, 0.35 * sizes[len(sizes) // 2])
-    ordered = sorted(words, key=lambda wb: ((wb[1][1] + wb[1][3]) / 2, wb[1][0]))
-    row: list[tuple[Word, BBox]] = []
+    median_size = sizes[len(sizes) // 2]
+    tolerance = max(2.0, 0.35 * median_size)
+    small = [wb for wb in words if wb[0].size < SUPERSCRIPT_RATIO * median_size]
+    ordered = sorted(
+        (wb for wb in words if wb[0].size >= SUPERSCRIPT_RATIO * median_size),
+        key=lambda wb: ((wb[1][1] + wb[1][3]) / 2, wb[1][0]),
+    )
+    rows: list[list[tuple[Word, BBox]]] = []
     centre = 0.0
     for item in ordered:
         mid = (item[1][1] + item[1][3]) / 2
-        if row and mid - centre > tolerance:
-            yield sorted(row, key=lambda wb: wb[1][0])
-            row = []
-        if not row:
+        if not rows or mid - centre > tolerance:
+            rows.append([])
             centre = mid
-        row.append(item)
-    yield sorted(row, key=lambda wb: wb[1][0])
+        rows[-1].append(item)
+    for item in small:
+        top, bottom = item[1][1], item[1][3]
+        best = max(
+            rows,
+            key=lambda r: min(bottom, max(b[3] for _, b in r)) - max(top, min(b[1] for _, b in r)),
+            default=None,
+        )
+        if best is not None and min(bottom, max(b[3] for _, b in best)) > max(
+            top, min(b[1] for _, b in best)
+        ):
+            best.append(item)
+        else:
+            rows.append([item])
+    rows.sort(key=lambda r: min((b[1] + b[3]) / 2 for _, b in r))
+    for row in rows:
+        yield sorted(row, key=lambda wb: wb[1][0])
 
 
 def detect_chrome(layer: TextLayer) -> frozenset[str]:

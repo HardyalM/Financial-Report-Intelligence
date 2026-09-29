@@ -7,6 +7,44 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M2.2 — 2026-09-29 — green
+
+M2.2 green. company_a: 20/20 labelled cells found by pdfplumber AND by PyMuPDF, each on its labelled
+page, in a value column. Both engines produce identical rows on both goldens. Next M2.3.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: **488 passed, 0 skipped** |
+| `uv run python scripts/gate.py M2.2` | exit 0: pdfplumber 20/20, pymupdf_tables 20/20 |
+| `uv run python scripts/gate.py M2.1` | exit 0 (still 7/7) |
+| `uv run pytest tests/tables` | grammar, engines, 6 specs x 2 statements x 2 engines, goldens |
+| `uv run python scripts/check_scope.py M2.2 --base m2.1` | exit 0 (with the amendment in MILESTONES) |
+
+Tables on the goldens (both engines): Unilever IS p.141 19 rows, columns Notes | EUR m 2024 | 2023 | 2022;
+BS p.143 43 rows; Lloyds IS p.216 31 rows (EPS "6.3p" recorded unparsed), BS p.218 44 rows.
+
+What real reports taught this milestone (each is now a test):
+- **Engines truncate hanging brackets.** Both grids cut ")" off right-column figures ("(493" for
+  "(493)"). Per ADR-001, characters now come from the text layer: the engine's cell box says where,
+  the printed words centred in it say what. The engine's own text is kept as `engine_text`.
+- **Superscripts split rows.** Unilever's "(a)" footnote marker (4.55 pt) formed its own row and a
+  figure row lost its values. Row grouping now attaches undersized glyphs to the row they overlap.
+- **Prose fragments look like figures.** PyMuPDF read "d 31 Dece" from the subtitle; the printed
+  "31" under it became a "figure". A cell whose edges cut through other words is never a figure.
+- **Footnote prose merges columns.** Only figure-like cells (numbers, dashes, note references,
+  years) define columns, and columns are measured on printed ink, not engine boxes.
+- **Unheaded note columns.** Found by the EXTRACTION section 3 reference pattern (notes_column spec).
+
+Proposed EXTRACTION section 3 amendment (the tech lead owns that document): the note-reference
+pattern has no letter suffix, but Unilever prints "4B", "15C", "17A". The "Notes" header caught them
+here; code also treats any letter-suffixed reference as a note (it can never be a value).
+
+Carried into M2.3:
+- Value-column headers as printed: Unilever "€ million 2024"; Lloyds "2024 £m". Three periods on
+  both income statements (2024, 2023, 2022); labels cover two.
+
+---
+
 ## M2.1 — 2026-09-29 — green
 
 M2.1 green. company_a IS p.141 (printed 138), BS p.143 (printed 140): equal to the labels, folios too.

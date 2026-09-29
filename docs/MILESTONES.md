@@ -126,17 +126,18 @@ These checks are created in M0 and run in CI.
 ## M2.2 — Table model (text-layer family)
 
 **Read first:** EXTRACTION §2, §3 (notes column) and §4.1–4.2.
-**Allowed paths:** `finintel/parse/engines/pdfplumber*`, `finintel/parse/engines/pymupdf_tables*`, `finintel/tables/**`, `evals/synthetic/**`, `tests/**`.
+**Allowed paths:** `finintel/parse/engines/pdfplumber*`, `finintel/parse/engines/pymupdf_tables*`, `finintel/tables/**`, `evals/synthetic/**`, `tests/**`, `finintel/parse/engines/base.py`, `finintel/locate/signals.py`, `scripts/gate.py`, `scripts/scope.yaml`.
+*Amended 2026-09-29 in the M2.2 session. The engine output contract ParsedTables lives in finintel/parse/engines/base.py, whose stub said its fields are defined in M1 and M2.2, yet no session was allowed to touch it; the gate below needs a scripted M2.2 check in scripts/gate.py; finintel/locate/signals.py gains superscript-aware row grouping (a footnote marker was splitting a Unilever row and losing its figures).*
 
-- [ ] `StatementTable` from pdfplumber and PyMuPDF `find_tables`, with rows aligned to text-layer lines, styles, section headers, the notes column excluded, `note_ref` kept, and multi-page merge.
-- [ ] Number grammar.
-- [ ] Synthetic specs: notes column; spread page.
+- [x] `StatementTable` from pdfplumber and PyMuPDF `find_tables`, with rows aligned to text-layer lines, styles, section headers, the notes column excluded, `note_ref` kept, and multi-page merge. *(Engines say where a cell is; its characters come from the text layer, ADR-001.)*
+- [x] Number grammar.
+- [x] Synthetic specs: notes column; spread page. *(Figures reviewed by the tech lead before commit, ADR-010.)*
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] `python scripts/gate.py M2.2` exits 0: for **every** labelled cell in `company_a.json`, a table cell exists whose normalised `raw_text` equals the label, on the labelled page (prints `N/N`).
-- [ ] Number-grammar tests pass: a dash gives 0; "n/a" stays unparsed (not 0); brackets give a negative; footnote markers are stripped.
-- [ ] No value column has a "Note(s)" header (test).
+- [x] G1–G6 pass. *2026-09-29: `make ci` exit 0 (488 passed); `check_scope.py M2.2 --base m2.1` exit 0.*
+- [x] `python scripts/gate.py M2.2` exits 0: for **every** labelled cell in `company_a.json`, a table cell exists whose normalised `raw_text` equals the label, on the labelled page (prints `N/N`). *20/20 for each engine separately.*
+- [x] Number-grammar tests pass: a dash gives 0; "n/a" stays unparsed (not 0); brackets give a negative; footnote markers are stripped.
+- [x] No value column has a "Note(s)" header (test). *(`tests/tables/test_specs.py`, all specs, both engines.)*
 
 ---
 

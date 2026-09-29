@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pymupdf
 
-from evals.synthetic.spec import NarrativePage, Row, Spec, StatementPage
+from evals.synthetic.spec import NarrativePage, Row, Spec, SpreadPage, StatementPage
 
 A4 = (595.0, 842.0)
 LABEL_X = 50.0
@@ -32,18 +32,31 @@ _FALLBACK = pymupdf.Font("cjk")
 def render(spec: Spec, path: Path) -> Path:
     doc = pymupdf.open()
     for number, page_spec in enumerate(spec.pages, start=1):
+        if isinstance(page_spec, SpreadPage):
+            page = doc.new_page(width=2 * A4[0], height=A4[1])
+            halves = ((0.0, page_spec.left, 2 * number - 1), (A4[0], page_spec.right, 2 * number))
+            for dx, half, folio in halves:
+                _chrome(page, spec, str(folio - spec.folio_offset), dx)
+                _half(page, spec, half, dx)
+            continue
         page = doc.new_page(width=A4[0], height=A4[1])
-        _chrome(page, spec, number)
-        if isinstance(page_spec, StatementPage):
-            _statement(page, spec, page_spec)
-        else:
-            _narrative(page, page_spec)
+        _chrome(page, spec, str(number - spec.folio_offset), 0.0)
+        _half(page, spec, page_spec, 0.0)
     doc.set_metadata(
         {"title": f"{spec.company} synthetic: {spec.name}", "producer": "finintel evals"}
     )
     doc.save(path)
     doc.close()
     return path
+
+
+def _half(
+    page: pymupdf.Page, spec: Spec, content: StatementPage | NarrativePage, dx: float
+) -> None:
+    if isinstance(content, StatementPage):
+        _statement(page, spec, content, dx)
+    else:
+        _narrative(page, content, dx)
 
 
 def _text(
@@ -69,51 +82,50 @@ def _right(
     _text(page, right - width, y, text, size, bold)
 
 
-def _chrome(page: pymupdf.Page, spec: Spec, number: int) -> None:
+def _chrome(page: pymupdf.Page, spec: Spec, folio: str, dx: float) -> None:
     for i, item in enumerate(spec.chrome):
-        _text(page, LABEL_X + 120 * i, 22, item.upper(), size=6.5)
-    _text(
-        page, LABEL_X, 822, f"{spec.company} Annual Report and Accounts {spec.periods[0]}", size=7
-    )
-    _right(page, 545, 822, str(number - spec.folio_offset), size=7)
+        _text(page, dx + LABEL_X + 120 * i, 22, item.upper(), size=6.5)
+    footer = f"{spec.company} Annual Report and Accounts {spec.periods[0]}"
+    _text(page, dx + LABEL_X, 822, footer, size=7)
+    _right(page, dx + 545, 822, folio, size=7)
 
 
-def _narrative(page: pymupdf.Page, spec: NarrativePage) -> None:
+def _narrative(page: pymupdf.Page, spec: NarrativePage, dx: float) -> None:
     if spec.header:
-        _text(page, LABEL_X, 48, spec.header, size=9)
-    _text(page, LABEL_X, 78, spec.title, size=16, bold=True)
-    page.insert_textbox(
-        pymupdf.Rect(LABEL_X, 100, 545, 600), PROSE * spec.paragraphs, fontsize=9, fontname="helv"
-    )
+        _text(page, dx + LABEL_X, 48, spec.header, size=9)
+    _text(page, dx + LABEL_X, 78, spec.title, size=16, bold=True)
+    box = pymupdf.Rect(dx + LABEL_X, 100, dx + 545, 600)
+    page.insert_textbox(box, PROSE * spec.paragraphs, fontsize=9, fontname="helv")
 
 
-def _statement(page: pymupdf.Page, spec: Spec, sheet: StatementPage) -> None:
+def _statement(page: pymupdf.Page, spec: Spec, sheet: StatementPage, dx: float) -> None:
     if sheet.header:
-        _text(page, LABEL_X, 48, sheet.header, size=9)
+        _text(page, dx + LABEL_X, 48, sheet.header, size=9)
     if sheet.title:
-        _text(page, LABEL_X, 78, sheet.title, size=16, bold=True)
+        _text(page, dx + LABEL_X, 78, sheet.title, size=16, bold=True)
     if sheet.subtitle:
-        _text(page, LABEL_X, 94, sheet.subtitle, size=8)
-    rights = [FIRST_VALUE_RIGHT + VALUE_STEP * i for i in range(len(spec.periods))]
+        _text(page, dx + LABEL_X, 94, sheet.subtitle, size=8)
+    rights = [dx + FIRST_VALUE_RIGHT + VALUE_STEP * i for i in range(len(spec.periods))]
     if sheet.entity_columns:
         for right, entity in zip(rights, sheet.entity_columns, strict=False):
             _right(page, right, 112, entity, size=8, bold=True)
-    _text(page, NOTE_X, 124, "Notes", size=7, bold=True)
+    if sheet.notes_header:
+        _text(page, dx + NOTE_X, 124, sheet.notes_header, size=7, bold=True)
     for right, period in zip(rights, spec.periods, strict=True):
         _right(page, right, 124, period, size=8, bold=True)
         _right(page, right, 136, spec.unit, size=7, bold=True)
     y = 158.0
     for row in sheet.rows:
-        _row(page, row, rights, y)
+        _row(page, row, rights, y, dx)
         y += ROW_STEP
 
 
-def _row(page: pymupdf.Page, row: Row, rights: list[float], y: float) -> None:
+def _row(page: pymupdf.Page, row: Row, rights: list[float], y: float, dx: float) -> None:
     bold = row.style in ("section", "total")
     if row.label:
-        _text(page, LABEL_X, y, row.label, size=8, bold=bold)
+        _text(page, dx + LABEL_X, y, row.label, size=8, bold=bold)
     if row.note:
-        _text(page, NOTE_X, y, row.note, size=8)
+        _text(page, dx + NOTE_X, y, row.note, size=8)
     if row.style in ("subtotal", "total") and row.values:
         for right in rights:
             page.draw_line((right - 55, y - 10), (right, y - 10), width=0.5)

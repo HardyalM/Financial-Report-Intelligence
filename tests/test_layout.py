@@ -52,13 +52,17 @@ def test_module_imports(module: str) -> None:
     importlib.import_module(module)
 
 
+STUBBED = {"AzureDiEngine": r"M2\.5", "VisionEngine": r"M2\.6"}
+
+
 @pytest.mark.parametrize(("target", "family"), ENGINES.items())
 def test_engine_declares_its_family(target: str, family: EngineFamily) -> None:
     module_name, class_name = target.split(":")
     engine = getattr(importlib.import_module(module_name), class_name)()
     assert engine.family is family
-    with pytest.raises(NotImplementedError, match=r"M\d"):
-        engine.parse(Path("report.pdf"))
+    if class_name in STUBBED:
+        with pytest.raises(NotImplementedError, match=STUBBED[class_name]):
+            engine.parse(Path("report.pdf"))
 
 
 def test_stubs_name_their_session() -> None:

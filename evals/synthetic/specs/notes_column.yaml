@@ -1,0 +1,66 @@
+# Hazard: the notes column. Note references ("3", "4.1", "12, 13", "15C") must never be read as
+# values, while a genuine small value ("7") in a value column must be. The balance sheet prints its
+# note column WITHOUT a "Notes" header, so only the reference pattern (EXTRACTION section 3) can
+# identify it. Figures are fictional and exist only because this spec prints them.
+name: notes_column
+hazard: notes column read as a value
+description: Income statement with a headed notes column; balance sheet with an unheaded one.
+chrome: [Strategic report, Governance, Financial statements]
+pages:
+  - kind: narrative
+    header: Strategic report
+    title: Chief Executive's review
+
+  - kind: statement
+    statement: income_statement
+    title: Consolidated income statement
+    subtitle: For the year ended 31 March 2025
+    rows:
+      - {label: Revenue, note: "3", values: ["4,200", "3,950"]}
+      - {label: Cost of sales, note: "4.1", values: ["(2,900)", "(2,760)"]}
+      - {label: Gross profit, style: subtotal, values: ["1,300", "1,190"], sum_of: [Revenue, Cost of sales]}
+      - {label: Distribution and administrative costs, note: "12, 13", values: ["(820)", "(770)"]}
+      - {label: Share of profit of associates, note: "15C", values: ["7", "–"]}
+      - {label: Operating profit, note: "5", style: subtotal, values: ["487", "420"],
+         sum_of: [Gross profit, Distribution and administrative costs, Share of profit of associates]}
+      - {label: Finance costs, note: "6", values: ["(45)", "(40)"]}
+      - {label: Profit before taxation, style: subtotal, values: ["442", "380"],
+         sum_of: [Operating profit, Finance costs]}
+      - {label: Taxation, note: "7", values: ["(110)", "(95)"]}
+      - {label: Profit for the year, style: total, values: ["332", "285"],
+         sum_of: [Profit before taxation, Taxation]}
+
+  - kind: statement
+    statement: balance_sheet
+    title: Consolidated balance sheet
+    subtitle: As at 31 March 2025
+    notes_header: null
+    rows:
+      - {label: Non-current assets, style: section}
+      - {label: "Property, plant and equipment", note: "8", values: ["2,100", "2,050"]}
+      - {label: Intangible assets, note: "9", values: ["400", "410"]}
+      - {id: non_current_assets, style: subtotal, values: ["2,500", "2,460"],
+         sum_of: ["Property, plant and equipment", Intangible assets]}
+      - {label: Current assets, style: section}
+      - {label: Inventories, note: "10", values: ["600", "570"]}
+      - {label: Trade and other receivables, note: "11", values: ["350", "330"]}
+      - {label: Cash and cash equivalents, note: "7.2", values: ["250", "200"]}
+      - {id: current_assets, style: subtotal, values: ["1,200", "1,100"],
+         sum_of: [Inventories, Trade and other receivables, Cash and cash equivalents]}
+      - {label: Total assets, style: total, values: ["3,700", "3,560"],
+         sum_of: [non_current_assets, current_assets]}
+      - {label: Current liabilities, style: section}
+      - {label: Trade and other payables, note: "12", values: ["(700)", "(680)"]}
+      - {label: Borrowings, note: "13", values: ["(100)", "(90)"]}
+      - {id: current_liabilities, style: subtotal, values: ["(800)", "(770)"],
+         sum_of: [Trade and other payables, Borrowings]}
+      - {label: Net assets, style: total, values: ["2,900", "2,790"],
+         sum_of: [Total assets, current_liabilities]}
+      - {label: Total equity, style: total, values: ["2,900", "2,790"]}
+
+expect:
+  statements:
+    income_statement: {pages: [2], scope: group}
+    balance_sheet: {pages: [3], scope: group}
+  document_type: corporate
+  balance_sheet_classified: true

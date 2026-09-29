@@ -43,8 +43,3 @@ def test_pages_keep_request_order(mini_pdf: Path) -> None:
 def test_out_of_range_page_is_an_error(mini_pdf: Path, page: int) -> None:
     with pytest.raises(IndexError):
         PdfplumberEngine().raw_tables(mini_pdf, [page])
-
-
-def test_normalised_parse_is_m2_2(mini_pdf: Path) -> None:
-    with pytest.raises(NotImplementedError, match=r"M2\.2"):
-        PdfplumberEngine().parse(mini_pdf)

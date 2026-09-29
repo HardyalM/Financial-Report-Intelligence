@@ -2,6 +2,7 @@
 
     python scripts/gate.py M2.4 [--report artifacts/eval/latest/report.json]
     python scripts/gate.py M2.1                      # runs the locator on the fixture PDFs
+    python scripts/gate.py M2.2                      # builds StatementTables for company_a
 
 Exit codes: 0 = all conditions hold; 1 = a condition fails or the report is missing;
 2 = this session's scripted check is not implemented yet (it is added in that session).
@@ -19,7 +20,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from finintel.locate import LocateResult
+    from finintel.locate import LocateResult, StatementType
+    from finintel.tables import StatementTable
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_REPORT = ROOT / "artifacts" / "eval" / "latest" / "report.json"
@@ -48,7 +50,7 @@ CONDITIONS: dict[str, list[str]] = {
     "M8.1": ["e1.matched + e1.honest_null == e1.labelled", "e1.silent_wrong == 0"],
 }
 # Scripted checks that compare pipeline output with labels; each is written in its own session.
-PENDING = {"M2.2", "M2.3", "M4.1", "M8.1"}
+PENDING = {"M2.3", "M4.1", "M8.1"}
 
 _COMPARE = {
     ast.Eq: operator.eq,
@@ -158,7 +160,77 @@ def gate_m21() -> tuple[int, list[str]]:
     return (0 if all(ok for ok, _ in checks) else 1), lines
 
 
-SCRIPTED: dict[str, Callable[[], tuple[int, list[str]]]] = {"M2.1": gate_m21}
+TEXT_LAYER_ENGINES = ("pdfplumber", "pymupdf_tables")
+
+
+def check_m22(
+    tables: Mapping[StatementType, Mapping[str, StatementTable]], labels: Mapping[str, Any]
+) -> list[tuple[bool, str]]:
+    """M2.2: every labelled cell exists, per engine, on its labelled page in a value column with
+    the same printed text (canonical comparison, EVAL section 3.1)."""
+    from finintel.locate import StatementType
+    from finintel.tables import ColumnKind, canonical
+
+    cells = [
+        (item_id, item, v)
+        for item_id, item in labels["items"].items()
+        for v in item["values"]
+        if v.get("raw_text")
+    ]
+    checks: list[tuple[bool, str]] = []
+    for engine in TEXT_LAYER_ENGINES:
+        missing = []
+        for item_id, item, v in cells:
+            table = tables.get(StatementType(item["statement"]), {}).get(engine)
+            values = (
+                {c.column_id for c in table.columns if c.kind is ColumnKind.VALUE}
+                if table
+                else set()
+            )
+            found = table is not None and any(
+                cell.page == v["page"]
+                and cid in values
+                and canonical(cell.raw_text) == canonical(v["raw_text"])
+                for row in table.rows
+                for cid, cell in row.cells.items()
+            )
+            if not found:
+                missing.append(f"{item_id} {v['period_id']} {v['raw_text']!r} p.{v['page']}")
+        found_n = len(cells) - len(missing)
+        detail = f"; missing: {', '.join(missing)}" if missing else ""
+        checks.append(
+            (
+                not missing,
+                f"{engine}: {found_n}/{len(cells)} labelled cells in a value column on their "
+                f"page{detail}",
+            )
+        )
+    return checks
+
+
+def gate_m22() -> tuple[int, list[str]]:
+    from finintel.cache import StageCache
+    from finintel.cli.common import cached_text_layer
+    from finintel.ingest import sha256_file
+    from finintel.locate import locate
+    from finintel.tables import statement_tables
+
+    pdf = ROOT / "fixtures" / "pdfs" / "company_a.pdf"
+    labels_path = ROOT / "fixtures" / "expected" / "company_a.json"
+    if not pdf.exists() or not labels_path.exists():
+        return 1, [
+            "FAIL  fixtures/pdfs/company_a.pdf and fixtures/expected/company_a.json are required"
+        ]
+    cache = StageCache(ROOT / "artifacts" / "cache")
+    sha = sha256_file(pdf)
+    layer, _ = cached_text_layer(pdf, sha, cache)
+    tables = statement_tables(pdf, sha, layer, locate(layer), cache)
+    checks = check_m22(tables, json.loads(labels_path.read_text(encoding="utf-8")))
+    lines = [f"{'PASS' if ok else 'FAIL'}  {text}" for ok, text in checks]
+    return (0 if all(ok for ok, _ in checks) else 1), lines
+
+
+SCRIPTED: dict[str, Callable[[], tuple[int, list[str]]]] = {"M2.1": gate_m21, "M2.2": gate_m22}
 
 
 def run(session: str, report_path: Path) -> tuple[int, list[str]]:

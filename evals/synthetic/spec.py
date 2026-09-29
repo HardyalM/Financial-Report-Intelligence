@@ -50,6 +50,7 @@ class StatementPage(_Model):
     header: str | None = None  # section header printed above the title
     subtitle: str | None = None
     entity_columns: tuple[str, ...] = ()
+    notes_header: str | None = "Notes"  # None prints the note column without a header
     continuation: bool = False  # rows continue the previous statement page
     rows: tuple[Row, ...]
 
@@ -61,7 +62,18 @@ class NarrativePage(_Model):
     paragraphs: int = 3
 
 
-Page = Annotated[StatementPage | NarrativePage, Field(discriminator="kind")]
+Half = Annotated[StatementPage | NarrativePage, Field(discriminator="kind")]
+
+
+class SpreadPage(_Model):
+    """Two printed pages side by side on one landscape PDF page."""
+
+    kind: Literal["spread"]
+    left: Half
+    right: Half
+
+
+Page = Annotated[StatementPage | NarrativePage | SpreadPage, Field(discriminator="kind")]
 
 
 class StatementExpectation(_Model):
@@ -109,11 +121,22 @@ def parse_printed(text: str) -> Decimal:
     return -value if negative else value
 
 
+def printed_pages(spec: Spec) -> list[tuple[int, StatementPage | NarrativePage]]:
+    """(PDF page, printed page) in reading order; a spread contributes its two halves."""
+    out: list[tuple[int, StatementPage | NarrativePage]] = []
+    for number, page in enumerate(spec.pages, start=1):
+        if isinstance(page, SpreadPage):
+            out += [(number, page.left), (number, page.right)]
+        else:
+            out.append((number, page))
+    return out
+
+
 def statement_groups(spec: Spec) -> Iterator[tuple[int, list[StatementPage]]]:
     """(first PDF page, pages) for each statement and its continuation pages."""
     group: list[StatementPage] = []
     start = 0
-    for number, page in enumerate(spec.pages, start=1):
+    for number, page in printed_pages(spec):
         if isinstance(page, StatementPage) and page.continuation and group:
             group.append(page)
             continue
@@ -160,15 +183,19 @@ def _check_sum(start: int, row: Row, by_key: dict[str, Row], periods: int) -> No
 
 
 def _check_expectations(spec: Spec) -> None:
-    pages = spec.pages
+    def kinds(number: int) -> set[str]:
+        return {
+            p.statement
+            for n, p in printed_pages(spec)
+            if n == number and isinstance(p, StatementPage)
+        }
+
     for kind, expected in spec.expect.statements.items():
         for number in expected.pages:
-            page = pages[number - 1] if 1 <= number <= len(pages) else None
-            if not isinstance(page, StatementPage) or page.statement != kind:
+            if kind not in kinds(number):
                 raise SpecError(f"expect.{kind}: p.{number} is not a {kind} page")
     for rejection in spec.expect.rejected:
-        page = pages[rejection.page - 1] if 1 <= rejection.page <= len(pages) else None
-        if not isinstance(page, StatementPage) or page.statement != rejection.statement:
+        if rejection.statement not in kinds(rejection.page):
             raise SpecError(
                 f"expect.rejected: p.{rejection.page} is not a {rejection.statement} page"
             )

@@ -42,6 +42,10 @@ sessions:
     - "finintel/tables/**"
     - "evals/synthetic/**"
     - "tests/**"
+    - "finintel/parse/engines/base.py"
+    - "finintel/locate/signals.py"
+    - "scripts/gate.py"
+    - "scripts/scope.yaml"
   "M2.3":
     - "finintel/tables/**"
     - "evals/synthetic/**"

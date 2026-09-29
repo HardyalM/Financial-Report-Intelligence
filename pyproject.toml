@@ -62,6 +62,7 @@ plugins = ["pydantic.mypy"]
 # everything they return is a typed model.
 module = [
     "finintel.parse.text_layer",
+    "finintel.parse.engines.pymupdf_tables_engine",
     "finintel.ingest.document",
     "tests.inspect.synthetic",
     "evals.synthetic.render",

@@ -1,0 +1,62 @@
+# Hazard: a two-page spread. One landscape PDF page carries two printed pages: the income
+# statement on the left half and the balance sheet on the right, each with its own folio. Tables
+# must be read per half, never across the gutter. Figures are fictional and exist only because
+# this spec prints them.
+name: spread_page
+hazard: two printed pages on one PDF page
+description: PDF p.2 is a spread; income statement left half, balance sheet right half.
+chrome: [Strategic report, Financial statements]
+folio_offset: -60  # printed folios 61-62, 63-64, 65-66
+pages:
+  - kind: narrative
+    header: Strategic report
+    title: Chief Executive's review
+
+  - kind: spread
+    left:
+      kind: statement
+      statement: income_statement
+      title: Consolidated income statement
+      subtitle: For the year ended 31 March 2025
+      rows:
+        - {label: Revenue, note: "2", values: ["950", "900"]}
+        - {label: Operating costs, note: "3", values: ["(800)", "(770)"]}
+        - {label: Operating profit, style: subtotal, values: ["150", "130"], sum_of: [Revenue, Operating costs]}
+        - {label: Finance costs, values: ["(20)", "(18)"]}
+        - {label: Profit before taxation, style: subtotal, values: ["130", "112"],
+           sum_of: [Operating profit, Finance costs]}
+        - {label: Taxation, values: ["(33)", "(28)"]}
+        - {label: Profit for the year, style: total, values: ["97", "84"],
+           sum_of: [Profit before taxation, Taxation]}
+    right:
+      kind: statement
+      statement: balance_sheet
+      title: Consolidated balance sheet
+      subtitle: As at 31 March 2025
+      rows:
+        - {label: Non-current assets, style: section}
+        - {label: "Property, plant and equipment", note: "4", values: ["700", "690"]}
+        - {label: Current assets, style: section}
+        - {label: Inventories, note: "5", values: ["120", "110"]}
+        - {label: Cash and cash equivalents, values: ["80", "60"]}
+        - {id: current_assets, style: subtotal, values: ["200", "170"],
+           sum_of: [Inventories, Cash and cash equivalents]}
+        - {label: Total assets, style: total, values: ["900", "860"],
+           sum_of: ["Property, plant and equipment", current_assets]}
+        - {label: Current liabilities, style: section}
+        - {label: Trade and other payables, note: "6", values: ["(150)", "(140)"]}
+        - {id: current_liabilities, style: subtotal, values: ["(150)", "(140)"],
+           sum_of: [Trade and other payables]}
+        - {label: Net assets, style: total, values: ["750", "720"],
+           sum_of: [Total assets, current_liabilities]}
+        - {label: Total equity, style: total, values: ["750", "720"]}
+
+  - kind: narrative
+    title: Notes to the consolidated financial statements
+
+expect:
+  statements:
+    income_statement: {pages: [2], scope: group}
+    balance_sheet: {pages: [2], scope: group}
+  document_type: corporate
+  balance_sheet_classified: true

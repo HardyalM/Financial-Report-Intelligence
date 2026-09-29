@@ -1,16 +1,20 @@
-"""StatementTables: rows, number grammar, units, currency and periods (EXTRACTION 2-4.2)."""
+"""StatementTable: one engine's reading of one statement, rows aligned to the text layer (M2.2)."""
 
-from dataclasses import dataclass
-from typing import Any
+from finintel.tables.builder import build_statement_table
+from finintel.tables.models import Cell, Column, ColumnKind, Row, RowStyle, StatementTable
+from finintel.tables.numbers import ParsedNumber, canonical, parse_number
+from finintel.tables.run import statement_tables
 
-from finintel._placeholders import not_yet
-
-
-@dataclass(frozen=True)
-class StatementTable:
-    """Rows and columns of one statement from one engine. Fields are defined in M2.2."""
-
-
-def build_statement_tables(parsed: Any, locations: Any) -> list[StatementTable]:
-    """Build StatementTables aligned to text-layer lines (M2.2) with header semantics (M2.3)."""
-    not_yet("M2.2", "build_statement_tables")
+__all__ = [
+    "Cell",
+    "Column",
+    "ColumnKind",
+    "ParsedNumber",
+    "Row",
+    "RowStyle",
+    "StatementTable",
+    "build_statement_table",
+    "canonical",
+    "parse_number",
+    "statement_tables",
+]

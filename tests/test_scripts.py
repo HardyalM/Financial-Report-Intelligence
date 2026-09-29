@@ -111,7 +111,7 @@ def test_gate_missing_report_fails(tmp_path: Path) -> None:
 
 
 def test_gate_pending_and_command_only_sessions(tmp_path: Path) -> None:
-    assert gate.run("M2.2", tmp_path / "absent.json")[0] == 2
+    assert gate.run("M2.3", tmp_path / "absent.json")[0] == 2
     assert gate.run("M0", tmp_path / "absent.json")[0] == 0
 
 
@@ -204,3 +204,50 @@ def test_gate_m2_1_compares_located_pages_with_labels() -> None:
     assert [ok for ok, text in gate.check_m21(no_company, labels) if "scope=company" in text] == [
         False
     ]
+
+
+def test_gate_m2_2_requires_every_labelled_cell_per_engine() -> None:
+    from decimal import Decimal
+
+    from finintel.locate import StatementType
+    from finintel.parse.engines.base import EngineFamily
+    from finintel.tables import Cell, Column, ColumnKind, Row, RowStyle, StatementTable
+
+    def table(engine: str, text: str) -> StatementTable:
+        box = (0.0, 0.0, 1.0, 1.0)
+        cell = Cell(
+            raw_text=text, engine_text=text, parsed_value=Decimal(0), bbox=box, ink=box, page=141
+        )
+        row = Row(
+            row_id="141:1", label_text="Turnover", note_ref=None, section_header=None, sections=(),
+            indent_level=0, style=RowStyle.NORMAL, page=141, bbox=box, cells={"v1": cell},
+        )  # fmt: skip
+        column = Column(
+            column_id="v1", kind=ColumnKind.VALUE, header_text="2024", x0=0, x1=1, evidence=""
+        )
+        return StatementTable(
+            statement_type=StatementType.INCOME_STATEMENT,
+            scope=None,
+            engine=engine,
+            engine_version="1",
+            family=EngineFamily.TEXT_LAYER,
+            pages=(141,),
+            strategies={141: "text"},
+            columns=(column,),
+            rows=(row,),
+        )
+
+    labels = {"items": {"revenue": {"statement": "income_statement", "values": [
+        {"period_id": "FY2024", "page": 141, "raw_text": "60,761"},
+        {"period_id": "FY2023", "page": 141, "raw_text": None},
+    ]}}}  # fmt: skip
+    good = {StatementType.INCOME_STATEMENT: {e: table(e, "60761") for e in gate.TEXT_LAYER_ENGINES}}
+    assert all(ok for ok, _ in gate.check_m22(good, labels))
+    short = {
+        "pdfplumber": table("pdfplumber", "60,761"),
+        "pymupdf_tables": table("pymupdf_tables", "60,716"),
+    }
+    one_short = {StatementType.INCOME_STATEMENT: short}
+    results = gate.check_m22(one_short, labels)
+    assert [ok for ok, _ in results] == [True, False]
+    assert "missing: revenue FY2024 '60,761' p.141" in results[1][1]
