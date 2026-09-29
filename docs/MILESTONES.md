@@ -92,13 +92,13 @@ These checks are created in M0 and run in CI.
 - [x] The inspector's glob covers `fixtures/pdfs/` **only** (never `fixtures/holdout/`). *(Explicit holdout paths, directories and symlinks into it are refused with exit 3.)*
 
 **Gate:**
-- [x] G1–G6 pass. *2026-09-26: `make ci` exit 0 (211 passed, 1 skipped: no fixture PDFs); `check_scope.py M1 --base m0` exit 0.*
-- [ ] `finintel inspect fixtures/pdfs/company_a.pdf` and the same for `company_b.pdf` both exit 0. *Blocked: `fixtures/pdfs/` has no PDFs (exit 1, "no such file").*
-- [ ] `summary.json.page_count` equals `source.page_count` in `fixtures/expected/company_a.json`. *Blocked: no PDF, and only `EXAMPLE_company_a.json` exists. `tests/inspect/test_fixture_pdfs.py` asserts it once both exist.*
-- [ ] A second run prints `vendor_calls=0`. *Verified on synthetic reports (tests); re-run on `company_a`.*
-- [ ] Either `summary.json.parser_skipped` contains `azure_di`, or `azure/raw.json` exists. *Both paths verified on synthetic reports (tests); re-run on `company_a`.*
+- [x] G1–G6 pass. *2026-09-29: `make ci` exit 0 (213 passed, 0 skipped, fixture PDFs included); `check_scope.py M1 --base m0` exit 0.*
+- [x] `finintel inspect fixtures/pdfs/company_a.pdf` and the same for `company_b.pdf` both exit 0. *Cold: 9.8 s (305 pp.) and 12.7 s (338 pp.).*
+- [x] `summary.json.page_count` equals `source.page_count` in `fixtures/expected/company_a.json`. *305 = 305; also asserted by `tests/inspect/test_fixture_pdfs.py`.*
+- [x] A second run prints `vendor_calls=0`. *Both PDFs; text layer and all 20 pdfplumber pages from cache.*
+- [x] Either `summary.json.parser_skipped` contains `azure_di`, or `azure/raw.json` exists. *`parser_skipped: ["azure_di"]` (no key) for both.*
 - [x] `pytest tests/inspect -k "holdout"` passes: a test asserts that `fixtures/holdout/` is excluded. *13 passed.*
-- [ ] *Sign-off:* the income statement and balance sheet pages appear among the top 10 keyword-hit pages of `pages.jsonl` (yes/no).
+- [ ] *Sign-off:* the income statement and balance sheet pages appear among the top 10 keyword-hit pages of `pages.jsonl` (yes/no). *Evidence: company_a p.143 rank 2, p.141 rank 3 (company balance sheet p.197 rank 1); company_b p.218 rank 1, p.216 rank 2.*
 
 ---
 
