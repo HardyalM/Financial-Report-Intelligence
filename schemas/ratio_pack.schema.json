@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/schemas/ratio_pack.schema.json",
+  "title": "RatioPack",
+  "description": "Locked ratios computed in code from a StatementPack only (CLAUDE.md, ADR-008). A null input gives value null with reason missing_input; applicability is separate; a computed value is never hidden.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "statement_pack_sha",
+    "formulas_locked",
+    "currency",
+    "unit_scale",
+    "document_type",
+    "periods",
+    "changes",
+    "warnings"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "statement_pack_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 of the canonical JSON of the StatementPack these ratios were computed from."
+    },
+    "formulas_locked": { "type": "boolean", "const": true },
+    "currency": { "type": ["string", "null"] },
+    "unit_scale": { "type": ["integer", "null"] },
+    "document_type": { "type": ["string", "null"] },
+    "periods": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/period_ratios" }
+    },
+    "changes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/period_change" }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ratio_warning" }
+    }
+  },
+  "$defs": {
+    "period_ratios": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["period_id", "end_date", "ratios"],
+      "properties": {
+        "period_id": { "type": "string" },
+        "end_date": { "type": ["string", "null"] },
+        "ratios": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operating_margin", "current_ratio", "debt_to_equity", "roce"],
+          "properties": {
+            "operating_margin": { "$ref": "#/$defs/ratio" },
+            "current_ratio": { "$ref": "#/$defs/ratio" },
+            "debt_to_equity": { "$ref": "#/$defs/ratio" },
+            "roce": { "$ref": "#/$defs/ratio" }
+          }
+        }
+      }
+    },
+    "ratio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name", "label", "value", "status", "reason", "applicability", "explanation",
+        "missing_inputs", "flags", "formula", "formula_text", "unit", "inputs"
+      ],
+      "properties": {
+        "name": { "type": "string" },
+        "label": { "type": "string" },
+        "value": { "type": ["number", "null"] },
+        "status": { "type": "string", "enum": ["ok", "null", "not_applicable", "withheld"] },
+        "reason": {
+          "type": ["string", "null"],
+          "description": "missing_input whenever an input is null (CLAUDE.md); division_by_zero for a zero denominator; null otherwise."
+        },
+        "applicability": { "type": "string", "enum": ["applicable", "not_applicable", "withheld"] },
+        "explanation": { "type": ["string", "null"] },
+        "missing_inputs": { "type": "array", "items": { "type": "string" } },
+        "flags": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["negative_denominator"] },
+          "description": "Shown beside the value, never instead of it."
+        },
+        "formula": { "type": "string", "description": "Verbatim from CLAUDE.md." },
+        "formula_text": { "type": "string", "description": "Readable form for the UI." },
+        "unit": { "type": "string", "enum": ["fraction", "multiple"] },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/ratio_input" }
+        }
+      }
+    },
+    "ratio_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["item", "value", "period_id", "page", "badges"],
+      "properties": {
+        "item": { "type": "string" },
+        "value": { "type": ["number", "null"] },
+        "period_id": { "type": "string" },
+        "page": { "type": ["integer", "null"] },
+        "badges": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["derived", "manual", "manual_unanchored"] }
+        }
+      }
+    },
+    "period_change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from_period_id", "to_period_id", "ratios", "items"],
+      "properties": {
+        "from_period_id": { "type": "string", "description": "The earlier period." },
+        "to_period_id": { "type": "string", "description": "The later period." },
+        "ratios": { "type": "object", "additionalProperties": { "$ref": "#/$defs/ratio_change" } },
+        "items": { "type": "object", "additionalProperties": { "$ref": "#/$defs/item_change" } }
+      }
+    },
+    "ratio_change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["percentage_points", "absolute"],
+          "description": "Margin-type ratios (operating margin, ROCE) in percentage points; multiples as an absolute difference."
+        },
+        "value": { "type": ["number", "null"] }
+      }
+    },
+    "item_change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["absolute", "percent"],
+      "properties": {
+        "absolute": { "type": ["number", "null"] },
+        "percent": { "type": ["number", "null"] }
+      }
+    },
+    "ratio_warning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "ratio", "period_id"],
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" },
+        "ratio": { "type": ["string", "null"] },
+        "period_id": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

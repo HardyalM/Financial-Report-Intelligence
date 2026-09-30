@@ -14,6 +14,7 @@ from typing import Any, TextIO
 
 from finintel.cache import StageCache
 from finintel.cli.common import resolve_pdf
+from finintel.evals import e2
 from finintel.evals.e1 import compare, report_json, write_report
 from finintel.extract import ExtractionResult, extract_pack
 from finintel.parse.engines.azure_di_engine import AzureDiConfig, AzureDiEngine
@@ -107,3 +108,28 @@ def run_e1(
     )
     path = write_report(report, artifacts / "eval" / "latest" / "report.json")
     return report, path
+
+
+def run_e2(company: str, cache_dir: Path, artifacts: Path) -> tuple[dict[str, Any], Path]:
+    """E2 for a fixture with labelled packs and hand-computed ratios."""
+    pdf = resolve_pdf(company)
+    labels = Path("fixtures") / "expected" / f"{pdf.stem}.json"
+    ratios = Path("fixtures") / "expected" / f"{pdf.stem}.ratios.json"
+    for path in (labels, ratios):
+        if not path.is_file():
+            raise FileNotFoundError(f"{path} is missing: hand-computed labels are the tech lead's")
+    result = extract_pack(pdf, StageCache(cache_dir))
+    if result.pack is None:
+        raise RuntimeError(f"extraction blocked: {result.status}")
+    body = e2.compare(
+        result.pack,
+        json.loads(labels.read_text(encoding="utf-8")),
+        json.loads(ratios.read_text(encoding="utf-8")),
+    )
+    target = artifacts / "eval" / "latest" / "report.json"
+    report: dict[str, Any] = {}
+    if target.is_file():
+        previous = json.loads(target.read_text(encoding="utf-8"))
+        report = previous if previous.get("company") == pdf.stem else {}
+    report.update({"company": pdf.stem, "e2": body})
+    return report, write_report(report, target)

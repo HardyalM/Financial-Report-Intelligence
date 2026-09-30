@@ -51,6 +51,7 @@ select = ["E", "F", "I", "B", "UP", "N", "SIM", "RUF"]
 [tool.ruff.lint.per-file-ignores]
 # Generated from schemas/statement_pack.schema.json by `make contracts`; never edited by hand.
 "finintel/contracts/statement_pack.py" = ["ALL"]
+"finintel/contracts/ratio_pack.py" = ["ALL"]
 
 [tool.mypy]
 python_version = "3.12"

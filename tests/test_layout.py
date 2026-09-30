@@ -66,10 +66,10 @@ def test_engine_declares_its_family(target: str, family: EngineFamily) -> None:
 
 
 def test_stubs_name_their_session() -> None:
-    from finintel.ratios import compute_ratios
+    from finintel.review import apply_overrides
 
-    with pytest.raises(NotImplementedError, match="M3"):
-        compute_ratios(None)  # type: ignore[arg-type]
+    with pytest.raises(NotImplementedError, match=r"M6\.2"):
+        apply_overrides(None, [])  # type: ignore[arg-type]
 
 
 def test_cli_without_a_command_prints_usage(capsys: pytest.CaptureFixture[str]) -> None:

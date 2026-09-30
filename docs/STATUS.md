@@ -7,6 +7,45 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M3 — 2026-10-01 — green
+
+M3 green. ROCE 0.172426443613 (FY2024) and 0.188527599065 (FY2023) match the hand calculator at 1e-9.
+Operating margin 0.154704 / 0.163714, current ratio 0.760640 / 0.761560. Debt-to-equity null,
+`missing_input` (total_debt is null). unit_scale millions, EUR. Next M4.1.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: **688 passed, 0 skipped** |
+| `make eval-e2 COMPANY=company_a` | 8/8 cells expected, matched from the labelled pack AND from the pipeline's pack |
+| `uv run python scripts/gate.py M3` | exit 0 (`e2.matched == e2.expected`) |
+| `uv run python scripts/check_scope.py M3 --base m2.5` | exit 0 (with the amendment in MILESTONES) |
+
+What shipped (finintel/ratios/engine.py, schemas/ratio_pack.schema.json, generated contract):
+- The four locked ratios from the StatementPack only; exact Decimal division, converted once to float.
+  pandas was not needed for four quotients.
+- A null input gives `value: null`, `reason: "missing_input"` (CLAUDE.md wording) and names the input.
+  A zero denominator gives `division_by_zero`. Negative equity or capital employed: the value is shown with
+  `negative_denominator` beside it (ADR-008), plus a pack warning.
+- `applicability` is separate: bank `not_applicable` (all four); unclassified balance sheet makes the current
+  ratio `not_applicable`; `other` withholds the rest; NHS withholds all but the current ratio until OQ-5 is
+  decided. A hidden-by-applicability ratio shows no number even if its inputs exist.
+- A v1.0.0 pack has no document profile: treated as corporate, its own nulls decide. Stated in the docstring.
+- Inputs carry item, value, page and badges (`derived`, `manual`, `manual_unanchored`). `total_debt` on
+  a derived pack shows `derived` and no page.
+- Changes: margin and ROCE in percentage points, multiples absolute, items absolute and percent; a
+  null never turns into a number and a zero base gives a null percent. Periods sorted latest first.
+- `statement_pack_sha` is the SHA-256 of the canonical pack JSON, so stale ratios are detectable.
+- Drift test reads the formula strings out of CLAUDE.md and compares them with the code.
+- Property test: multiplying every input by 1,000 changes no ratio, flag or reason (300 examples).
+
+Notes:
+- Unilever's FY2022 period (income statement only) gets ratios with missing balance-sheet inputs. Honest,
+  but a UI decision for M7: show a prior-year column only when it has inputs.
+- Tag `m3-done` (the web-directory guard, G5) is the tech lead's to create.
+- Still pending from earlier: Azure key (M2.5 gate) and ADR-010 review of the six M2.3 specs.
+
+---
+
 ## M2.5 — 2026-10-01 — BUILT, gate BLOCKED on an Azure DI key
 
 M2.5 code complete and green offline. The gate command cannot pass honestly: no Azure key, so no real

@@ -84,6 +84,10 @@ sessions:
     - "schemas/ratio_pack.schema.json"
     - "finintel/contracts/**"
     - "tests/**"
+    - "finintel/evals/**"
+    - "finintel/cli/**"
+    - "scripts/gen_contracts.py"
+    - "scripts/scope.yaml"
   "M4.1":
     - "finintel/narrative/**"
     - "evals/synthetic/**"

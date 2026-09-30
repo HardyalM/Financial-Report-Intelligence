@@ -224,18 +224,19 @@ These checks are created in M0 and run in CI.
 ## M3 — Deterministic ratios
 
 **Read first:** `CLAUDE.md` (locked formulas); SCHEMA §11; ADR-008; OQ-1; OQ-11.
-**Allowed paths:** `finintel/ratios/**`, `schemas/ratio_pack.schema.json`, `finintel/contracts/**`, `tests/**`.
+**Allowed paths:** `finintel/ratios/**`, `schemas/ratio_pack.schema.json`, `finintel/contracts/**`, `tests/**`, `finintel/evals/**`, `finintel/cli/**`, `scripts/gen_contracts.py`, `scripts/scope.yaml`.
+*Amended 2026-10-01 in the M3 session: `make eval-e2` needs the E2 comparison (finintel/evals) and a CLI command, and the contract generator lists the new schema.*
 
-- [ ] `RatioPack` schema and contract; pure `compute_ratios`; `reason` exactly as `CLAUDE.md` specifies; `applicability`; flags beside values; changes.
+- [x] `RatioPack` schema and contract; pure `compute_ratios`; `reason` exactly as `CLAUDE.md` specifies; `applicability`; flags beside values; changes.
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] `make eval-e2 COMPANY=company_a` followed by `python scripts/gate.py M3` exits 0: `e2.matched == e2.expected` for **both** periods at 1e-9.
+- [x] G1–G6 pass. *2026-10-01: see docs/STATUS.md for counts; `check_scope.py M3 --base m2.5` exit 0.*
+- [x] `make eval-e2 COMPANY=company_a` followed by `python scripts/gate.py M3` exits 0 *(8/8, from the labelled pack and from the pipeline's pack)*: `e2.matched == e2.expected` for **both** periods at 1e-9.
   - If `company_a.ratios.json` is missing, the session prints the computed values and G3 still passes, because no expected file was created.
-- [ ] **Drift test:** the formula strings in `RatioPack` equal the strings parsed from `CLAUDE.md` (test reads `CLAUDE.md`).
-- [ ] Hypothesis property test (≥ 200 examples): multiplying every input by 1,000 leaves every ratio unchanged.
-- [ ] Synthetic bank pack: all four ratios have `value: null`, `reason: "missing_input"` and `applicability: "not_applicable"`.
-- [ ] Negative-equity test: the value is present **and** the flag `negative_denominator` is set.
+- [x] **Drift test:** the formula strings in `RatioPack` equal the strings parsed from `CLAUDE.md` (test reads `CLAUDE.md`).
+- [x] Hypothesis property test (≥ 200 examples; 300 run): multiplying every input by 1,000 leaves every ratio unchanged.
+- [x] Synthetic bank pack: all four ratios have `value: null`, `reason: "missing_input"` and `applicability: "not_applicable"`.
+- [x] Negative-equity test: the value is present **and** the flag `negative_denominator` is set.
 
 ---
 

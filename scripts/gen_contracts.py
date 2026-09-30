@@ -33,6 +33,7 @@ ROOT = Path(__file__).resolve().parent.parent
 # (schema file, output module, root class name). Later milestones append here.
 TARGETS: list[tuple[str, str, str]] = [
     ("schemas/statement_pack.schema.json", "finintel/contracts/statement_pack.py", "StatementPack"),
+    ("schemas/ratio_pack.schema.json", "finintel/contracts/ratio_pack.py", "RatioPack"),
 ]
 
 HEADER = (

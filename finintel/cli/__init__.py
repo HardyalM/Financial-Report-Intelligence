@@ -4,6 +4,7 @@
     finintel locate <pdf|fixture> [--json]       M2.1 statement pages and document profile
     finintel extract <pdf|fixture> [--json]      M2.4 StatementPack from the local engines
     finintel eval-e1 <fixture> --engines local   M2.4 golden-cell comparison
+    finintel eval-e2 <fixture>                   M3 ratio comparison at 1e-9
 
 Exit codes: 0 ok; 1 a document was refused or failed, or its statements need review; 2 usage;
 3 a held-out path was requested.
@@ -90,6 +91,9 @@ def build_parser() -> argparse.ArgumentParser:
     extract.add_argument("--json", action="store_true", help="print the pack as JSON")
     extract.add_argument("--engines", choices=("local", "all"), default="local")
     extract.add_argument("--cache-dir", type=Path)
+    e2p = commands.add_parser("eval-e2", help="compare ratios with fixtures/expected (M3)")
+    e2p.add_argument("company", help='fixture name, e.g. "company_a"')
+    e2p.add_argument("--cache-dir", type=Path)
     e1 = commands.add_parser("eval-e1", help="compare an extraction with fixtures/expected (M2.4)")
     e1.add_argument("company", help='fixture name, e.g. "company_a"')
     e1.add_argument("--engines", choices=("local", "all"), default="local")
@@ -113,6 +117,8 @@ def main(argv: list[str] | None = None) -> int:
         return _locate(args, settings)
     if args.command in ("extract", "eval-e1"):
         return _extract(args, settings)
+    if args.command == "eval-e2":
+        return _eval_e2(args, settings)
     return _inspect(args, settings)
 
 
@@ -233,3 +239,30 @@ def _inspect(args: argparse.Namespace, settings: Settings) -> int:
         report(result, sys.stdout)
     print(f"vendor_calls={vendor_calls}")
     return code
+
+
+def _eval_e2(args: argparse.Namespace, settings: Settings) -> int:
+    try:
+        report, path = extract_cmd.run_e2(
+            args.company, args.cache_dir or settings.cache_dir, settings.artifacts_dir
+        )
+    except HoldoutRefusedError as exc:
+        print(f"finintel: refused {exc}: held out until M8.3", file=sys.stderr)
+        return EXIT_HOLDOUT
+    except (FileNotFoundError, ValueError, RuntimeError, IngestError) as exc:
+        print(f"finintel eval-e2: {exc}", file=sys.stderr)
+        return EXIT_FAILED
+    e2 = report["e2"]
+    print(
+        f"{report['company']}: ratio cells expected {e2['expected']}  matched {e2['matched']} "
+        f"(extracted {e2['matched_extracted']}, labelled {e2['matched_labelled']}) "
+        f"at {e2['tolerance']}"
+    )
+    for cell in e2["cells"]:
+        if cell["extracted"] != "ok" or cell["labelled"] != "ok":
+            print(
+                f"  {cell['period']} {cell['ratio']}: extracted {cell['extracted']}; "
+                f"labelled {cell['labelled']}"
+            )
+    print(f"  -> {path}")
+    return EXIT_OK

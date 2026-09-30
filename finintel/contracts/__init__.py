@@ -14,16 +14,19 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
+from finintel.contracts.ratio_pack import RatioPack
 from finintel.contracts.statement_pack import LineItem, PeriodValue, StatementPack
 
 __all__ = [
     "CANONICAL_ITEMS",
     "LineItem",
     "PeriodValue",
+    "RatioPack",
     "StatementPack",
     "load_schema",
     "schema_dir",
     "validate_pack",
+    "validate_ratio_pack",
 ]
 
 
@@ -54,3 +57,10 @@ def validate_pack(pack: dict[str, Any]) -> list[str]:
 
 #: Canonical line-item ids named in the schema (documented in docs/SCHEMA.md section 5 and 9).
 CANONICAL_ITEMS: tuple[str, ...] = tuple(load_schema()["properties"]["items"]["properties"])
+
+
+def validate_ratio_pack(pack: dict[str, Any]) -> list[str]:
+    """Validate a RatioPack against its JSON Schema. Returns messages; empty means valid."""
+    validator = Draft202012Validator(load_schema("ratio_pack"))
+    errors = sorted(validator.iter_errors(pack), key=lambda e: list(e.absolute_path))
+    return [f"{'/'.join(str(p) for p in e.absolute_path) or '<root>'}: {e.message}" for e in errors]
