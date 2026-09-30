@@ -7,6 +7,59 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M2.4 — 2026-09-30 — green
+
+M2.4 green. E1 company_a: 22/22 matched (20 figures + 2 explicit `total_debt` nulls), silent_wrong 0,
+unit_errors 0, published_llm_pointer 0. `total_debt` null with a specific warning. Next M2.5.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: **646 passed, 0 skipped** |
+| `make eval-e1 COMPANY=company_a ENGINES=local` | labelled 22, matched 22, honest_null 0, silent_wrong 0, unit_errors 0 |
+| `uv run python scripts/gate.py M2.4` | exit 0 (4/4); M2.1-M2.3 gates still exit 0 |
+| `uv run python scripts/check_scope.py M2.4 --base m2.3` | exit 0 (with the amendment in MILESTONES) |
+| `uv run finintel extract company_b` | bank: every corporate item an explicit null, bank_layout + unclassified_balance_sheet warnings |
+
+Label change (tech lead, 2026-09-30, commit c3418ee, CHANGELOG entry): company_a `total_debt` and
+debt_to_equity are null under the strict rule. Unilever's face "Financial liabilities" includes derivatives
+(594) and other financial liabilities (804), so it is not interest-bearing borrowings + leases.
+
+What the pipeline does (finintel/extract.py): ingest, text layer, locate, both text-layer engines,
+headers, alias-map mapping, arithmetic checks, publish-or-null.
+- Confidence: base (exact .95, regex .90, structural .85) x 0.90 (one engine family), +0.05 if a check
+  passes, -0.30 if one fails (failure dominates), cap 0.99, publish at >= 0.80. Unilever: revenue 0.855,
+  operating profit 0.905, unlabelled current-assets subtotal 0.815 (only because its section sum passes).
+- Engines that read different cells give null + `parser_disagreement` (tested with a perturbed engine).
+  No tie-break in M2.4.
+- Liabilities are stored positive; equity keeps its sign.
+- `total_debt`: derived sum of four printed lines (engine derived, derived_from); borrowings only +
+  `lease_not_separately_presented`; a found-but-null component makes it null; absent components are zero
+  only when their section subtotal verified (`assumed_zero`); a face "Financial liabilities" line with no
+  borrowings makes it null.
+- LLM pointer: port, digit masking, schema (no numeric field) and row validation, FakeProvider. Suggestions
+  are review items at 0.70 and never change the pack (byte-equal test). NOT built: a live Anthropic adapter
+  (no key; the step records "skipped: no provider configured").
+
+Decisions and findings:
+- Ambiguous documents ("other", e.g. a statement with no revenue row) use the corporate alias map, since
+  values stay anchored and checked; ratios are withheld in M3. Bank/NHS need their maps (M8.1) and list
+  every required item as an explicit null meanwhile.
+- The rounding tolerance (0.5 x n x unit) means a subtotal off by 1 on a 4-figure sum still passes. That is
+  the documented EXTRACTION 5.2 rule; it is not tightened.
+- A memo line between two chain anchors (an "Adjusted operating profit" row between revenue and operating
+  profit) makes the chain check fail and both figures null: cautious, tested, and documented.
+- Import cycle fixed: cached text-layer loader moved to finintel/parse/cached.py.
+- Golden excerpt (OQ-10 = A): tests/golden/company_a/excerpt.pdf, 99 KB; regenerate with
+  `python scripts/make_golden_excerpt.py company_a 141 143 195 197`.
+
+Not yet done / carried to M2.5:
+- Azure DI normalisation and cross-family voting; tau calibration (EVAL 6.1); `reduced_verification` is
+  always raised until then.
+- company_name is null (not confidently read from the statements).
+- Pending from M2.3: tech-lead ADR-010 review of the six new synthetic specs.
+
+---
+
 ## M2.3 — 2026-09-29 — green
 
 M2.3 green. company_a: EUR x 1,000,000; FY2024 ends 2024-12-31, FY2023 ends 2023-12-31 (both equal

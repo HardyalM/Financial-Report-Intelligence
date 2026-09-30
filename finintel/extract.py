@@ -1,0 +1,155 @@
+"""Extraction pipeline, local engines (M2.4): PDF -> StatementPack + ExtractionReport.
+
+ingest -> text layer -> locate -> text-layer table engines -> header semantics -> mapping ->
+arithmetic checks -> publish-or-null. Nothing here reads a number from a model. A blocking unit
+or currency problem returns status != "ok" and no pack: there is no default and no guess.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
+
+import structlog
+
+from finintel.cache import StageCache
+from finintel.contracts import validate_pack
+from finintel.ingest import ingest, score_digital_born
+from finintel.llm import LLMProvider, suggest_pointers
+from finintel.locate import LocateResult, locate
+from finintel.mapping.aliases import load_aliases
+from finintel.parse.cached import cached_text_layer
+from finintel.reconcile.pack import Assembly, EngineView, assemble
+from finintel.tables import statement_tables
+from finintel.tables.headers import HeaderResult, read_headers
+
+log = structlog.get_logger(__name__)
+__all__ = ["ExtractionResult", "extract_pack", "statement_tables"]
+SCHEMA_CODES = {
+    "missing_item", "low_confidence", "parser_disagreement", "unit_ambiguous", "sign_ambiguous",
+    "multi_page_table", "restated_comparative", "alias_weak", "bank_layout", "public_sector_layout",
+    "arithmetic_check_failed", "entity_scope_ambiguous", "period_ambiguous", "currency_ambiguous",
+    "not_digitally_born", "lease_not_separately_presented", "derived_value", "human_override",
+    "human_override_unanchored", "unit_confirmed_manually", "unclassified_balance_sheet",
+    "document_type_ambiguous", "reduced_verification",
+}  # fmt: skip
+
+
+@dataclass
+class ExtractionResult:
+    status: str  # ok, needs_unit_confirmation, currency_ambiguous, statements_not_found
+    pack: dict[str, Any] | None
+    report: dict[str, Any]
+    warnings: list[dict[str, Any]] = field(default_factory=list)
+    schema_errors: list[str] = field(default_factory=list)
+    located: LocateResult | None = None
+
+
+def extract_pack(
+    pdf: Path, cache: StageCache, *, engines: str = "local", provider: LLMProvider | None = None
+) -> ExtractionResult:
+    if engines != "local":
+        raise NotImplementedError("engines=all needs the Azure DI reconciliation (M2.5)")
+    record = ingest(pdf)
+    layer, _ = cached_text_layer(pdf, record.sha256, cache)
+    located = locate(layer)
+    tables = statement_tables(pdf, record.sha256, layer, located, cache)
+    notes: list[dict[str, Any]] = []
+    for w in located.warnings:
+        code = "missing_item" if w.code == "statement_not_found" else w.code
+        if code in SCHEMA_CODES:
+            notes.append({"code": code, "message": w.message, "item": None, "page": w.page})
+    born = score_digital_born(layer)
+    if not born.is_digitally_born:
+        notes.append(
+            {
+                "code": "not_digitally_born",
+                "message": f"{len(born.failing_pages)} of {born.pages_total} pages have "
+                "too little text",
+                "item": None,
+                "page": None,
+            }
+        )
+    report: dict[str, Any] = {"locator": located.model_dump(mode="json", exclude={"candidates"})}
+    if not tables:
+        return ExtractionResult("statements_not_found", None, report, notes, located=located)
+
+    engine_names = sorted({e for by_engine in tables.values() for e in by_engine})
+    headers: dict[str, HeaderResult] = {
+        e: read_headers({k: by[e] for k, by in tables.items() if e in by}, layer)
+        for e in engine_names
+    }
+    first = headers[engine_names[0]]
+    if any(
+        (h.status, h.currency, h.unit_scale) != (first.status, first.currency, first.unit_scale)
+        for h in headers.values()
+    ):
+        notes.append(
+            {
+                "code": "parser_disagreement",
+                "message": "the two text-layer engines read different units",
+                "item": None,
+                "page": None,
+            }
+        )
+        return ExtractionResult("needs_unit_confirmation", None, report, notes, located=located)
+    for hw in first.warnings:
+        if hw.code in SCHEMA_CODES:
+            notes.append({"code": hw.code, "message": hw.message, "item": None, "page": hw.page})
+    report["header"] = first.model_dump(mode="json", exclude={"tables"})
+    if first.status != "ok":
+        return ExtractionResult(first.status, None, report, notes, located=located)
+
+    notes.append(
+        {
+            "code": "reduced_verification",
+            "message": "one engine family ran (text layer); Azure DI is not used in this run",
+            "item": None,
+            "page": None,
+        }
+    )
+    # Corporate and ambiguous ("other") documents use the corporate alias map: values stay anchored
+    # and checked, and ratios are withheld for "other" in M3. Bank and NHS maps arrive in M8.
+    mapped_type = located.profile.document_type.value in ("corporate", "other")
+    specs = load_aliases("corporate") if mapped_type else {}
+    views = [EngineView(e, headers[e].tables) for e in engine_names]
+    assembly: Assembly = assemble(
+        views,
+        specs=specs,
+        located=located,
+        header=first,
+        source={"filename": pdf.name, "page_count": record.page_count, "sha256": record.sha256},
+        extra_warnings=notes,
+    )
+    errors = validate_pack(assembly.pack)
+    report.update(assembly.report)
+    report["review"] = _review_suggestions(views[0], assembly.pack, specs, provider)
+    log.info(
+        "extract.done",
+        file=pdf.name,
+        items=len(assembly.pack["items"]),
+        warnings=len(assembly.pack["warnings"]),
+        schema_errors=len(errors),
+    )
+    return ExtractionResult("ok", assembly.pack, report, assembly.pack["warnings"], errors, located)
+
+
+def _review_suggestions(
+    view: EngineView, pack: dict[str, Any], specs: dict[str, Any], provider: LLMProvider | None
+) -> dict[str, Any]:
+    """Number-blind pointers for required items with no row, review queue only (ADR-007)."""
+    if provider is None:
+        return {"llm": "skipped: no provider configured", "suggestions": [], "rejections": []}
+    missing = [
+        item
+        for item, body in pack["items"].items()
+        if item in specs
+        and all(v["value"] is None and v.get("raw_text") is None for v in body["values"])
+    ]
+    suggestions, rejections = [], []
+    for table in view.tables.values():
+        found, rejected = suggest_pointers(table, missing, specs, provider)
+        suggestions += [s.model_dump() for s in found]
+        rejections += rejected
+    return {"llm": provider.name, "suggestions": suggestions, "rejections": rejections}

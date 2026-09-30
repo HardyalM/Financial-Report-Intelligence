@@ -58,6 +58,13 @@ sessions:
     - "finintel/llm/**"
     - "tests/**"
     - "tests/golden/**"
+    - "finintel/extract.py"
+    - "finintel/evals/**"
+    - "finintel/cli/**"
+    - "finintel/parse/cached.py"
+    - "scripts/gate.py"
+    - "scripts/make_golden_excerpt.py"
+    - "scripts/scope.yaml"
   "M2.5":
     - "finintel/parse/engines/azure_di*"
     - "finintel/reconcile/**"

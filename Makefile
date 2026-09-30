@@ -1,7 +1,7 @@
 # Every target runs inside the uv-managed environment. Override RUN= to use another runner.
 RUN ?= uv run
 
-.PHONY: help lint format typecheck test contracts contracts-check scope ci inspect eval eval-live
+.PHONY: help lint format typecheck test contracts contracts-check scope ci inspect eval-e1 eval eval-live
 
 help:
 	@echo "make ci              lint, typecheck, test, contracts-check, scope (the standard gate G1 plus G5)"
@@ -34,6 +34,12 @@ scope:
 	$(RUN) python scripts/check_scope.py --web-guard
 
 ci: lint typecheck test contracts-check scope
+
+COMPANY ?= company_a
+ENGINES ?= local
+
+eval-e1:
+	$(RUN) finintel eval-e1 $(COMPANY) --engines $(ENGINES)
 
 inspect:
 	$(RUN) finintel inspect --fixtures

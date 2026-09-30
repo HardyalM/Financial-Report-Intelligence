@@ -1,0 +1,110 @@
+# Corporate alias map (SCHEMA section 6). Configuration, not code: a recurring unusual label is
+# fixed here, with a test, never by letting a model pick a row (ADR-007).
+#
+# include_exact: normalised labels (lower case, note refs and footnote markers stripped, "&" = "and")
+# include_regex: anchored regular expressions, tried only when no exact label matches
+# exclude_any:   substrings that veto a row whatever rule produced it (APM contamination)
+# sections:      the heading the row must sit under (nearest preceding heading without a colon)
+# structural:    an unlabelled subtotal/total row closing one of these sections
+# internal:      used for arithmetic checks only; not emitted into the pack
+_apm: &apm [adjusted, underlying, "before adjusting items", "before exceptional", pre-exceptional,
+            "trading profit", headline, ebitda, "core", "constant currency", "like-for-like"]
+
+revenue:
+  statement: income_statement
+  include_exact: [revenue, turnover, "group revenue", "total revenue", "group turnover",
+                  "revenue from contracts with customers", "net revenue", "net sales", sales]
+  exclude_any: [adjusted, underlying, "including concessions", "gross transaction", "total income"]
+operating_profit:
+  statement: income_statement
+  include_exact: ["operating profit", "operating profit/(loss)", "operating (loss)/profit",
+                  "operating profit/loss", "group operating profit", "profit from operations",
+                  "operating loss", "operating (loss)"]
+  include_regex: ["^operating (profit|loss|\\(loss\\))( ?/ ?\\(?(profit|loss)\\)?)?$"]
+  exclude_any: *apm
+profit_before_tax:
+  statement: income_statement
+  include_exact: ["profit before taxation", "profit before tax", "profit/(loss) before taxation",
+                  "profit/(loss) before tax", "(loss)/profit before taxation", "(loss)/profit before tax",
+                  "loss before taxation", "loss before tax", "profit on ordinary activities before taxation"]
+  exclude_any: *apm
+net_income:
+  statement: income_statement
+  include_exact: ["net profit", "profit for the year", "profit for the financial year",
+                  "profit/(loss) for the year", "(loss)/profit for the year", "profit for the period",
+                  "profit/(loss) for the period", "net profit for the year", "loss for the year"]
+  exclude_any: [attributable, "owners of", shareholders, "non-controlling"]
+
+current_assets:
+  statement: balance_sheet
+  include_exact: ["total current assets"]
+  structural: ["current assets"]
+current_liabilities:
+  statement: balance_sheet
+  include_exact: ["total current liabilities",
+                  "creditors: amounts falling due within one year"]
+  structural: ["current liabilities", "creditors: amounts falling due within one year"]
+non_current_assets:
+  statement: balance_sheet
+  include_exact: ["total non-current assets", "total fixed assets"]
+  structural: ["non-current assets", "fixed assets"]
+non_current_liabilities:
+  statement: balance_sheet
+  internal: true
+  include_exact: ["total non-current liabilities",
+                  "creditors: amounts falling due after more than one year"]
+  structural: ["non-current liabilities",
+               "creditors: amounts falling due after more than one year"]
+total_assets:
+  statement: balance_sheet
+  include_exact: ["total assets"]
+total_liabilities:
+  statement: balance_sheet
+  include_exact: ["total liabilities"]
+total_equity:
+  statement: balance_sheet
+  include_exact: ["total equity", "total equity and reserves"]
+  exclude_any: [attributable, "and liabilities", "excluding"]
+equity_attributable_to_owners:
+  statement: balance_sheet
+  sections: [equity]
+  include_exact: ["shareholders' equity", "equity attributable to owners of the parent",
+                  "equity attributable to shareholders", "equity attributable to equity holders of the parent",
+                  "total shareholders' equity"]
+non_controlling_interests:
+  statement: balance_sheet
+  sections: [equity]
+  include_exact: ["non-controlling interests", "non-controlling interest", "minority interests"]
+cash:
+  statement: balance_sheet
+  sections: ["current assets"]
+  include_exact: ["cash and cash equivalents", "cash and short-term deposits", "cash at bank and in hand"]
+borrowings_current:
+  statement: balance_sheet
+  sections: ["current liabilities", "creditors: amounts falling due within one year"]
+  include_exact: [borrowings, "interest-bearing borrowings", "interest-bearing loans and borrowings",
+                  "loans and borrowings", "borrowings and overdrafts", "bank loans and overdrafts",
+                  "bank overdrafts", "current borrowings"]
+borrowings_non_current:
+  statement: balance_sheet
+  sections: ["non-current liabilities", "creditors: amounts falling due after more than one year"]
+  include_exact: [borrowings, "interest-bearing borrowings", "interest-bearing loans and borrowings",
+                  "loans and borrowings", "bank loans", "non-current borrowings"]
+lease_liabilities_current:
+  statement: balance_sheet
+  sections: ["current liabilities", "creditors: amounts falling due within one year"]
+  include_exact: ["lease liabilities", "obligations under finance leases", "finance lease obligations"]
+lease_liabilities_non_current:
+  statement: balance_sheet
+  sections: ["non-current liabilities", "creditors: amounts falling due after more than one year"]
+  include_exact: ["lease liabilities", "obligations under finance leases", "finance lease obligations"]
+# Face line that mixes borrowings with derivatives and other financial liabilities (Unilever).
+# Mapped so that total_debt can say exactly why it is null; never summed into debt.
+financial_liabilities_current:
+  statement: balance_sheet
+  sections: ["current liabilities"]
+  include_exact: ["financial liabilities"]
+financial_liabilities_non_current:
+  statement: balance_sheet
+  sections: ["non-current liabilities"]
+  include_exact: ["financial liabilities"]

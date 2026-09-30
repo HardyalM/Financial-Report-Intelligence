@@ -2,6 +2,8 @@
 
     finintel inspect <pdf|dir>... [--fixtures]   M1 inspection dump (see finintel.cli.inspect)
     finintel locate <pdf|fixture> [--json]       M2.1 statement pages and document profile
+    finintel extract <pdf|fixture> [--json]      M2.4 StatementPack from the local engines
+    finintel eval-e1 <fixture> --engines local   M2.4 golden-cell comparison
 
 Exit codes: 0 ok; 1 a document was refused or failed, or its statements need review; 2 usage;
 3 a held-out path was requested.
@@ -11,9 +13,11 @@ The last line of `inspect` output is `vendor_calls=N`: paid vendor requests made
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
+from finintel.cli import extract_cmd
 from finintel.cli import locate as locate_cmd
 from finintel.cli.common import HoldoutRefusedError
 from finintel.cli.inspect import (
@@ -79,6 +83,17 @@ def build_parser() -> argparse.ArgumentParser:
     locate.add_argument("target", help='a PDF path, or a fixture name such as "company_a"')
     locate.add_argument("--json", action="store_true", help="print the full result as JSON")
     locate.add_argument("--cache-dir", type=Path, help="stage cache (default: artifacts/cache)")
+    extract = commands.add_parser(
+        "extract", help="extract a StatementPack with the local engines (M2.4)"
+    )
+    extract.add_argument("target", help='a PDF path, or a fixture name such as "company_a"')
+    extract.add_argument("--json", action="store_true", help="print the pack as JSON")
+    extract.add_argument("--engines", choices=("local",), default="local")
+    extract.add_argument("--cache-dir", type=Path)
+    e1 = commands.add_parser("eval-e1", help="compare an extraction with fixtures/expected (M2.4)")
+    e1.add_argument("company", help='fixture name, e.g. "company_a"')
+    e1.add_argument("--engines", choices=("local",), default="local")
+    e1.add_argument("--cache-dir", type=Path)
     return parser
 
 
@@ -96,7 +111,46 @@ def main(argv: list[str] | None = None) -> int:
     configure_logging(settings.log_format, settings.log_level)
     if args.command == "locate":
         return _locate(args, settings)
+    if args.command in ("extract", "eval-e1"):
+        return _extract(args, settings)
     return _inspect(args, settings)
+
+
+def _extract(args: argparse.Namespace, settings: Settings) -> int:
+    cache_dir = args.cache_dir or settings.cache_dir
+    try:
+        if args.command == "extract":
+            pdf, result, out = extract_cmd.run_extract(
+                args.target, cache_dir, settings.artifacts_dir, args.engines
+            )
+            if args.json and result.pack is not None:
+                print(json.dumps(result.pack, indent=2))
+            else:
+                extract_cmd.print_summary(pdf, result, out, sys.stdout)
+            return EXIT_OK if result.status == "ok" and not result.schema_errors else EXIT_FAILED
+        report, path = extract_cmd.run_e1(
+            args.company, args.engines, cache_dir, settings.artifacts_dir
+        )
+    except HoldoutRefusedError as exc:
+        print(f"finintel: refused {exc}: held out until M8.3", file=sys.stderr)
+        return EXIT_HOLDOUT
+    except (FileNotFoundError, ValueError, RuntimeError, IngestError) as exc:
+        print(f"finintel {args.command}: {exc}", file=sys.stderr)
+        return EXIT_FAILED
+    e1 = report["e1"]
+    print(
+        f"{report['company']}: labelled {e1['labelled']}  matched {e1['matched']}  "
+        f"honest_null {e1['honest_null']}  silent_wrong {e1['silent_wrong']}  "
+        f"unit_errors {e1['unit_errors']}"
+    )
+    for cell in e1["cells"]:
+        if cell["status"] != "matched":
+            print(
+                f"  {cell['status']}: {cell['item']} {cell['period']} "
+                f"expected {cell['expected']} got {cell['got']}"
+            )
+    print(f"  -> {path}")
+    return EXIT_OK
 
 
 def _locate(args: argparse.Namespace, settings: Settings) -> int:
