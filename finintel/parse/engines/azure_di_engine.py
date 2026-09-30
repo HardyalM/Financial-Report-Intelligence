@@ -12,7 +12,7 @@ in logs, exceptions, cache keys or artefacts.
 from __future__ import annotations
 
 import time
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -21,8 +21,13 @@ from urllib.parse import urlsplit
 import httpx
 import structlog
 
-from finintel._placeholders import not_yet
-from finintel.parse.engines.base import EngineFamily, ParsedTables
+from finintel.parse.engines.base import (
+    BBox,
+    EngineCell,
+    EngineFamily,
+    EngineTable,
+    ParsedTables,
+)
 
 #: Bump when the stored raw response or the request shape changes. Part of the cache key.
 RAW_RESPONSE_VERSION = "1"
@@ -130,8 +135,18 @@ class AzureDiEngine:
             if self._client is None:
                 client.close()
 
-    def parse(self, pdf_path: Path, pages: list[int] | None = None) -> ParsedTables:
-        not_yet("M2.5", "AzureDiEngine.parse (StatementTable normalisation)")
+    version = f"azure_di {DEFAULT_MODEL_ID} {DEFAULT_API_VERSION}"
+
+    def parse(
+        self,
+        pdf_path: Path,
+        pages: Sequence[int] | None = None,
+        clips: Mapping[int, Sequence[BBox]] | None = None,
+    ) -> ParsedTables:
+        """Call the vendor (whole file or the given pages) and normalise. Callers that cache the
+        raw response use `normalise_layout` directly."""
+        body = self.analyze_raw(pdf_path.read_bytes(), page_ranges(pages) if pages else None)
+        return normalise_layout(body, clips=clips)
 
     def _analyze(
         self, client: httpx.Client, cfg: AzureDiConfig, pdf_bytes: bytes, pages: str | None
@@ -199,3 +214,74 @@ def _vendor_message(response: httpx.Response) -> str:
         body = {}
     detail = _error_text(body) if isinstance(body, dict) else ""
     return f"HTTP {response.status_code} {detail}".strip()
+
+
+POINTS_PER_INCH = 72.0
+
+
+def normalise_layout(
+    body: Mapping[str, Any], *, clips: Mapping[int, Sequence[BBox]] | None = None
+) -> ParsedTables:
+    """Azure `prebuilt-layout` response -> ParsedTables (EXTRACTION sections 4.1 and 5.1).
+
+    Geometry is converted to PDF points (the response is in inches for PDFs), top-left origin, the
+    same space as the text layer. One EngineTable per table and page, strategy "azure_layout", so
+    a multi-page table arrives as per-page tables that the builder merges by rule. Cell text is
+    exactly what the vendor returned; nothing is corrected here, and nothing the vendor returns is
+    trusted until it anchors to the text layer.
+    """
+    result = body.get("analyzeResult") or body
+    units = {
+        int(pg["pageNumber"]): (POINTS_PER_INCH if pg.get("unit", "inch") == "inch" else 1.0)
+        for pg in result.get("pages", [])
+    }
+    tables: list[EngineTable] = []
+    errors: list[str] = []
+    for raw in result.get("tables", []):
+        by_page: dict[int, list[EngineCell]] = {}
+        for cell in raw.get("cells", []):
+            regions = cell.get("boundingRegions") or []
+            if not regions:
+                continue
+            page = int(regions[0]["pageNumber"])
+            scale = units.get(page, POINTS_PER_INCH)
+            xs, ys = regions[0]["polygon"][0::2], regions[0]["polygon"][1::2]
+            box = (
+                round(min(xs) * scale, 2), round(min(ys) * scale, 2),
+                round(max(xs) * scale, 2), round(max(ys) * scale, 2),
+            )  # fmt: skip
+            by_page.setdefault(page, []).append(
+                EngineCell(
+                    row=int(cell["rowIndex"]),
+                    col=int(cell["columnIndex"]),
+                    text=str(cell.get("content", "")),
+                    bbox=box,
+                )
+            )
+        for page, cells in sorted(by_page.items()):
+            boxes = [c.bbox for c in cells if c.bbox]
+            tables.append(
+                EngineTable(
+                    page=page,
+                    strategy="azure_layout",
+                    clip=None,
+                    bbox=(
+                        min(b[0] for b in boxes),
+                        min(b[1] for b in boxes),
+                        max(b[2] for b in boxes),
+                        max(b[3] for b in boxes),
+                    ),
+                    n_rows=int(raw.get("rowCount", 0)),
+                    n_cols=int(raw.get("columnCount", 0)),
+                    cells=tuple(cells),
+                )
+            )
+    if clips:
+        tables = [t for t in tables if t.page in clips]
+    return ParsedTables(
+        engine="azure_di",
+        engine_version=AzureDiEngine.version,
+        family=EngineFamily.IMAGE_LAYOUT,
+        tables=tuple(tables),
+        errors=tuple(errors),
+    )

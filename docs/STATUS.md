@@ -7,6 +7,43 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M2.5 — 2026-10-01 — BUILT, gate BLOCKED on an Azure DI key
+
+M2.5 code complete and green offline. The gate command cannot pass honestly: no Azure key, so no real
+response exists. Not advancing to M2.6/M3 claims; M3 does not depend on Azure and can proceed.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: **656 passed, 0 skipped** |
+| `make eval-e1 COMPANY=company_a ENGINES=all` (no key) | 22/22 matched, 0 silent wrong, Azure `engine_skipped: no credentials`, `reduced_verification` raised |
+| `uv run python scripts/gate.py M2.5` | **exit 1: `FAIL azure.ran == True`** (by design: a skipped engine must not look like a pass) |
+| `uv run python scripts/check_scope.py M2.5 --base m2.4` | exit 0 (with the amendment in MILESTONES) |
+
+Built (tested on an Azure-shaped stand-in, tests/extract/fake_azure.py; NOT a recorded vendor response):
+- `normalise_layout`: Azure layout JSON (inches, per-cell bounding regions) to ParsedTables in PDF points.
+- Anchoring for non-text-layer engines: a figure the engine reports but the page does not print at that
+  spot is an `unanchored_candidate` and is dropped. Verified: a "corrected" 12,600 never appears.
+  Characters, row, column and period always come from the text layer (`row_source: text_layer`).
+- Family voting: two families on the same cell x1.00 (else x0.90), engine `reconciled`; a cross-engine
+  difference is resolved only if exactly one candidate passes every applicable arithmetic check (capped
+  0.85), else null + `parser_disagreement`. Review items listed in the report.
+- Azure called on the statement pages only (OQ-7 option B, about $0.08 a report), raw response cached;
+  no key or a vendor failure gives `engine_skipped` and the local path unchanged.
+- Tie-break tests: resolved by arithmetic (revenue) and unresolved when no check applies (cash).
+
+Honest limits:
+- Real Azure behaviour is unverified. Real layouts may split cells, merge rows or round coordinates in
+  ways the stand-in does not; the anchoring rule is the safety net, but E1 on real output is the test.
+- Because row/column/period are always text-layer derived, cross-family disagreement can only arise from
+  which cells survive anchoring, so the second family mostly adds corroboration (x1.00) and a tripwire.
+- tau calibration: note added to EXTRACTION 5.3 saying unchanged and pending real two-family evidence.
+
+Needed from the tech lead to close M2.5: set `AZURE_DI_ENDPOINT` and `AZURE_DI_KEY` in `.env`, then
+`make eval-e1 COMPANY=company_a ENGINES=all && python scripts/gate.py M2.5`. One disputed-cell sign-off
+also remains (MILESTONES). Also pending from M2.3: ADR-010 review of the six new synthetic specs.
+
+---
+
 ## M2.4 — 2026-09-30 — green
 
 M2.4 green. E1 company_a: 22/22 matched (20 figures + 2 explicit `total_debt` nulls), silent_wrong 0,

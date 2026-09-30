@@ -35,7 +35,7 @@ CONDITIONS: dict[str, list[str]] = {
         "e1.unit_errors == 0",
         "e6.published_llm_pointer == 0",
     ],
-    "M2.5": ["e1.matched == e1.labelled", "e1.silent_wrong == 0"],
+    "M2.5": ["azure.ran == True", "e1.matched == e1.labelled", "e1.silent_wrong == 0"],
     "M2.6": ["e6.published_vision_only == 0"],
     "M3": ["e2.matched == e2.expected"],
     "M4.2": ["e3.hit_at_8 >= 0.8"],

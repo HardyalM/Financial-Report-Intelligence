@@ -52,7 +52,7 @@ def test_module_imports(module: str) -> None:
     importlib.import_module(module)
 
 
-STUBBED = {"AzureDiEngine": r"M2\.5", "VisionEngine": r"M2\.6"}
+STUBBED = {"VisionEngine": r"M2\.6"}
 
 
 @pytest.mark.parametrize(("target", "family"), ENGINES.items())

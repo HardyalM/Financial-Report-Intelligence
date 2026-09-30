@@ -16,13 +16,19 @@ from finintel.cache import StageCache
 from finintel.cli.common import resolve_pdf
 from finintel.evals.e1 import compare, report_json, write_report
 from finintel.extract import ExtractionResult, extract_pack
+from finintel.parse.engines.azure_di_engine import AzureDiConfig, AzureDiEngine
 
 
 def run_extract(
-    target: str, cache_dir: Path, artifacts: Path, engines: str
+    target: str,
+    cache_dir: Path,
+    artifacts: Path,
+    engines: str,
+    azure: AzureDiConfig | None = None,
 ) -> tuple[Path, ExtractionResult, Path]:
     pdf = resolve_pdf(target)
-    result = extract_pack(pdf, StageCache(cache_dir), engines=engines)
+    engine = AzureDiEngine(azure) if azure else None
+    result = extract_pack(pdf, StageCache(cache_dir), engines=engines, azure=engine)
     out = artifacts / "extract" / pdf.stem
     out.mkdir(parents=True, exist_ok=True)
     if result.pack is not None:
@@ -64,7 +70,11 @@ def print_summary(pdf: Path, result: ExtractionResult, out: Path, stream: TextIO
 
 
 def run_e1(
-    company: str, engines: str, cache_dir: Path, artifacts: Path
+    company: str,
+    engines: str,
+    cache_dir: Path,
+    artifacts: Path,
+    azure: AzureDiConfig | None = None,
 ) -> tuple[dict[str, Any], Path]:
     pdf = resolve_pdf(company)
     expected_path = Path("fixtures") / "expected" / f"{pdf.stem}.json"
@@ -74,13 +84,26 @@ def run_e1(
         )
     if pdf.stem.upper().startswith("EXAMPLE"):
         raise ValueError("EXAMPLE files are dummy data, not labels")
-    result = extract_pack(pdf, StageCache(cache_dir), engines=engines)
+    engine = AzureDiEngine(azure) if azure else None
+    result = extract_pack(pdf, StageCache(cache_dir), engines=engines, azure=engine)
     if result.pack is None:
         raise RuntimeError(
             f"extraction blocked: {result.status}: {[w['message'] for w in result.warnings]}"
         )
     expected = json.loads(expected_path.read_text(encoding="utf-8"))
     e1 = compare(result.pack, expected, result.report)
-    report = report_json(e1, pdf.stem, engines, {"schema_errors": result.schema_errors})
+    skipped = result.report.get("engine_skipped", {}).get("azure_di")
+    report = report_json(
+        e1,
+        pdf.stem,
+        engines,
+        {
+            "schema_errors": result.schema_errors,
+            "azure": {
+                "ran": "azure_di" in result.pack["source"]["parser_engines"],
+                "skipped": skipped,
+            },
+        },
+    )
     path = write_report(report, artifacts / "eval" / "latest" / "report.json")
     return report, path

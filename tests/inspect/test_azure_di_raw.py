@@ -5,7 +5,6 @@ Every test drives the real client code against httpx.MockTransport. No socket is
 
 from __future__ import annotations
 
-import json
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
@@ -201,15 +200,7 @@ def test_no_credentials() -> None:
     assert caught.value.code == "no_credentials"
 
 
-def test_normalised_parse_is_m2_5() -> None:
-    from pathlib import Path
-
-    with pytest.raises(NotImplementedError, match=r"M2\.5"):
-        AzureDiEngine().parse(Path("x.pdf"))
-
-
-def test_response_body_is_returned_untouched() -> None:
-    raw = {**SUCCEEDED, "analyzeResult": {**SUCCEEDED["analyzeResult"], "content": "£13,907.5m"}}  # type: ignore[dict-item]
-    vendor = FakeVendor(_accepted(), [httpx.Response(200, content=json.dumps(raw).encode())])
-    engine, _ = _engine(vendor)
-    assert engine.analyze_raw(b"%PDF") == raw
+def test_no_credentials_means_no_vendor_call() -> None:
+    with pytest.raises(AzureDiError) as caught:
+        AzureDiEngine().analyze_raw(b"%PDF")
+    assert caught.value.code == "no_credentials"

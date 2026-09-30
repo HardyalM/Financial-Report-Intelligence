@@ -190,20 +190,21 @@ These checks are created in M0 and run in CI.
 ## M2.5 — Cross-family reconciliation
 
 **Read first:** EXTRACTION §5 (all); ADR-001; OQ-6.
-**Allowed paths:** `finintel/parse/engines/azure_di*`, `finintel/reconcile/**`, `finintel/tables/**`, `tests/**`, `docs/EXTRACTION.md` (§5.3 calibration note only).
+**Allowed paths:** `finintel/parse/engines/azure_di*`, `finintel/reconcile/**`, `finintel/tables/**`, `tests/**`, `docs/EXTRACTION.md` (§5.3 calibration note only), `finintel/extract.py`, `finintel/cli/**`, `scripts/gate.py`, `scripts/scope.yaml`.
+*Amended 2026-10-01 in the M2.5 session: the pipeline entry point and CLI gain `--engines all` (finintel/extract.py, finintel/cli/**), and the gate needs an `azure.ran` condition in scripts/gate.py.*
 
-- [ ] Azure DI normalised into `StatementTable`; anchoring; row, column and period re-derived from the text layer; family voting; `ExtractionReport`; review items.
-- [ ] τ calibration (EVAL §6.1).
+- [x] Azure DI normalised into `StatementTable`; anchoring; row, column and period re-derived from the text layer; family voting; `ExtractionReport`; review items. *(Built and tested against an Azure-shaped stand-in; never run on a real Azure response.)*
+- [ ] τ calibration (EVAL §6.1). *Local-family evidence recorded; real two-family calibration needs an Azure key.*
 - [ ] If OQ-6 = B: ESEF label check run, with results added to the labelling notes by the tech lead.
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] `make eval-e1 COMPANY=company_a ENGINES=all` followed by `python scripts/gate.py M2.5` exits 0 (`matched == labelled`, `silent_wrong == 0`).
-- [ ] Test: every published value has `ExtractionReport.row_source == "text_layer"`.
-- [ ] Test: a perturbed engine value gives null or a resolved `parser_disagreement`, never a silent pick.
-- [ ] Test: a scripted engine returning a "corrected" number produces an `unanchored_candidate` and nothing is published from it.
-- [ ] With the Azure key unset: `silent_wrong == 0` and the pack contains a `reduced_verification` warning.
-- [ ] `git diff main...HEAD -- docs/EXTRACTION.md` shows the §5.3 calibration note (or an explicit "τ unchanged, evidence: …").
+- [x] G1–G6 pass. *2026-10-01: `make ci` exit 0 (656 passed); `check_scope.py M2.5 --base m2.4` exit 0.*
+- [ ] `make eval-e1 COMPANY=company_a ENGINES=all` followed by `python scripts/gate.py M2.5` exits 0 (`matched == labelled`, `silent_wrong == 0`). ***BLOCKED: needs an Azure DI key. Without one the gate fails on `azure.ran == True`, by design.***
+- [x] Test: every published value has `ExtractionReport.row_source == "text_layer"`.
+- [x] Test: a perturbed engine value gives null or a resolved `parser_disagreement`, never a silent pick.
+- [x] Test: a scripted engine returning a "corrected" number produces an `unanchored_candidate` and nothing is published from it.
+- [x] With the Azure key unset: `silent_wrong == 0` and the pack contains a `reduced_verification` warning.
+- [x] `git diff main...HEAD -- docs/EXTRACTION.md` shows the §5.3 calibration note (or an explicit "τ unchanged, evidence: …"). *(Says calibration on the second family is pending.)*
 - [ ] *Sign-off:* you agree with the decision in one disputed cell's `ExtractionReport` (yes/no).
 
 ## M2.6 — Vision family *(optional)*

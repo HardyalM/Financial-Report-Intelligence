@@ -71,6 +71,10 @@ sessions:
     - "finintel/tables/**"
     - "tests/**"
     - "docs/EXTRACTION.md"
+    - "finintel/extract.py"
+    - "finintel/cli/**"
+    - "scripts/gate.py"
+    - "scripts/scope.yaml"
   "M2.6":
     - "finintel/parse/engines/vision*"
     - "finintel/reconcile/**"

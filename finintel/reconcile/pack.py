@@ -2,11 +2,14 @@
 
 Confidence is deterministic (never a model's opinion):
     base  = {exact_alias .95, regex_alias .90, structural .85}
-    x 0.90 when only one engine family produced the cell (the two text-layer engines are one family)
+    x 1.00 when anchored candidates from two engine families read the same cell, else x 0.90
+    (the two text-layer engines are one family)
     - 0.30 if any arithmetic check involving the cell fails, else + 0.05 if at least one passes
     capped at 0.99. Publish at >= tau (0.80); below it the value is null with `low_confidence`.
-Engines of one family that read different cells give null + `parser_disagreement` (no tie-break in
-M2.4; cross-family resolution is M2.5). An LLM suggestion is never a candidate here (ADR-007).
+Engines that read different cells: exactly one candidate passing every applicable arithmetic check
+is accepted (capped at 0.85, `parser_disagreement` "resolved"); otherwise null +
+`parser_disagreement`
+"unresolved". An LLM suggestion or a vision read is never a candidate here (ADR-007).
 """
 
 from __future__ import annotations
@@ -20,6 +23,7 @@ from finintel import PIPELINE_VERSION
 from finintel.locate.models import LocateResult, StatementType
 from finintel.mapping.aliases import AliasSpec
 from finintel.mapping.mapper import METHOD_BASE, ItemMapping, map_table
+from finintel.parse.engines.base import EngineFamily
 from finintel.reconcile.checks import CheckResult, period_columns, run_checks
 from finintel.tables.models import Cell, Row, StatementTable
 from finintel.tables.numbers import canonical
@@ -58,6 +62,7 @@ STATEMENT_OF = {
 class EngineView:
     engine: str
     tables: dict[StatementType, StatementTable]
+    family: EngineFamily = EngineFamily.TEXT_LAYER
     mapped: dict[str, ItemMapping] = field(default_factory=dict)
     checks: list[CheckResult] = field(default_factory=list)
 
@@ -90,26 +95,34 @@ def _signed(item: str, value: Decimal) -> float:
     return float(abs(value) if item in LIABILITY_ITEMS else value)
 
 
-def _confidence(method: str, checks: Sequence[CheckResult]) -> tuple[float, dict[str, Any]]:
+def _confidence(
+    method: str, checks: Sequence[CheckResult], agreement: float
+) -> tuple[float, dict[str, Any]]:
     base = METHOD_BASE[method]
-    value = base * SINGLE_FAMILY
+    value = base * agreement
     failed, passed = [c for c in checks if not c.passed], [c for c in checks if c.passed]
     value += -CHECK_FAIL if failed else (CHECK_PASS if passed else 0.0)
     final = round(min(CAP, value), 4)
     return final, {
-        "base": base, "agreement": SINGLE_FAMILY,
-        "checks_passed": [c.name for c in passed], "checks_failed": [
-            f"{c.name}: {c.detail}, off by {c.difference}" for c in failed
-        ],
+        "base": base, "agreement": agreement,
+        "checks_passed": [c.name for c in passed],
+        "checks_failed": [f"{c.name}: {c.detail}, off by {c.difference}" for c in failed],
         "confidence": final,
     }  # fmt: skip
+
+
+Member = tuple[EngineView, Row, Cell, ItemMapping]
+
+
+def _item_checks(view: EngineView, item: str, period: str) -> list[CheckResult]:
+    return [c for c in view.checks if item in c.items and c.period_id == period]
 
 
 def _resolve(
     item: str, period: str, views: Sequence[EngineView], kind: StatementType
 ) -> Resolution:
     res = Resolution(item, period)
-    seen: dict[tuple[int, str], tuple[EngineView, Row, Cell, ItemMapping]] = {}
+    groups: dict[tuple[int, str], list[Member]] = {}
     weak = []
     for view in views:
         m = view.mapped.get(item)
@@ -123,8 +136,11 @@ def _resolve(
         if m.row is None or column is None or column.column_id not in m.row.cells:
             continue
         cell = m.row.cells[column.column_id]
-        seen.setdefault((cell.page, canonical(cell.raw_text)), (view, m.row, cell, m))
+        groups.setdefault((cell.page, canonical(cell.raw_text)), []).append((view, m.row, cell, m))
     res.record["engines"] = [v.engine for v in views if v.mapped.get(item)]
+    res.record["row_source"] = (
+        "text_layer"  # row, column and period always come from the text layer
+    )
     if weak:
         res.warn(
             "alias_weak",
@@ -132,35 +148,51 @@ def _resolve(
         )
         res.record["decision"] = "alias_weak"
         return res
-    if not seen:
+    if not groups:
         res.record["decision"] = "no_candidate"
         return res
-    if len(seen) > 1:
-        shown = "; ".join(f"{v.engine}={c.raw_text} p.{c.page}" for v, _, c, _ in seen.values())
-        res.warn("parser_disagreement", f"unresolved: {shown}", next(iter(seen.values()))[2].page)
-        res.record.update(
-            decision="parser_disagreement", candidates=[c.raw_text for _, _, c, _ in seen.values()]
+    cap: float | None = None
+    if len(groups) == 1:
+        members = next(iter(groups.values()))
+    else:
+        # Deterministic tie-break (EXTRACTION 5.4): label and period hold by construction, so the
+        # one thing left is the arithmetic. Exactly one candidate passing every applicable check
+        # wins, capped at 0.85. Never magnitude, plausibility, engine reputation or a model.
+        passing = [
+            g
+            for g in groups.values()
+            if all(c.passed for v, _, _, _ in g for c in _item_checks(v, item, period))
+        ]
+        shown = "; ".join(
+            f"{v.engine}={c.raw_text} p.{c.page}" for g in groups.values() for v, _, c, _ in g
         )
-        return res
-    view, row, cell, m = next(iter(seen.values()))
-    assert m.method is not None
-    checks = [c for c in view.checks if item in c.items and c.period_id == period]
-    confidence, arithmetic = _confidence(m.method, checks)
-    res.row, res.cell, res.method, res.engine, res.confidence = (
-        row,
-        cell,
-        m.method,
-        view.engine,
-        confidence,
+        page = next(iter(groups.values()))[0][2].page
+        res.record["candidates"] = [c.raw_text for g in groups.values() for _, _, c, _ in g]
+        if len(passing) != 1:
+            res.warn("parser_disagreement", f"unresolved: {shown}", page)
+            res.record["decision"] = "parser_disagreement"
+            return res
+        members, cap = passing[0], 0.85
+        res.warn("parser_disagreement", f"resolved by arithmetic: {shown}", page)
+    view, row, cell, m = members[0]
+    families = {v.family for v, _, _, _ in members}
+    agreement = 1.0 if len(families) >= 2 else SINGLE_FAMILY
+    lowest = min(
+        (mm for _, _, _, mm in members), key=lambda mm: METHOD_BASE[mm.method or "structural"]
     )
+    assert lowest.method is not None
+    checks = [c for v, _, _, _ in members for c in _item_checks(v, item, period)]
+    confidence, arithmetic = _confidence(lowest.method, checks, agreement)
+    if cap is not None:
+        confidence = min(confidence, cap)
+        arithmetic["confidence"] = confidence
+    res.row, res.cell, res.method, res.confidence = row, cell, lowest.method, confidence
+    res.engine = "reconciled" if len(families) >= 2 else view.engine
     res.record.update(
-        method=m.method,
-        row=row.row_id,
-        label=row.label_text,
-        raw_text=cell.raw_text,
-        page=cell.page,
-        **arithmetic,
-    )
+        method=lowest.method, row=row.row_id, label=row.label_text,
+        raw_text=cell.raw_text, page=cell.page,
+        families=sorted(f.value for f in families), **arithmetic,
+    )  # fmt: skip
     for c in checks:
         if not c.passed:
             res.warn(
@@ -431,7 +463,18 @@ def assemble(
     }
     if located.profile.balance_sheet_classified is not None:
         pack["balance_sheet_classified"] = located.profile.balance_sheet_classified
+    review = [
+        {
+            "item": i, "period": p, "kind": r.record["decision"],
+            "candidates": r.record.get("candidates", []),
+            "warnings": [w["message"] for w in r.warnings],
+        }
+        for (i, p), r in sorted(res.items())
+        if r.record.get("decision")
+        in ("parser_disagreement", "alias_weak", "below_threshold", "unparsed")
+    ]  # fmt: skip
     report = {
+        "review_items": review,
         "engines": [v.engine for v in views],
         "tau": TAU,
         "candidates": {f"{i}:{p}": r.record for (i, p), r in sorted(res.items())},

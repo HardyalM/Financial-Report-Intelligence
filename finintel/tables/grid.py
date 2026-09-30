@@ -25,9 +25,9 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 from finintel.locate.signals import SUPERSCRIPT_RATIO, PageView, normalise
-from finintel.parse.engines.base import BBox, EngineTable, ParsedTables
+from finintel.parse.engines.base import BBox, EngineFamily, EngineTable, ParsedTables
 from finintel.parse.text_layer import Word
-from finintel.tables.numbers import ParsedNumber, parse_number
+from finintel.tables.numbers import ParsedNumber, canonical, parse_number
 from finintel.tables.regions import Region
 
 _YEAR = re.compile(r"^(?:19|20)\d{2}$")
@@ -43,7 +43,7 @@ NOTE_SLACK = 6.0  # pt either side of a printed Note(s) header
 HEADER_MARGIN = 120.0
 CUT_TOLERANCE = 2.0  # pt a neighbouring word may reach into a cell before the cell 'cuts' it
 NOTE_SHARE = 0.8
-PREFERRED = ("lines", "text")  # on a tie, the ruled-table reading wins
+PREFERRED = ("lines", "text", "azure_layout")  # on a tie, the ruled-table reading wins
 
 
 @dataclass
@@ -206,16 +206,17 @@ def _note_header(
 def _choose(
     parsed: ParsedTables, region: Region, rows: Sequence[TextRow]
 ) -> tuple[str, list[PlacedCell], list[str]]:
-    best: tuple[int, int, str, list[PlacedCell], tuple[int, int, int]] | None = None
+    best: tuple[int, int, str, list[PlacedCell], tuple[int, int, int], list[str]] | None = None
+    strict = parsed.family is not EngineFamily.TEXT_LAYER
     for rank, strategy in enumerate(PREFERRED):
         tables = [t for t in parsed.on_page(region.page, strategy) if _intersects(t, region)]
-        placed, multi, unanchored, differs = _place(tables, region, rows)
+        placed, multi, unanchored, differs, rejected = _place(tables, region, rows, strict)
         accurate = sum(1 for c in placed if c.parsed is not None)
-        candidate = (accurate, -rank, strategy, placed, (multi, unanchored, differs))
+        candidate = (accurate, -rank, strategy, placed, (multi, unanchored, differs), rejected)
         if best is None or candidate[:2] > best[:2]:
             best = candidate
     assert best is not None
-    accurate, _, strategy, placed, (multi, unanchored, differs) = best
+    accurate, _, strategy, placed, (multi, unanchored, differs), rejected = best
     page = region.page
     notes = [
         f"p.{page}: {parsed.engine} strategy '{strategy}' ({accurate} single-row numeric cells)"
@@ -226,16 +227,20 @@ def _choose(
         notes.append(f"p.{page}: {unanchored} engine cells with no printed text under them dropped")
     if differs:
         notes.append(f"p.{page}: {differs} figures where the engine's text differs from the print")
+    if rejected:
+        shown = "; ".join(rejected[:4])
+        notes.append(f"p.{page}: unanchored_candidate x{len(rejected)}: {shown}")
     return strategy, placed, notes
 
 
 def _place(
-    tables: Sequence[EngineTable], region: Region, rows: Sequence[TextRow]
-) -> tuple[list[PlacedCell], int, int, int]:
+    tables: Sequence[EngineTable], region: Region, rows: Sequence[TextRow], strict: bool = False
+) -> tuple[list[PlacedCell], int, int, int, list[str]]:
     """(cells, multi-row cells dropped, unanchored cells dropped, cells whose engine text
     differs from what is printed). Characters always come from the text layer."""
     placed: list[PlacedCell] = []
     multi = unanchored = 0
+    rejected: list[str] = []
     x0, top, x1, bottom = region.bbox
     for table in tables:
         for cell in table.cells:
@@ -273,9 +278,19 @@ def _place(
             )
             ink = (min(b[0] for _, b in words), row.top, max(b[2] for _, b in words), row.bottom)
             parsed = None if cut else parse_number(printed)
+            if (
+                strict
+                and not cut
+                and _numeric_claim(engine_text)
+                and canonical(engine_text) != canonical(printed)
+            ):
+                # An engine that reports a figure the page does not print is never a candidate:
+                # it can help find a number, never introduce one (ADR-001).
+                rejected.append(f"engine {engine_text!r} but the page prints {printed!r}")
+                continue
             placed.append(PlacedCell(printed, engine_text, parsed, cell.bbox, ink, row.index, cut))
     differs = sum(1 for c in placed if not c.cut and c.parsed and c.text != c.engine_text)
-    return placed, multi, unanchored, differs
+    return placed, multi, unanchored, differs, rejected
 
 
 def _header_rows(
@@ -311,6 +326,11 @@ def _attach_unparsed(placed: Sequence[PlacedCell], bands: Sequence[Band], body: 
                 count += 1
                 break
     return count
+
+
+def _numeric_claim(text: str) -> bool:
+    """The engine's text is, or is shaped like, a figure (so a change to it is a correction)."""
+    return parse_number(text) is not None or bool(re.fullmatch(r"\(?[\d,.\s]+\)?", text.strip()))
 
 
 def _figure_like(cell: PlacedCell) -> bool:

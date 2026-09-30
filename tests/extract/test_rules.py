@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -228,9 +227,8 @@ def test_absent_debt_with_an_unverified_section_is_null(tmp_path: Path) -> None:
 # ------------------------------------------------------------------------------ engines
 
 
-def test_engines_that_read_different_cells_give_null_never_a_pick(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def _perturb(monkeypatch: pytest.MonkeyPatch, label: str, printed: str) -> None:
+    """Make the pymupdf engine report `printed` for the row `label` (a different cell's figure)."""
     import finintel.extract as extract_module
 
     real = extract_module.statement_tables
@@ -241,9 +239,9 @@ def test_engines_that_read_different_cells_give_null_never_a_pick(
             table: StatementTable = by_engine["pymupdf_tables"]
             rows = []
             for row in table.rows:
-                if row.label_text == "Revenue":
+                if row.label_text == label:
                     cells = {
-                        k: c.model_copy(update={"raw_text": "9,999"}) for k, c in row.cells.items()
+                        k: c.model_copy(update={"raw_text": printed}) for k, c in row.cells.items()
                     }
                     row = row.model_copy(update={"cells": cells})
                 rows.append(row)
@@ -251,15 +249,39 @@ def test_engines_that_read_different_cells_give_null_never_a_pick(
         return tables
 
     monkeypatch.setattr(extract_module, "statement_tables", perturbed)
-    spec = load_spec(SPEC_PATHS["company_before_group"])
+
+
+def _extract(tmp_path: Path) -> Any:
     from evals.synthetic.render import render
 
-    result = extract_pack(render(spec, tmp_path / "x.pdf"), StageCache(tmp_path / "c"))
-    assert values(result, "revenue") == {"FY2025": None, "FY2024": None}
-    [warning, *_] = warnings(result, "parser_disagreement", "revenue")
+    spec = load_spec(SPEC_PATHS["company_before_group"])
+    return extract_pack(render(spec, tmp_path / "x.pdf"), StageCache(tmp_path / "c"))
+
+
+def test_a_disagreement_is_resolved_only_by_arithmetic_and_capped(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _perturb(monkeypatch, "Revenue", "9,999")  # revenue feeds the operating-profit chain
+    result = _extract(tmp_path)
+    [revenue, *_] = [
+        v for v in result.pack["items"]["revenue"]["values"] if v["period_id"] == "FY2025"
+    ]
+    assert revenue["value"] == 12500.0 and revenue["confidence"] == 0.85  # the reading that adds up
+    [warning] = [
+        w
+        for w in warnings(result, "parser_disagreement", "revenue")
+        if "FY" not in w["message"][:0]
+    ][:1]
+    assert warning["message"].startswith("resolved by arithmetic") and "9,999" in warning["message"]
+
+
+def test_engines_that_read_different_cells_give_null_never_a_pick(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _perturb(monkeypatch, "Cash and cash equivalents", "9,999")  # no check covers cash itself
+    result = _extract(tmp_path)
+    assert values(result, "cash") == {"FY2025": None, "FY2024": None}
+    [warning, *_] = warnings(result, "parser_disagreement", "cash")
     assert "unresolved" in warning["message"] and "9,999" in warning["message"]
     assert values(result, "operating_profit")["FY2025"] == 1600.0  # other items unaffected
-
-
-def test_unused_decimal_import_guard() -> None:
-    assert Decimal("1") == 1
+    assert result.report["review_items"][0]["kind"] == "parser_disagreement"

@@ -88,11 +88,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     extract.add_argument("target", help='a PDF path, or a fixture name such as "company_a"')
     extract.add_argument("--json", action="store_true", help="print the pack as JSON")
-    extract.add_argument("--engines", choices=("local",), default="local")
+    extract.add_argument("--engines", choices=("local", "all"), default="local")
     extract.add_argument("--cache-dir", type=Path)
     e1 = commands.add_parser("eval-e1", help="compare an extraction with fixtures/expected (M2.4)")
     e1.add_argument("company", help='fixture name, e.g. "company_a"')
-    e1.add_argument("--engines", choices=("local",), default="local")
+    e1.add_argument("--engines", choices=("local", "all"), default="local")
     e1.add_argument("--cache-dir", type=Path)
     return parser
 
@@ -121,7 +121,7 @@ def _extract(args: argparse.Namespace, settings: Settings) -> int:
     try:
         if args.command == "extract":
             pdf, result, out = extract_cmd.run_extract(
-                args.target, cache_dir, settings.artifacts_dir, args.engines
+                args.target, cache_dir, settings.artifacts_dir, args.engines, settings.azure
             )
             if args.json and result.pack is not None:
                 print(json.dumps(result.pack, indent=2))
@@ -129,7 +129,7 @@ def _extract(args: argparse.Namespace, settings: Settings) -> int:
                 extract_cmd.print_summary(pdf, result, out, sys.stdout)
             return EXIT_OK if result.status == "ok" and not result.schema_errors else EXIT_FAILED
         report, path = extract_cmd.run_e1(
-            args.company, args.engines, cache_dir, settings.artifacts_dir
+            args.company, args.engines, cache_dir, settings.artifacts_dir, settings.azure
         )
     except HoldoutRefusedError as exc:
         print(f"finintel: refused {exc}: held out until M8.3", file=sys.stderr)

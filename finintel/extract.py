@@ -7,22 +7,33 @@ or currency problem returns status != "ok" and no pack: there is no default and 
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 import structlog
 
-from finintel.cache import StageCache
+from finintel.cache import StageCache, StageKey
 from finintel.contracts import validate_pack
 from finintel.ingest import ingest, score_digital_born
 from finintel.llm import LLMProvider, suggest_pointers
 from finintel.locate import LocateResult, locate
+from finintel.locate.models import EXTRACTED
 from finintel.mapping.aliases import load_aliases
 from finintel.parse.cached import cached_text_layer
+from finintel.parse.engines.azure_di_engine import (
+    RAW_RESPONSE_VERSION,
+    AzureDiEngine,
+    AzureDiError,
+    normalise_layout,
+    page_ranges,
+)
+from finintel.parse.engines.base import EngineFamily
 from finintel.reconcile.pack import Assembly, EngineView, assemble
-from finintel.tables import statement_tables
+from finintel.tables import build_statement_table, statement_tables
 from finintel.tables.headers import HeaderResult, read_headers
+from finintel.tables.regions import statement_regions
 
 log = structlog.get_logger(__name__)
 __all__ = ["ExtractionResult", "extract_pack", "statement_tables"]
@@ -47,10 +58,18 @@ class ExtractionResult:
 
 
 def extract_pack(
-    pdf: Path, cache: StageCache, *, engines: str = "local", provider: LLMProvider | None = None
+    pdf: Path,
+    cache: StageCache,
+    *,
+    engines: str = "local",
+    provider: LLMProvider | None = None,
+    azure: AzureDiEngine | None = None,
 ) -> ExtractionResult:
-    if engines != "local":
-        raise NotImplementedError("engines=all needs the Azure DI reconciliation (M2.5)")
+    """`engines="all"` adds the image-layout family (Azure DI) when `azure` is configured; without
+    credentials, or if the vendor call fails, it is recorded as `engine_skipped` and the local path
+    carries on with a `reduced_verification` warning."""
+    if engines not in ("local", "all"):
+        raise ValueError(f"engines must be 'local' or 'all', not {engines!r}")
     record = ingest(pdf)
     layer, _ = cached_text_layer(pdf, record.sha256, cache)
     located = locate(layer)
@@ -72,8 +91,13 @@ def extract_pack(
             }
         )
     report: dict[str, Any] = {"locator": located.model_dump(mode="json", exclude={"candidates"})}
+    report["engine_skipped"] = {}
     if not tables:
         return ExtractionResult("statements_not_found", None, report, notes, located=located)
+    if engines == "all":
+        skipped = _add_azure(pdf, record.sha256, layer, located, tables, cache, azure)
+        if skipped:
+            report["engine_skipped"]["azure_di"] = skipped
 
     engine_names = sorted({e for by_engine in tables.values() for e in by_engine})
     headers: dict[str, HeaderResult] = {
@@ -101,19 +125,24 @@ def extract_pack(
     if first.status != "ok":
         return ExtractionResult(first.status, None, report, notes, located=located)
 
-    notes.append(
-        {
-            "code": "reduced_verification",
-            "message": "one engine family ran (text layer); Azure DI is not used in this run",
-            "item": None,
-            "page": None,
-        }
-    )
+    views = [
+        EngineView(e, headers[e].tables, next(iter(headers[e].tables.values())).family)
+        for e in engine_names
+    ]
+    if not any(v.family is EngineFamily.IMAGE_LAYOUT for v in views):
+        why = report["engine_skipped"].get("azure_di", "not requested (--engines local)")
+        notes.append(
+            {
+                "code": "reduced_verification",
+                "message": f"one engine family ran (text layer); Azure DI: {why}",
+                "item": None,
+                "page": None,
+            }
+        )
     # Corporate and ambiguous ("other") documents use the corporate alias map: values stay anchored
     # and checked, and ratios are withheld for "other" in M3. Bank and NHS maps arrive in M8.
     mapped_type = located.profile.document_type.value in ("corporate", "other")
     specs = load_aliases("corporate") if mapped_type else {}
-    views = [EngineView(e, headers[e].tables) for e in engine_names]
     assembly: Assembly = assemble(
         views,
         specs=specs,
@@ -153,3 +182,38 @@ def _review_suggestions(
         suggestions += [s.model_dump() for s in found]
         rejections += rejected
     return {"llm": provider.name, "suggestions": suggestions, "rejections": rejections}
+
+
+def _add_azure(
+    pdf: Path,
+    sha256: str,
+    layer: Any,
+    located: LocateResult,
+    tables: dict[Any, dict[str, Any]],
+    cache: StageCache,
+    azure: AzureDiEngine | None,
+) -> str | None:
+    """Add Azure DI tables for the located statements. Returns why it was skipped, or None."""
+    if azure is None or azure.config is None:
+        return "no credentials (AZURE_DI_ENDPOINT, AZURE_DI_KEY)"
+    found = [located.statements[k] for k in EXTRACTED if located.statements[k].status == "found"]
+    clips = {r.page: [r.bbox] for loc in found for r in statement_regions(layer, loc)}
+    pages = page_ranges(clips)  # statement pages only: OQ-7 option B, about $0.08 a report
+    key = StageKey.build(
+        sha256, "azure_di_raw", RAW_RESPONSE_VERSION, azure.config.cache_config(pages)
+    )
+    try:
+        raw, _ = cache.memo(
+            key,
+            "raw.json",
+            lambda: json.dumps(
+                azure.analyze_raw(pdf.read_bytes(), pages), ensure_ascii=False
+            ).encode("utf-8"),
+        )
+    except AzureDiError as exc:
+        log.warning("extract.azure_skipped", code=exc.code)
+        return f"{exc.code}: {exc}"
+    parsed = normalise_layout(json.loads(raw), clips=clips)
+    for loc in found:
+        tables[loc.statement_type]["azure_di"] = build_statement_table(layer, loc, parsed)
+    return None

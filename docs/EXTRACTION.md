@@ -245,6 +245,13 @@ Consequences, with worked values:
 - **LLM pointer → 0.70 whatever the evidence → review only.**
 - **Vision alone → no candidate at all** (vision is never a mapping method).
 - τ and the weights are **initial values**. They are calibrated on the goldens at M2.5 (after both engine families run), and any change is recorded here. They must never be tuned to make a failing golden pass.
+- **Calibration note (M2.5, 2026-10-01): τ unchanged at 0.80; calibration on the image-layout family is
+  pending.** Evidence so far, local family only, company_a (22 labelled cells, 0 wrong): every published
+  figure sits between 0.815 (structural subtotal whose section sum passes) and 0.905; a structural
+  subtotal that fails its check falls to 0.465 and is null. No wrong candidate was ever at or above 0.80,
+  so 0.80 publishes zero wrong values on this evidence. The cross-family multiplier (x1.00 against x0.90)
+  is implemented and tested on an Azure-shaped stand-in only. A real Azure response has not been captured
+  (no key), so the two-family numbers must be re-checked on real output before this is called calibrated.
 
 ### 5.4 Voting
 
