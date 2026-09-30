@@ -295,51 +295,29 @@
       "values": [
         {
           "period_id": "FY2024",
-          "value": 32053.0,
+          "value": null,
           "page": null,
           "raw_text": null,
           "confidence": 1.0,
-          "engine": "derived",
-          "derivation": "sum",
-          "derived_from": [
-            {
-              "item": "financial_liabilities_current",
-              "period_id": "FY2024"
-            },
-            {
-              "item": "financial_liabilities_non_current",
-              "period_id": "FY2024"
-            }
-          ]
+          "engine": "hand"
         },
         {
           "period_id": "FY2023",
-          "value": 29622.0,
+          "value": null,
           "page": null,
           "raw_text": null,
           "confidence": 1.0,
-          "engine": "derived",
-          "derivation": "sum",
-          "derived_from": [
-            {
-              "item": "financial_liabilities_current",
-              "period_id": "FY2023"
-            },
-            {
-              "item": "financial_liabilities_non_current",
-              "period_id": "FY2023"
-            }
-          ]
+          "engine": "hand"
         }
       ]
     }
   },
   "warnings": [
     {
-      "code": "lease_not_separately_presented",
-      "message": "Lease liabilities are inside 'Financial liabilities' on the face (note 15C). total_debt here is all financial liabilities, including derivatives and other financial liabilities; treatment to be settled before M2.4 (see labelling notes).",
+      "code": "missing_item",
       "item": "total_debt",
-      "page": 143
+      "page": 143,
+      "message": "total_debt is null: the balance sheet face shows only 'Financial liabilities' (p.143), which per note 15C includes derivatives and other financial liabilities, so interest-bearing borrowings cannot be isolated from the face. Debt-to-equity is therefore null."
     }
   ]
 }

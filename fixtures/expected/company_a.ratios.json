@@ -20,10 +20,11 @@
         }
       },
       "debt_to_equity": {
-        "value": 1.421103968078,
+        "value": null,
+        "reason": "missing_input",
         "formula": "total_debt / total_equity",
         "inputs": {
-          "total_debt": 32053.0,
+          "total_debt": null,
           "total_equity": 22555.0
         }
       },
@@ -59,10 +60,11 @@
         }
       },
       "debt_to_equity": {
-        "value": 1.426603737238,
+        "value": null,
+        "reason": "missing_input",
         "formula": "total_debt / total_equity",
         "inputs": {
-          "total_debt": 29622.0,
+          "total_debt": null,
           "total_equity": 20764.0
         }
       },
