@@ -31,10 +31,16 @@ from finintel.tables.numbers import ParsedNumber, parse_number
 from finintel.tables.regions import Region
 
 _YEAR = re.compile(r"^(?:19|20)\d{2}$")
-_NOTE_REF = re.compile(r"^\d{1,2}(\.\d{1,2})?([,/]\s?\d{1,2}(\.\d{1,2})?)*$")  # EXTRACTION 3
-_LETTER_REF = re.compile(r"^\d{1,2}[A-Z](?:\.\d{1,2})?$")  # "4B", "15C", "17A"
+NOTE_REF = _NOTE_REF = re.compile(
+    r"^\d{1,2}(\.\d{1,2})?([,/]\s?\d{1,2}(\.\d{1,2})?)*$"
+)  # EXTRACTION 3
+LETTER_REF = _LETTER_REF = re.compile(r"^\d{1,2}[A-Z](?:\.\d{1,2})?$")  # "4B", "15C", "17A"
 _UNPARSED = re.compile(r"^(?=\S*\d)\S{1,12}$|^(?:n/a|n/m|nm)$", re.IGNORECASE)
 VALUE_SHARE = 0.5
+NOTE_SLACK = 6.0  # pt either side of a printed Note(s) header
+# pt a column-header row may start left of the first figure column. Note headers sit 36-80 pt
+# left of the figures on the goldens and specs; subtitles start at the left margin, ~300 pt away.
+HEADER_MARGIN = 120.0
 CUT_TOLERANCE = 2.0  # pt a neighbouring word may reach into a cell before the cell 'cuts' it
 NOTE_SHARE = 0.8
 PREFERRED = ("lines", "text")  # on a tie, the ruled-table reading wins
@@ -84,6 +90,20 @@ class PageGrid:
     note_evidence: str
     header_texts: dict[int, str]  # id(band) -> header text
     notes: list[str]
+    header_top: float | None = None  # top of the column-header band
+    #: x-range of the note column: the engine's note band, or, when the engine found none (sparse
+    #: references are too few for a text-strategy grid), the printed "Note(s)" header.
+    note_range: tuple[float, float] | None = None
+
+    def header_words(self) -> list[tuple[int, Word, BBox]]:
+        """(header row number, word, box) for every word in the column-header band."""
+        order = {index: n for n, index in enumerate(self.header_rows)}
+        return [
+            (order[r.index], w, b)
+            for r in self.rows
+            if r.index in order
+            for w, b in sorted(r.words, key=lambda wb: wb[1][0])
+        ]
 
     def header_text(self, band: Band) -> str:
         return self.header_texts.get(id(band), "")
@@ -125,7 +145,18 @@ def build_grid(view: PageView, region: Region, parsed: ParsedTables) -> PageGrid
         c for c in placed if c.parsed is not None and not _YEAR.match(c.text) and not c.cut
     ]
     first_data = min((c.row for c in data_cells), default=None)
-    header_rows = _header_rows(rows, first_data)
+    data_left = min(
+        (
+            c.ink[0]
+            for c in placed
+            if first_data is not None
+            and c.row >= first_data
+            and not c.cut
+            and (c.parsed is not None or _NOTE_REF.match(c.text) or _LETTER_REF.match(c.text))
+        ),
+        default=None,
+    )
+    header_rows = _header_rows(rows, first_data, data_left)
     start = header_rows[0] if header_rows else (first_data if first_data is not None else 0)
     kept_rows = [r for r in rows if r.index >= start]
 
@@ -135,6 +166,11 @@ def build_grid(view: PageView, region: Region, parsed: ParsedTables) -> PageGrid
     value_bands, note_band, evidence = _classify(bands, set(body), header_texts)
     if not value_bands:
         notes.append(f"p.{region.page}: no value column found")
+    note_range = (note_band.x0, note_band.x1) if note_band is not None else None
+    if note_band is None and value_bands:
+        note_range = _note_header(rows, header_rows, value_bands[0].x0)
+        if note_range is not None:
+            evidence = 'header "Note(s)"; sparse references read from the print'
     unparsed = _attach_unparsed(placed, value_bands, set(body))
     if unparsed:
         notes.append(f"p.{region.page}: {unparsed} unparsed cells recorded (e.g. pence, n/a)")
@@ -149,7 +185,22 @@ def build_grid(view: PageView, region: Region, parsed: ParsedTables) -> PageGrid
         note_evidence=evidence,
         header_texts=header_texts,
         notes=notes,
+        header_top=min((r.top for r in rows if r.index in header_rows), default=None),
+        note_range=note_range,
     )
+
+
+def _note_header(
+    rows: Sequence[TextRow], header_rows: Sequence[int], values_x0: float
+) -> tuple[float, float] | None:
+    """The x-range of a printed "Note"/"Notes" header left of the value columns, if any."""
+    for row in rows:
+        if row.index not in header_rows:
+            continue
+        for word, box in row.words:
+            if normalise(word.text) in ("note", "notes") and box[2] < values_x0:
+                return (box[0] - NOTE_SLACK, box[2] + NOTE_SLACK)
+    return None
 
 
 def _choose(
@@ -227,18 +278,19 @@ def _place(
     return placed, multi, unanchored, differs
 
 
-def _header_rows(rows: Sequence[TextRow], first_data: int | None) -> list[int]:
-    """The contiguous rows just above the first figure that carry years, units or 'Note(s)'."""
+def _header_rows(
+    rows: Sequence[TextRow], first_data: int | None, data_left: float | None
+) -> list[int]:
+    """The contiguous rows just above the first figure that sit over the figure columns: years,
+    units, "Note(s)", and sub-headers such as "Restated" or "Underlying | Adjusting | Total".
+    A row starting in the label area is a subtitle ("For the year ended 30 June 2025") or a section
+    heading ("Assets"), never a column header."""
     if first_data is None:
         return []
     found: list[int] = []
     for row in reversed([r for r in rows if r.index < first_data]):
-        tokens = [normalise(w.text) for w, _ in row.words]
-        is_header = any(
-            _YEAR.match(t) or t in ("note", "notes") or "million" in t or any(s in t for s in "£$€")
-            for t in tokens
-        )
-        if is_header:
+        over_figures = data_left is None or row.x0 >= data_left - HEADER_MARGIN
+        if over_figures:
             found.append(row.index)
         elif found:
             break

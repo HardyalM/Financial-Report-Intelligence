@@ -1,0 +1,59 @@
+# Hazard: figures in thousands (£000). The pack's unit_scale must be 1,000, never 1,000,000.
+# Figures are fictional and exist only because this spec prints them.
+name: unit_thousands
+hazard: £000 unit
+description: A smaller company reporting in £000.
+chrome: [Strategic report, Financial statements]
+unit: "£000"
+pages:
+  - kind: narrative
+    title: Chair's statement
+  - kind: statement
+    statement: income_statement
+    title: Consolidated income statement
+    subtitle: For the year ended 30 June 2025
+    rows:
+      - {label: Revenue, note: "3", values: ["250,400", "231,900"]}
+      - {label: Cost of sales, values: ["(170,100)", "(158,300)"]}
+      - {label: Gross profit, style: subtotal, values: ["80,300", "73,600"], sum_of: [Revenue, Cost of sales]}
+      - {label: Administrative expenses, note: "4", values: ["(52,700)", "(49,900)"]}
+      - {label: Operating profit, style: subtotal, values: ["27,600", "23,700"],
+         sum_of: [Gross profit, Administrative expenses]}
+      - {label: Finance costs, values: ["(3,100)", "(2,800)"]}
+      - {label: Profit before taxation, style: subtotal, values: ["24,500", "20,900"],
+         sum_of: [Operating profit, Finance costs]}
+      - {label: Taxation, values: ["(6,125)", "(5,225)"]}
+      - {label: Profit for the year, style: total, values: ["18,375", "15,675"],
+         sum_of: [Profit before taxation, Taxation]}
+  - kind: statement
+    statement: balance_sheet
+    title: Consolidated balance sheet
+    subtitle: As at 30 June 2025
+    rows:
+      - {label: Non-current assets, style: section}
+      - {label: "Property, plant and equipment", note: "8", values: ["96,200", "91,500"]}
+      - {label: Current assets, style: section}
+      - {label: Inventories, values: ["31,400", "29,800"]}
+      - {label: Cash and cash equivalents, values: ["18,900", "14,200"]}
+      - {id: current_assets, style: subtotal, values: ["50,300", "44,000"],
+         sum_of: [Inventories, Cash and cash equivalents]}
+      - {label: Total assets, style: total, values: ["146,500", "135,500"],
+         sum_of: ["Property, plant and equipment", current_assets]}
+      - {label: Current liabilities, style: section}
+      - {label: Trade and other payables, values: ["(41,200)", "(38,700)"]}
+      - {id: current_liabilities, style: subtotal, values: ["(41,200)", "(38,700)"],
+         sum_of: [Trade and other payables]}
+      - {label: Net assets, style: total, values: ["105,300", "96,800"],
+         sum_of: [Total assets, current_liabilities]}
+      - {label: Total equity, style: total, values: ["105,300", "96,800"]}
+expect:
+  statements:
+    income_statement: {pages: [2], scope: group}
+    balance_sheet: {pages: [3], scope: group}
+  document_type: corporate
+  balance_sheet_classified: true
+  currency: GBP
+  unit_scale: 1000
+  periods:
+    - {id: FY2025, end_date: "2025-06-30"}
+    - {id: FY2024, end_date: "2024-06-30"}

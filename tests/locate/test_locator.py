@@ -193,7 +193,10 @@ def test_group_and_company_columns_are_a_mixed_page(tmp_path: Path) -> None:
                     "balance_sheet",
                     "Balance sheets",
                     CLASSIFIED_ROWS,
-                    entity_columns=["Group", "Company"],
+                    columns=[
+                        {"period": "2025", "entity": "Group"},
+                        {"period": "2025", "entity": "Company"},
+                    ],
                 ),
             ]
         ),

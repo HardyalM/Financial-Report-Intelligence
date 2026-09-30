@@ -63,3 +63,8 @@ expect:
     balance_sheet: {pages: [3], scope: group}
   document_type: bank
   balance_sheet_classified: false
+  currency: GBP
+  unit_scale: 1000000
+  periods:
+    - {id: FY2025, end_date: "2025-12-31"}
+    - {id: FY2024, end_date: "2024-12-31"}

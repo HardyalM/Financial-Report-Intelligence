@@ -18,7 +18,7 @@ from dataclasses import dataclass, field, replace
 
 from finintel.locate.signals import SUPERSCRIPT_RATIO, PageView, normalise
 from finintel.parse.engines.base import BBox
-from finintel.tables.grid import Band, PageGrid
+from finintel.tables.grid import LETTER_REF, NOTE_REF, PageGrid
 from finintel.tables.models import Cell, Row, RowStyle
 
 RULE_DISTANCE = 3.0  # pt between a ruling line and the figures it marks (EXTRACTION 4.1)
@@ -46,10 +46,10 @@ class DraftRow:
 
 
 def page_drafts(view: PageView, grid: PageGrid, column_of: Mapping[int, str]) -> list[DraftRow]:
-    bands: list[Band] = [*grid.value_bands, *([grid.note_band] if grid.note_band else [])]
     if not grid.value_bands:
         return []
-    label_right = min(b.x0 for b in bands) - 2.0
+    lefts = [b.x0 for b in grid.value_bands] + ([grid.note_range[0]] if grid.note_range else [])
+    label_right = min(lefts) - 2.0
     value_x0 = min(b.x0 for b in grid.value_bands)
     value_x1 = max(b.x1 for b in grid.value_bands)
     header = set(grid.header_rows)
@@ -97,6 +97,15 @@ def page_drafts(view: PageView, grid: PageGrid, column_of: Mapping[int, str]) ->
         if grid.note_band is not None:
             notes = [c.text for c in grid.note_band.cells if c.row == row.index]
             draft.note_ref = notes[0] if notes else None
+        elif grid.note_range is not None:
+            lo, hi = grid.note_range
+            refs = [
+                w.text
+                for w, box in row.words
+                if lo <= (box[0] + box[2]) / 2 <= hi
+                and (NOTE_REF.match(w.text) or LETTER_REF.match(w.text))
+            ]
+            draft.note_ref = " ".join(refs) or None
         if draft.cells:
             draft.rule_above, draft.rule_below = _rules(view, draft, value_x0, value_x1)
         drafts.append(draft)

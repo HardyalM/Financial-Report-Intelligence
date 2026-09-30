@@ -13,8 +13,8 @@ from finintel.locate.signals import PageView
 from finintel.parse.engines.base import ParsedTables
 from finintel.parse.text_layer import TextLayer
 from finintel.tables.grid import PageGrid, build_grid
-from finintel.tables.models import Column, ColumnKind, StatementTable
-from finintel.tables.regions import statement_regions
+from finintel.tables.models import Column, ColumnKind, HeaderWord, StatementTable
+from finintel.tables.regions import Region, statement_regions
 from finintel.tables.rows import DraftRow, finalise, join_wrapped, page_drafts
 
 
@@ -22,6 +22,8 @@ def build_statement_table(
     layer: TextLayer, location: StatementLocation, parsed: ParsedTables
 ) -> StatementTable:
     columns: list[Column] = []
+    title_block: list[str] = []
+    header_words: list[HeaderWord] = []
     drafts: list[DraftRow] = []
     strategies: dict[int, str] = {}
     notes: list[str] = []
@@ -38,6 +40,11 @@ def build_statement_table(
         values = [c for c in page_columns if c.kind is ColumnKind.VALUE]
         if not columns:
             columns = page_columns
+            title_block = _title_block(view, region, grid)
+            header_words = [
+                HeaderWord(page=region.page, row=row, text=w.text, bbox=b)
+                for row, w, b in grid.header_words()
+            ]
         elif len(values) != (first := sum(c.kind is ColumnKind.VALUE for c in columns)):
             notes.append(
                 f"p.{region.page}: {len(values)} value columns, first page has {first}; "
@@ -58,8 +65,26 @@ def build_statement_table(
         strategies=strategies,
         columns=tuple(columns),
         rows=tuple(finalise(join_wrapped(drafts))),
+        title_block=tuple(title_block),
+        header_words=tuple(header_words),
         notes=tuple(notes),
     )
+
+
+def _title_block(view: PageView, region: Region, grid: PageGrid) -> list[str]:
+    """The title and the lines between it and the column headers ("for the year ended ...").
+    Read from the page, not the region: a subtitle can touch the title line's box."""
+    x0, top, x1, _ = region.bbox
+    start = region.title_top if region.title_top is not None else top
+    end = grid.header_top if grid.header_top is not None else top
+    return [
+        line.text
+        for line in view.lines
+        if start - 1 <= line.bbox[1]
+        and line.bbox[3] <= end + 1
+        and x0 <= (line.bbox[0] + line.bbox[2]) / 2 <= x1
+        and not view.is_chrome(line)
+    ]
 
 
 def _columns(grid: PageGrid) -> list[Column]:
@@ -72,6 +97,17 @@ def _columns(grid: PageGrid) -> list[Column]:
                 header_text=grid.header_text(grid.note_band),
                 x0=round(grid.note_band.x0, 2),
                 x1=round(grid.note_band.x1, 2),
+                evidence=grid.note_evidence,
+            )
+        )
+    elif grid.note_range is not None:
+        columns.append(
+            Column(
+                column_id="note",
+                kind=ColumnKind.NOTE,
+                header_text="Notes",
+                x0=round(grid.note_range[0], 2),
+                x1=round(grid.note_range[1], 2),
                 evidence=grid.note_evidence,
             )
         )

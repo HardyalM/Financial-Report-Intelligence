@@ -1,0 +1,50 @@
+# Hazard: a restated comparative. The 2024 column is headed "Restated": is_restated must be true
+# and a restated_comparative warning raised. The restated figures are the ones used.
+# Figures are fictional and exist only because this spec prints them.
+name: restated_header
+hazard: restated comparative column
+description: Both statements head the 2024 column "Restated".
+chrome: [Strategic report, Financial statements]
+pages:
+  - kind: narrative
+    title: Chief Executive's review
+  - kind: statement
+    statement: income_statement
+    title: Consolidated income statement
+    subtitle: For the year ended 31 December 2025
+    columns: [{period: "2025"}, {period: "2024", sub: Restated}]
+    rows:
+      - {label: Revenue, note: "2", values: ["950", "900"]}
+      - {label: Operating costs, values: ["(800)", "(770)"]}
+      - {label: Operating profit, style: subtotal, values: ["150", "130"], sum_of: [Revenue, Operating costs]}
+      - {label: Taxation, values: ["(38)", "(33)"]}
+      - {label: Profit for the year, style: total, values: ["112", "97"], sum_of: [Operating profit, Taxation]}
+  - kind: statement
+    statement: balance_sheet
+    title: Consolidated balance sheet
+    subtitle: As at 31 December 2025
+    columns: [{period: "2025"}, {period: "2024", sub: Restated}]
+    rows:
+      - {label: Non-current assets, style: section}
+      - {label: "Property, plant and equipment", values: ["700", "690"]}
+      - {label: Current assets, style: section}
+      - {label: Cash and cash equivalents, values: ["200", "170"]}
+      - {id: current_assets, style: subtotal, values: ["200", "170"], sum_of: [Cash and cash equivalents]}
+      - {label: Total assets, style: total, values: ["900", "860"],
+         sum_of: ["Property, plant and equipment", current_assets]}
+      - {label: Current liabilities, style: section}
+      - {label: Trade and other payables, values: ["(150)", "(140)"]}
+      - {id: current_liabilities, style: subtotal, values: ["(150)", "(140)"], sum_of: [Trade and other payables]}
+      - {label: Net assets, style: total, values: ["750", "720"], sum_of: [Total assets, current_liabilities]}
+      - {label: Total equity, style: total, values: ["750", "720"]}
+expect:
+  statements:
+    income_statement: {pages: [2], scope: group}
+    balance_sheet: {pages: [3], scope: group}
+  document_type: corporate
+  balance_sheet_classified: true
+  currency: GBP
+  unit_scale: 1000000
+  periods:
+    - {id: FY2025, end_date: "2025-12-31"}
+    - {id: FY2024, end_date: "2024-12-31", is_restated: true}

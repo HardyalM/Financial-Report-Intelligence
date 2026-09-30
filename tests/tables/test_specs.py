@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 
 from evals.synthetic.render import render
-from evals.synthetic.spec import Spec, all_specs, load_spec, statement_groups
+from evals.synthetic.spec import Spec, all_specs, load_spec, page_columns, statement_groups
 from finintel.locate import StatementType, locate
 from finintel.parse.engines.pdfplumber_engine import PdfplumberEngine
 from finintel.parse.engines.pymupdf_tables_engine import PymupdfTablesEngine
@@ -101,13 +101,20 @@ def test_no_value_column_is_a_notes_column(
 ) -> None:
     spec = rendered[0]
     table = _table(rendered, kind, engine_index)
+    [pages] = [
+        p for s, p in statement_groups(spec) if p[0].statement == kind.value and s == table.pages[0]
+    ]
+    columns = page_columns(spec, pages[0])
     values = table.value_columns
-    assert len(values) == len(spec.periods)
-    for column, period in zip(values, spec.periods, strict=True):
+    assert len(values) == len(columns)
+    for column in values:
         assert "note" not in column.header_text.lower()
-        assert period in column.header_text.split()
     notes = [c for c in table.columns if c.kind is ColumnKind.NOTE]
-    assert len(notes) == 1 and notes[0].x1 < values[0].x0
+    printed = pages[0].notes_header or any(row.note for page in pages for row in page.rows)
+    if printed:  # a printed "Notes" header or reference: exactly one note column, left of values
+        assert len(notes) == 1 and notes[0].x1 < values[0].x0
+    else:
+        assert notes == []
 
 
 def test_unheaded_note_column_is_found_by_its_references(

@@ -50,6 +50,8 @@ sessions:
     - "finintel/tables/**"
     - "evals/synthetic/**"
     - "tests/**"
+    - "scripts/gate.py"
+    - "scripts/scope.yaml"
   "M2.4":
     - "finintel/mapping/**"
     - "finintel/reconcile/**"

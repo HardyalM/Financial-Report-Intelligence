@@ -1,0 +1,66 @@
+# Hazard: a columnar income statement ("Underlying | Adjusting | Total" for each year). Only the
+# Total column is statutory; the others must never feed the pack. Years span their three columns.
+# Figures are fictional and exist only because this spec prints them.
+name: columnar_income_statement
+hazard: columnar income statement (Total column chosen)
+description: Six income-statement columns; only the two Total columns are usable.
+chrome: [Strategic report, Financial statements]
+pages:
+  - kind: narrative
+    title: Chief Executive's review
+  - kind: statement
+    statement: income_statement
+    title: Consolidated income statement
+    subtitle: For the year ended 31 March 2025
+    notes_header: null
+    columns:
+      - {period: "2025", sub: Underlying}
+      - {period: "2025", sub: Adjusting}
+      - {period: "2025", sub: Total}
+      - {period: "2024", sub: Underlying}
+      - {period: "2024", sub: Adjusting}
+      - {period: "2024", sub: Total}
+    rows:
+      - {label: Revenue, values: ["12,500", "–", "12,500", "11,800", "–", "11,800"]}
+      - {label: Cost of sales, values: ["(8,750)", "(120)", "(8,870)", "(8,300)", "(90)", "(8,390)"]}
+      - {label: Gross profit, style: subtotal, values: ["3,750", "(120)", "3,630", "3,500", "(90)", "3,410"],
+         sum_of: [Revenue, Cost of sales]}
+      - {label: Admin expenses, values: ["(2,150)", "(230)", "(2,380)", "(2,020)", "(60)", "(2,080)"]}
+      - {label: Operating profit, style: subtotal, values: ["1,600", "(350)", "1,250", "1,480", "(150)", "1,330"],
+         sum_of: [Gross profit, Admin expenses]}
+      - {label: Finance costs, values: ["(190)", "–", "(190)", "(175)", "–", "(175)"]}
+      - {label: Profit before tax, style: subtotal, values: ["1,410", "(350)", "1,060", "1,305", "(150)", "1,155"],
+         sum_of: [Operating profit, Finance costs]}
+      - {label: Taxation, values: ["(353)", "88", "(265)", "(326)", "38", "(288)"]}
+      - {label: Profit for the year, style: total, values: ["1,057", "(262)", "795", "979", "(112)", "867"],
+         sum_of: [Profit before tax, Taxation]}
+  - kind: statement
+    statement: balance_sheet
+    title: Consolidated balance sheet
+    subtitle: As at 31 March 2025
+    rows:
+      - {label: Non-current assets, style: section}
+      - {label: "Property, plant and equipment", values: ["7,000", "6,900"]}
+      - {label: Current assets, style: section}
+      - {label: Cash and cash equivalents, values: ["2,000", "1,700"]}
+      - {id: current_assets, style: subtotal, values: ["2,000", "1,700"], sum_of: [Cash and cash equivalents]}
+      - {label: Total assets, style: total, values: ["9,000", "8,600"],
+         sum_of: ["Property, plant and equipment", current_assets]}
+      - {label: Current liabilities, style: section}
+      - {label: Trade and other payables, values: ["(1,500)", "(1,400)"]}
+      - {id: current_liabilities, style: subtotal, values: ["(1,500)", "(1,400)"], sum_of: [Trade and other payables]}
+      - {label: Net assets, style: total, values: ["7,500", "7,200"], sum_of: [Total assets, current_liabilities]}
+      - {label: Total equity, style: total, values: ["7,500", "7,200"]}
+expect:
+  statements:
+    income_statement: {pages: [2], scope: group}
+    balance_sheet: {pages: [3], scope: group}
+  document_type: corporate
+  balance_sheet_classified: true
+  currency: GBP
+  unit_scale: 1000000
+  periods:
+    - {id: FY2025, end_date: "2025-03-31"}
+    - {id: FY2024, end_date: "2024-03-31"}
+  usable_columns:
+    income_statement: [2, 5]

@@ -43,14 +43,24 @@ class Row(_Model):
         return self.id or self.label
 
 
+class ColumnSpec(_Model):
+    """One value column's header, printed as a report prints it."""
+
+    period: (
+        str  # the period row, e.g. "2025", "31 March 2025"; equal neighbours print once, spanning
+    )
+    sub: str | None = None  # a second header row: "Total", "Underlying", "Restated"
+    entity: str | None = None  # an entity row above: "Group", "Company"; equal neighbours span
+
+
 class StatementPage(_Model):
     kind: Literal["statement"]
     statement: str
     title: str | None = None  # None: a continuation page without a title
     header: str | None = None  # section header printed above the title
     subtitle: str | None = None
-    entity_columns: tuple[str, ...] = ()
     notes_header: str | None = "Notes"  # None prints the note column without a header
+    columns: tuple[ColumnSpec, ...] = ()  # default: one column per spec period
     continuation: bool = False  # rows continue the previous statement page
     rows: tuple[Row, ...]
 
@@ -87,11 +97,25 @@ class Rejection(_Model):
     scope: str
 
 
+class PeriodExpectation(_Model):
+    id: str
+    end_date: str | None
+    is_restated: bool = False
+
+
 class Expectation(_Model):
     statements: dict[str, StatementExpectation]
     rejected: tuple[Rejection, ...] = ()
     document_type: str
     balance_sheet_classified: bool | None
+    # Header semantics (M2.3). header_status is "ok", "needs_unit_confirmation" or
+    # "currency_ambiguous"; usable_columns lists, per statement, the 0-based columns that feed
+    # values (default: all of them).
+    header_status: str = "ok"
+    currency: str | None = None
+    unit_scale: int | None = None
+    periods: tuple[PeriodExpectation, ...] = ()
+    usable_columns: dict[str, tuple[int, ...]] = {}
     #: The folio offset the locator must infer, or None when the report is too short to support
     #: one (the locator needs five agreeing pages; see finintel.locate.folios).
     folio_offset: int | None = None
@@ -147,9 +171,13 @@ def statement_groups(spec: Spec) -> Iterator[tuple[int, list[StatementPage]]]:
         yield start, group
 
 
+def page_columns(spec: Spec, page: StatementPage) -> tuple[ColumnSpec, ...]:
+    return page.columns or tuple(ColumnSpec(period=p) for p in spec.periods)
+
+
 def check_spec(spec: Spec) -> None:
-    periods = len(spec.periods)
     for start, pages in statement_groups(spec):
+        periods = len(page_columns(spec, pages[0]))
         rows = [row for page in pages for row in page.rows]
         by_key: dict[str, Row] = {}
         for row in rows:

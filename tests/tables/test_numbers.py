@@ -45,7 +45,8 @@ def test_a_dash_or_nil_is_zero(raw: str) -> None:
 @pytest.mark.parametrize(
     "raw",
     ["n/a", "N/A", "see note 12", "12.5%", "£13.9bn", "6.3p", "1,23", "12,34,567", "(493",
-     "22,311 18,590", "1 234", "", "   ", "(\u2013)", "abc", "2024a", "--5"],
+     "22,311 18,590", "1 234", "", "   ", "(\u2013)", "abc", "2024a", "--5",
+     "\u00a3000", "\u00a3'000", "$000", "\u20ac'000"],
 )  # fmt: skip
 def test_anything_else_stays_unparsed(raw: str) -> None:
     assert parse_number(raw) is None

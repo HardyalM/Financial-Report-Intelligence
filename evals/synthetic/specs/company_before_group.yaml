@@ -112,3 +112,8 @@ expect:
   document_type: corporate
   balance_sheet_classified: true
   folio_offset: -120
+  currency: GBP
+  unit_scale: 1000000
+  periods:
+    - {id: FY2025, end_date: "2025-03-31"}
+    - {id: FY2024, end_date: "2024-03-31"}

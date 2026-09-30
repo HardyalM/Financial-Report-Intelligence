@@ -61,6 +61,8 @@ def parse_number(raw: str | None) -> ParsedNumber | None:
     if currency is None and (match := _CURRENCY.match(text)):  # "-£1,234"
         currency, text = match.group(0), text[match.end() :].strip()
 
+    if currency is not None and re.fullmatch(r"'?000", text):
+        return None  # "£000" and "$'000" are unit headers, never the number 0
     amount = _AMOUNT.match(text)
     if amount is None:
         return None

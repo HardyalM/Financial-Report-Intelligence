@@ -7,6 +7,51 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M2.3 — 2026-09-29 — green
+
+M2.3 green. company_a: EUR x 1,000,000; FY2024 ends 2024-12-31, FY2023 ends 2023-12-31 (both equal
+the labels), on both engines. Lloyds: GBP £m, same dates. Next M2.4 (blocked on the label update below).
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: **599 passed, 0 skipped** |
+| `uv run python scripts/gate.py M2.3` | exit 0: status ok; EUR x 1000000; FY2024, FY2023 dates match; FY2022 printed, not labelled |
+| `uv run python scripts/gate.py M2.1` / `M2.2` | exit 0 (7/7; 20/20 per engine) |
+| `uv run pytest tests/tables/test_headers.py` | 12 specs x 2 engines: status, currency, scale, period ids, end dates, restatement, usable columns |
+| `uv run pytest tests/tables/test_header_rules.py` | every SCHEMA 7 token; date rules below |
+
+Rules as implemented (SCHEMA 7-8):
+- One distinct unit token per statement (header band or title block); none or two block with
+  `needs_unit_confirmation`; income statement and balance sheet must agree. "$" alone blocks with
+  `currency_ambiguous` unless the report states a US dollar presentation currency.
+- Day and month from the title block, year from the column. "Year ended 31 March 2025" also dates
+  the 2024 column. "52 weeks ended", "period ended" and "as at 29 March 2025" never date a
+  comparative (a 52/53-week year end shifts by days): that end date stays null unless printed.
+- Year headers centred over a column group apply to the whole group; a phrase right-aligned with one
+  column is that column's own ("Restated").
+- Columnar income statements: one Total/Statutory column per period, or the period's figures stay
+  null (`period_ambiguous`). Company columns are excluded with their reason; only Group feeds v1.
+
+Bugs found by the new specs, now tested:
+- "£000" parsed as the number 0: a unit row would have become an unlabelled row worth 0.
+  Currency + "000"/"'000" is a unit, never a figure.
+- A subtitle with a year ("For the year ended 30 June 2025") was swallowed into the header band, and
+  a sub-header row ("Restated") cut the band short. Header rows are now found by position: rows
+  above the first figure that sit over the figure columns.
+- Sparse note references (one or two rows) are invisible to text-strategy grids and were merged into
+  labels. When the engine finds no note column but a "Note(s)" header is printed, references under
+  it are read from the text layer.
+
+Pending (tech lead): ADR-010 review of the six new M2.3 spec files and the header expectations
+added to the older six. Committed so the work is safe; amend if any figure is wrong.
+
+Blocking M2.4 (tech lead): `fixtures/expected/company_a.json` and `company_a.ratios.json` still carry
+the pre-decision `total_debt` (all financial liabilities, 32,053 / 29,622) and D/E 1.4211 / 1.4266.
+Under the strict rule decided on 2026-09-29 they should expect `total_debt` null (with a warning) and
+D/E null with `reason: missing_input`. Code never edits expected files.
+
+---
+
 ## M2.2 — 2026-09-29 — green
 
 M2.2 green. company_a: 20/20 labelled cells found by pdfplumber AND by PyMuPDF, each on its labelled

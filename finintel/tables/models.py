@@ -41,9 +41,21 @@ class Column(_Frozen):
     x0: float
     x1: float
     evidence: str  # why this is a note or value column
-    period_id: str | None = None  # M2.3
-    is_restated: bool = False  # M2.3
-    is_total_column: bool = False  # M2.3
+    # Header semantics (M2.3). A value column feeds the pack only if `excluded` is None.
+    period_id: str | None = None
+    period_label: str | None = None  # as printed, e.g. "2024" or "29 March 2025"
+    end_date: str | None = None  # ISO; None when the print does not say
+    is_restated: bool = False
+    is_total_column: bool = False
+    weeks: int | None = None  # 52 or 53 when the title says so for this column's period
+    entity: str | None = None  # "group" or "company" when entity columns sit side by side
+    excluded: str | None = None  # why this value column never feeds the pack
+
+    @property
+    def usable(self) -> bool:
+        return (
+            self.kind is ColumnKind.VALUE and self.excluded is None and self.period_id is not None
+        )
 
 
 class Cell(_Frozen):
@@ -68,6 +80,15 @@ class Row(_Frozen):
     cells: dict[str, Cell]  # column_id -> cell (value columns only)
 
 
+class HeaderWord(_Frozen):
+    """A word in the column-header band, with its position (year headers can span columns)."""
+
+    page: int
+    row: int  # header row, top to bottom
+    text: str
+    bbox: BBox
+
+
 class StatementTable(_Frozen):
     statement_type: StatementType
     scope: Scope | None
@@ -78,6 +99,10 @@ class StatementTable(_Frozen):
     strategies: dict[int, str]  # page -> the engine strategy whose grid was used
     columns: tuple[Column, ...]
     rows: tuple[Row, ...]
+    title_block: tuple[
+        str, ...
+    ] = ()  # title and subtitle lines, e.g. "for the year ended 31 December"
+    header_words: tuple[HeaderWord, ...] = ()  # first page's column-header band
     notes: tuple[str, ...] = ()  # what the builder saw and did: merges, dropped cells, choices
 
     @property

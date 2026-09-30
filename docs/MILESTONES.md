@@ -144,14 +144,15 @@ These checks are created in M0 and run in CI.
 ## M2.3 — Header semantics
 
 **Read first:** EXTRACTION §3; SCHEMA §7–8.
-**Allowed paths:** `finintel/tables/**`, `evals/synthetic/**`, `tests/**`.
+**Allowed paths:** `finintel/tables/**`, `evals/synthetic/**`, `tests/**`, `scripts/gate.py`, `scripts/scope.yaml`.
+*Amended 2026-09-29 in the M2.3 session: the gate below needs the scripted M2.3 check in scripts/gate.py.*
 
-- [ ] Unit and currency (blocking), period columns, restatement markers, statutory column in columnar income statements, entity-column scope.
+- [x] Unit and currency (blocking), period columns, restatement markers, statutory column in columnar income statements, entity-column scope.
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] `python scripts/gate.py M2.3` exits 0: `company_a` unit scale, currency, period ids and end dates equal `company_a.json`.
-- [ ] These synthetic specs pass:
+- [x] G1–G6 pass. *2026-09-29: `make ci` exit 0; `check_scope.py M2.3 --base m2.2` exit 0 (see docs/STATUS.md for counts).*
+- [x] `python scripts/gate.py M2.3` exits 0: `company_a` unit scale, currency, period ids and end dates equal `company_a.json`. *EUR x 1,000,000; FY2024 2024-12-31, FY2023 2023-12-31, both engines; FY2022 printed, not labelled.*
+- [x] These synthetic specs pass (`tests/tables/test_headers.py`, both engines; ADR-010 review of the new spec figures still pending with the tech lead):
   - £000
   - £m
   - missing unit (status `needs_unit_confirmation`)

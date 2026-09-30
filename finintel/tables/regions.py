@@ -29,6 +29,7 @@ class Region:
     bbox: BBox  # x0, top, x1, bottom
     title_bottom: float | None  # None on a continuation page without a title
     half: str | None  # "left" or "right" on a spread
+    title_top: float | None = None
 
 
 def statement_regions(layer: TextLayer, location: StatementLocation) -> list[Region]:
@@ -65,6 +66,7 @@ def statement_regions(layer: TextLayer, location: StatementLocation) -> list[Reg
                 bbox=(round(x0, 2), round(top, 2), round(x1, 2), round(bottom, 2)),
                 title_bottom=title.bbox[3] if title is not None else None,
                 half=half if location.spread else None,
+                title_top=title.bbox[1] if title is not None else None,
             )
         )
     return regions

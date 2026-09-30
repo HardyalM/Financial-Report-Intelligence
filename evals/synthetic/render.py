@@ -11,7 +11,15 @@ from pathlib import Path
 
 import pymupdf
 
-from evals.synthetic.spec import NarrativePage, Row, Spec, SpreadPage, StatementPage
+from evals.synthetic.spec import (
+    ColumnSpec,
+    NarrativePage,
+    Row,
+    Spec,
+    SpreadPage,
+    StatementPage,
+    page_columns,
+)
 
 A4 = (595.0, 842.0)
 LABEL_X = 50.0
@@ -105,30 +113,88 @@ def _statement(page: pymupdf.Page, spec: Spec, sheet: StatementPage, dx: float) 
         _text(page, dx + LABEL_X, 78, sheet.title, size=16, bold=True)
     if sheet.subtitle:
         _text(page, dx + LABEL_X, 94, sheet.subtitle, size=8)
-    rights = [dx + FIRST_VALUE_RIGHT + VALUE_STEP * i for i in range(len(spec.periods))]
-    if sheet.entity_columns:
-        for right, entity in zip(rights, sheet.entity_columns, strict=False):
-            _right(page, right, 112, entity, size=8, bold=True)
+    columns = page_columns(spec, sheet)
+    rights, note_x = _layout(len(columns), dx)
+    header_rows = [
+        ("entity", any(c.entity for c in columns)),
+        ("period", True),
+        ("sub", any(c.sub for c in columns)),
+        ("unit", bool(spec.unit)),
+    ]
+    present = [name for name, shown in header_rows if shown]
+    y_of = {name: 136.0 - 11.0 * (len(present) - 1 - i) for i, name in enumerate(present)}
     if sheet.notes_header:
-        _text(page, dx + NOTE_X, 124, sheet.notes_header, size=7, bold=True)
-    for right, period in zip(rights, spec.periods, strict=True):
-        _right(page, right, 124, period, size=8, bold=True)
-        _right(page, right, 136, spec.unit, size=7, bold=True)
+        _text(page, note_x, y_of["period"], sheet.notes_header, size=7, bold=True)
+    size = 7.0 if len(columns) > 3 else 8.0
+    for name in present:
+        _header_row(page, name, columns, rights, y_of[name], spec.unit, size)
     y = 158.0
     for row in sheet.rows:
-        _row(page, row, rights, y, dx)
+        _row(page, row, rights, y, dx, note_x, size)
         y += ROW_STEP
 
 
-def _row(page: pymupdf.Page, row: Row, rights: list[float], y: float, dx: float) -> None:
+def _layout(count: int, dx: float) -> tuple[list[float], float]:
+    """Value-column right edges and the notes x: three columns or fewer as before; more fit
+    between x = 300 and 555 (columnar and entity layouts)."""
+    if count <= 3:
+        return [dx + FIRST_VALUE_RIGHT + VALUE_STEP * i for i in range(count)], dx + NOTE_X
+    step = 48.0
+    rights = [dx + 555.0 - step * (count - 1 - i) for i in range(count)]
+    return rights, rights[0] - 62.0
+
+
+def _header_row(
+    page: pymupdf.Page,
+    name: str,
+    columns: tuple[ColumnSpec, ...],
+    rights: list[float],
+    y: float,
+    unit: str,
+    size: float,
+) -> None:
+    texts = [
+        {"entity": c.entity, "period": c.period, "sub": c.sub, "unit": unit}[name] for c in columns
+    ]
+    if name in ("entity", "period"):  # equal neighbours print once, centred over the group
+        i = 0
+        while i < len(texts):
+            j = i
+            while j + 1 < len(texts) and texts[j + 1] == texts[i]:
+                j += 1
+            text = texts[i]
+            if text and j > i:
+                left, right = rights[i] - 30.0, rights[j]
+                width = pymupdf.get_text_length(text, fontname="hebo", fontsize=size)
+                _text(page, (left + right - width) / 2, y, text, size=size, bold=True)
+            elif text:
+                _right(page, rights[i], y, text, size=size, bold=True)
+            i = j + 1
+        return
+    for right, text in zip(rights, texts, strict=True):
+        if text:
+            _right(page, right, y, text, size=size - 0.5, bold=True)
+
+
+def _row(
+    page: pymupdf.Page,
+    row: Row,
+    rights: list[float],
+    y: float,
+    dx: float,
+    note_x: float,
+    size: float,
+) -> None:
     bold = row.style in ("section", "total")
     if row.label:
-        _text(page, dx + LABEL_X, y, row.label, size=8, bold=bold)
+        _text(page, dx + LABEL_X, y, row.label, size=size, bold=bold)
     if row.note:
-        _text(page, dx + NOTE_X, y, row.note, size=8)
+        _text(page, note_x, y, row.note, size=size)
     if row.style in ("subtotal", "total") and row.values:
         for right in rights:
-            page.draw_line((right - 55, y - 10), (right, y - 10), width=0.5)
+            page.draw_line(
+                (right - (40 if len(rights) > 3 else 55), y - 10), (right, y - 10), width=0.5
+            )
     if row.values:  # section headers print no figures
         for right, value in zip(rights, row.values, strict=True):
-            _right(page, right, y, value, size=8, bold=row.style == "total")
+            _right(page, right, y, value, size=size, bold=row.style == "total")

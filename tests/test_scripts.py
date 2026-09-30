@@ -111,7 +111,7 @@ def test_gate_missing_report_fails(tmp_path: Path) -> None:
 
 
 def test_gate_pending_and_command_only_sessions(tmp_path: Path) -> None:
-    assert gate.run("M2.3", tmp_path / "absent.json")[0] == 2
+    assert gate.run("M4.1", tmp_path / "absent.json")[0] == 2
     assert gate.run("M0", tmp_path / "absent.json")[0] == 0
 
 
