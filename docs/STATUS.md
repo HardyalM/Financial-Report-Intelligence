@@ -7,6 +7,26 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M4.2 (partial) — 2026-10-01 — NOT green, gate blocked
+
+M4.2 partial. Database-free retrieval core built and tested (758 passed). Gate NOT run: no Docker on this machine
+and no `fixtures/expected/company_a.retrieval.json`. M4.2 stays unticked; M5 does not start.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: **758 passed** |
+| `uv run python scripts/check_scope.py M4.2 --base m4.1` | exit 0 |
+| `docker compose up -d db && make migrate` | not run: `docker` not installed |
+| `make eval-e3 COMPANY=company_a` | not run: labels missing (format in docs/EVAL.md 3.3) |
+
+Built (finintel/retrieval): topic query sets with corporate/bank/NHS variants selected by `document_type`;
+RRF (k=60); rerank, +0.05 prior, 3-per-section, top 8; evidence floor tested on rerank alone (0.30, uncalibrated);
+`IndexBackend` protocol with an in-memory backend; fake embedder and overlap reranker (offline stand-ins).
+Not built: Postgres schema/migrations/FTS/HNSW, Voyage and local bge-m3 embedders, real reranker, eval-e3, context expansion.
+Gap: NHS priors cannot name `performance_report`/`accountability_report`: not in the section taxonomy (M8.1).
+
+---
+
 ## M4.1 — 2026-10-01 — green (heading_path sign-off pending)
 
 M4.1 green. company_a: 1,208 chunks, every one with `page_start`; 0 chunks in primary or company statements;
