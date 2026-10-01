@@ -22,7 +22,7 @@ from finintel.commentary.audit import audit_commentary, displayed_ids
 from finintel.commentary.coverage import score_coverage
 from finintel.commentary.generate import CallResult, answer_numeric, generate_answer
 from finintel.commentary.qa import Answer, question_text, score_qa
-from finintel.commentary.ratings import score_ratings
+from finintel.commentary.ratings import claims_sha256, score_ratings
 from finintel.commentary.render import build_ground_truth
 from finintel.commentary.routing import list_answer
 from finintel.commentary.run import CommentaryRun, allowed_years, build_commentary, fitted_context
@@ -162,7 +162,9 @@ def run_commentary(
             notes.append(f"{pdf.stem}.qa.json is missing; format:\n{QA_FORMAT}")
     claims = {cid: p.rendered for cid, p in displayed_ids(run.commentary)}
     if run.commentary.mode == "generated":
-        report["ratings"] = score_ratings(_label(fixtures / "ratings.json"), list(claims))
+        report["ratings"] = score_ratings(
+            _label(fixtures / "ratings.json"), list(claims), claims_sha256(claims)
+        )
         if not report["ratings"]["complete"]:
             notes.append(
                 "ratings.json is not complete: rate each displayed paragraph id in the artefact's "
@@ -175,6 +177,7 @@ def run_commentary(
         {
             "company": pdf.stem,
             "claims": claims,
+            "claims_sha256": claims_sha256(claims),
             "supplemental_facts": facts.model_dump(mode="json"),
         },
     )

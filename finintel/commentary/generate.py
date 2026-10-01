@@ -39,7 +39,7 @@ from finintel.commentary.validators import (
     validate_output,
 )
 from finintel.commentary.validators.validate import LIST_SCHEMA, SUMMARY_SCHEMA
-from finintel.contracts.commentary import Paragraph, ParagraphValidation
+from finintel.contracts.commentary import Figure, Paragraph, ParagraphValidation
 from finintel.llm import LLMProvider
 from finintel.llm.anthropic_provider import LLMError
 from finintel.narrative.models import Chunk
@@ -211,6 +211,7 @@ def answer_numeric(
         template="{{" + str(key) + "}}",
         rendered=entry.text(),
         citations=[],
+        figures=[Figure(placeholder=str(key), rendered=entry.rendered, pages=sorted(entry.pages))],
         validation=ParagraphValidation(retried=False, removed_citations=[]),
     )
     return "ok", paragraph

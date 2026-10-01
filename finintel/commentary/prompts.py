@@ -14,7 +14,7 @@ from typing import Any
 from finintel.commentary.render import TruthEntry
 from finintel.narrative.models import Chunk
 
-PROMPT_VERSION = "commentary-3"
+PROMPT_VERSION = "commentary-4"
 
 _RULES = """\
 You are a research aid for credit and equity analysts. UK English.
@@ -28,6 +28,12 @@ same paragraph. Never write a number as a word. Never calculate. If a change is 
 placeholder, do not describe it numerically. Use a direction word (rose, fell, improved...) only \
 next to a placeholder whose direction in GROUND_TRUTH_NUMBERS agrees with it; otherwise state no \
 direction. Do not mention a value whose status is null.
+Put words in "quotation marks" only when they are copied exactly from a quote you cite in the \
+same paragraph; never quote anything you are not citing, and cite one quote per claim.
+Every figure you write through a placeholder is shown to the reader with the page it comes from, \
+so name what the figure is in the same sentence, and keep each claim to what its own source says.
+After a direction word write a change placeholder without a plus or minus ("fell by {{key}}"): \
+the size is shown, the direction is yours and is checked.
 A placeholder already prints its currency symbol, scale, sign and unit (for example the \
 "rendered" value). Never write a currency symbol, bn, m, %, x or pp beside a placeholder.
 """

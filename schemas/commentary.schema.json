@@ -23,7 +23,7 @@
   "properties": {
     "schema_version": {
       "type": "string",
-      "const": "1.0.0"
+      "const": "1.1.0"
     },
     "mode": {
       "type": "string",
@@ -233,6 +233,7 @@
         "template",
         "rendered",
         "citations",
+        "figures",
         "validation"
       ],
       "properties": {
@@ -252,6 +253,12 @@
         },
         "validation": {
           "$ref": "#/$defs/paragraph_validation"
+        },
+        "figures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/figure"
+          }
         }
       }
     },
@@ -312,6 +319,35 @@
           "items": {
             "$ref": "#/$defs/paragraph"
           }
+        }
+      }
+    },
+    "figure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "placeholder",
+        "rendered",
+        "pages"
+      ],
+      "description": "A figure a paragraph states through a placeholder, with the printed page(s) it comes from. Computed by code from the packs; the model supplies only the placeholder.",
+      "properties": {
+        "placeholder": {
+          "type": "string"
+        },
+        "rendered": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "PDF pages that print the figure, or that print the inputs of a ratio or change."
         }
       }
     }

@@ -328,6 +328,20 @@ Happy path first, then the failure path at each stage.
   from the labelled pages (answer-key leakage; would not generalise).
 
 
+### ADR-012 — A figure is cited by its own page; quoted means cited (tech lead's M5.2 ratings, "fix the cause")
+
+- **Context.** The human rating found 4 of 29 paragraphs unsupported: pack figures (current assets, current ratio, ROCE)
+  written beside a quote from a page that does not print them, and a bullet with a second quotation that no cited quote
+  contained. The numbers were right; the citation did not back them.
+- **Decision.** Commentary schema 1.1.0: every paragraph lists `figures`, one per placeholder, each with the PDF page(s)
+  that print it (an item's page; a ratio's input pages; a change's pages at both periods; a fact's source pages), computed
+  by code. V12 refuses a figure with a value and no page. V11 refuses any quotation-marked text that is not inside a verified
+  quote of the same paragraph. A change after a direction word shows its size, not a second sign ("fell by 1.6 pp").
+  Ratings are bound to a run by `claims_sha256`, so an earlier run's ratings never count for a regenerated one.
+- **Consequences.** A reader sees which page backs each number and which page backs each sentence. Narrative claims are still
+  checked only as far as quotes can be (paraphrase is rated by a person).
+
+
 ## 7. Threats specific to financial documents
 
 | Threat | How it happens | Defence | Test |

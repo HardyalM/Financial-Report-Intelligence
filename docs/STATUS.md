@@ -7,6 +7,42 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 after the ratings fix (ADR-012) — 2026-10-01 — all scripted conditions PASS except ratings (to be re-rated); risk recall 13/14
+
+Regenerated with prompt commentary-4, schema 1.1.0 (figures with source pages, V11 quoted means cited, V12 figures need a page,
+unsigned change after a direction word). Provider gemini, model gemini-3.5-flash-lite, generated mode, 25 displayed paragraphs.
+Fixtures and ratings.json untouched. M5.2 unticked.
+
+| Condition | Result |
+|---|---|
+| generated; e4 unverified / naked / advice / mismatched | PASS (0/0/0/0) |
+| e4 figures without a source page (new) / unverified quotes (new) | PASS (0 / 0) |
+| e8 KAM recall 3/3, going concern correct | PASS |
+| e8 risk recall | 13/14 = 0.93: scripted bar (>= 0.8) PASS, the tech lead's 14/14 MISS (missing: Customer and channel) |
+| qa.passed >= 17 | PASS: 18/20 (misses v2, v3) |
+| ratings complete / supported | FAIL: the earlier ratings are bound to the earlier run (`stale`); rate docs/ratings_draft.md |
+
+Why "Customer and channel" is missing: the model returned all 14 bullets, but that bullet's quote ("Successful customer
+relationships are vital...") is not verbatim in its chunk (V3 quote_not_in_chunk), so it was dropped, correctly; the retry
+returned an extra `title` field (schema V1) and the first pass was kept (a retry never makes a topic worse). Not a validator
+bug (I checked by re-validating the recorded replies). V10 now compares the quote's own offset, not its chunk's.
+liquidity_and_capital is `validation_failed` with 0 paragraphs: the stricter rules rejected every paragraph the model wrote for
+it (these are the paragraphs the earlier rating found unsupported); the topic is shown as failed, not as weak text. Pre-validation
+metrics now also count V9-V12 (they were uncounted before, which hid this).
+v2 (expected 7, 8) cited page 9; v3 (expected 11, 12) cited page 11 and missed "underlying sales"/"volume".
+
+To finish M5.2: rate the 25 paragraphs in docs/ratings_draft.md (it carries `claims_sha256`; put it in ratings.json), save as
+`fixtures/expected/ratings.json`, then `python scripts/gate.py M5.2`; risk recall 14/14 depends on a model run that quotes
+every risk verbatim (runs vary: 14/14 once, 13/14 three times).
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: 906 passed |
+| `uv run pytest -m network tests` | 28 passed |
+| `uv run python scripts/gate.py M5.2` | exit 1 only on ratings.complete and ratings.supported |
+
+---
+
 ## M5.2 ratings check — 2026-10-01 — ratings read, 86.2% supported: still FAILS the 90% bar
 
 Ratings were saved as `fixtures/expected/fixtures:expected:ratings.json` (mangled name, as before; the real

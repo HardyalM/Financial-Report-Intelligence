@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
+from finintel.commentary.words import DIRECTION_WORDS
 from finintel.contracts.ratio_pack import RatioPack
 from finintel.facts.models import SupplementalFact, SupplementalFacts
 
@@ -133,9 +134,30 @@ def build_ground_truth(
                 put(TruthEntry(key, None, "null", "unit_unknown", None))
             else:
                 money = render_money(pv["value"], unit_scale, currency)
-                pages = (pv["page"],) if pv.get("page") else ()
+                pages: tuple[int, ...] = (pv["page"],) if pv.get("page") else ()
                 amount = pv["value"] * unit_scale
                 put(TruthEntry(key, money, "ok", None, direction, pv["value"], amount, pages))
+    ratio_pages: dict[tuple[str, str], tuple[int, ...]] = {}
+    for period in ratios.periods:
+        for name, ratio in period.ratios.model_dump().items():
+            ratio_pages[(name, period.period_id)] = tuple(
+                sorted({i["page"] for i in ratio["inputs"].values() if i.get("page")})
+            )
+    item_pages: dict[tuple[str, str], tuple[int, ...]] = {
+        (item_id, pv["period_id"]): ((pv["page"],) if pv.get("page") else ())
+        for item_id, item in pack["items"].items()
+        for pv in item.get("values", [])
+    }
+
+    def span_pages(
+        pages: Mapping[tuple[str, str], tuple[int, ...]], name: str, change: Any
+    ) -> tuple[int, ...]:
+        both = (
+            *pages.get((name, change.from_period_id), ()),
+            *pages.get((name, change.to_period_id), ()),
+        )
+        return tuple(sorted(set(both)))
+
     for period in ratios.periods:
         change = into.get(period.period_id)
         for name, ratio in period.ratios.model_dump().items():
@@ -150,7 +172,8 @@ def build_ground_truth(
             direction = None
             if change is not None and change.ratios[name].value is not None:
                 direction = _direction(_round(_dec(change.ratios[name].value), _places(name)))
-            put(TruthEntry(key, rendered, "ok", None, direction, ratio["value"]))
+            pages = ratio_pages[(name, period.period_id)]
+            put(TruthEntry(key, rendered, "ok", None, direction, ratio["value"], None, pages))
     for change in ratios.changes:
         span = f"{change.from_period_id}:{change.to_period_id}"
         for name, rc in change.ratios.items():
@@ -164,7 +187,8 @@ def build_ground_truth(
                 if rc.kind == "percentage_points"
                 else render_multiple_change(rc.value)
             )
-            put(TruthEntry(key, text, "ok", None, _direction(rounded)))
+            pages = span_pages(ratio_pages, name, change)
+            put(TruthEntry(key, text, "ok", None, _direction(rounded), rc.value, None, pages))
         for item_id, ic in change.items.items():
             key = f"change:item:{item_id}:{span}"
             if ic.absolute is None:
@@ -176,14 +200,17 @@ def build_ground_truth(
                     text = ("+" if ic.absolute > 0 else "") + render_money(
                         ic.absolute, unit_scale, currency
                     )
-                    put(TruthEntry(key, text, "ok", None, _direction(_dec(ic.absolute))))
+                    pages = span_pages(item_pages, item_id, change)
+                    put(
+                        TruthEntry(
+                            key, text, "ok", None, _direction(_dec(ic.absolute)), None, None, pages
+                        )
+                    )
             else:
                 rounded = _round(_dec(ic.percent), 1)
-                put(
-                    TruthEntry(
-                        key, render_percent_change(ic.percent), "ok", None, _direction(rounded)
-                    )
-                )
+                pages = span_pages(item_pages, item_id, change)
+                text = render_percent_change(ic.percent)
+                put(TruthEntry(key, text, "ok", None, _direction(rounded), None, None, pages))
     for fact in facts.facts if facts else ():
         put(_fact_entry(fact))
     return truth
@@ -215,12 +242,28 @@ def placeholders(text: str) -> list[str]:
     return [m.group(1) for m in PLACEHOLDER.finditer(text)]
 
 
+_DIRECTION_BEFORE = re.compile(
+    r"\b(?:" + "|".join(sorted(DIRECTION_WORDS)) + r")\b(?:\W+\w+){0,2}\W*$", re.IGNORECASE
+)
+
+
 def render_template(template: str, truth: Mapping[str, TruthEntry]) -> str:
     """Replace each known placeholder with its rendered text; an unknown one is left as written
     (validator V4 rejects such a paragraph before it is ever shown)."""
 
     def sub(match: re.Match[str]) -> str:
         entry = truth.get(match.group(1))
-        return entry.text() if entry is not None else match.group(0)
+        if entry is None:
+            return match.group(0)
+        text = entry.text()
+        # "fell by {{change}}": the word carries the direction, so show the size, not "-1.6 pp".
+        if (
+            match.group(1).startswith("change:")
+            and entry.direction in ("up", "down")
+            and text[:1] in "+-"
+            and _DIRECTION_BEFORE.search(template[: match.start()])
+        ):
+            return text[1:]
+        return text
 
     return PLACEHOLDER.sub(sub, template)

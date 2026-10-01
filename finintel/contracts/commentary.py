@@ -12,6 +12,7 @@ __all__ = [
     "Citation",
     "ParagraphValidationRemovedCitationsItem",
     "ParagraphValidation",
+    "Figure",
     "Paragraph",
     "Topic",
     "Summary",
@@ -64,6 +65,18 @@ class ParagraphValidation(BaseModel):
     removed_citations: list[ParagraphValidationRemovedCitationsItem]
 
 
+class Figure(BaseModel):
+    """A figure a paragraph states through a placeholder, with the printed page(s) it comes from. Computed by code from the packs; the model supplies only the placeholder."""
+
+    model_config = ConfigDict(extra="forbid")
+    placeholder: str
+    rendered: str | None
+    pages: list[int] = Field(
+        ...,
+        description="PDF pages that print the figure, or that print the inputs of a ratio or change.",
+    )
+
+
 class Paragraph(BaseModel):
     model_config = ConfigDict(extra="forbid")
     template: str = Field(
@@ -75,6 +88,7 @@ class Paragraph(BaseModel):
     )
     citations: list[Citation]
     validation: ParagraphValidation
+    figures: list[Figure]
 
 
 class Topic(BaseModel):
@@ -101,7 +115,7 @@ class Commentary(BaseModel):
     """Validated commentary (RAG section 4). Every paragraph carries at least one code-verified citation; numbers come from placeholders rendered by code."""
 
     model_config = ConfigDict(extra="forbid")
-    schema_version: Literal["1.0.0"]
+    schema_version: Literal["1.1.0"]
     mode: Literal["generated", "extractive"]
     label: str | None = Field(
         ..., description="Shown with extractive output: 'Extractive summary: no generated text'."

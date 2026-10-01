@@ -17,7 +17,7 @@ from finintel.commentary.validators import (
     mismatched_placeholders,
     naked_numbers,
 )
-from finintel.commentary.validators.text import simple
+from finintel.commentary.validators.text import simple, unverified_quotes
 from finintel.contracts.commentary import Commentary, Paragraph
 from finintel.narrative.models import Chunk
 
@@ -44,6 +44,7 @@ def audit_commentary(
     allowed_years: Collection[str] = (),
 ) -> dict[str, Any]:
     unverified = naked = advice = unknown = direction = no_citation = mismatched = total = 0
+    unsourced = unquoted = 0
     for para in displayed(commentary):
         total += 1
         if not para.citations:
@@ -63,6 +64,15 @@ def audit_commentary(
             direction += 1
         if mismatched_placeholders(para.template, truth):
             mismatched += 1
+        shown = [m.group(1) for m in PLACEHOLDER.finditer(para.template)]
+        if any(truth[k].rendered is not None and not truth[k].pages for k in shown if k in truth):
+            unsourced += 1
+        if [f.placeholder for f in para.figures] != list(
+            dict.fromkeys(k for k in shown if k in truth)
+        ):
+            unsourced += 1  # the displayed figure list does not match the template
+        if unverified_quotes(para.template, quotes):
+            unquoted += 1
     return {
         "displayed_paragraphs": total,
         "displayed_unverified_citations": unverified,
@@ -71,6 +81,8 @@ def audit_commentary(
         "displayed_unknown_placeholders": unknown,
         "displayed_direction_violations": direction,
         "displayed_mismatched_placeholders": mismatched,
+        "displayed_figures_without_source": unsourced,
+        "displayed_unverified_quotes": unquoted,
         "displayed_without_citation": no_citation,
     }
 

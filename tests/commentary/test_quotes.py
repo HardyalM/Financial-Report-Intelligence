@@ -99,7 +99,7 @@ def test_a_citation_validates_against_its_schema() -> None:
 def test_the_commentary_schema_accepts_a_minimal_extractive_document() -> None:
     schema = json.loads((ROOT / "schemas" / "commentary.schema.json").read_text(encoding="utf-8"))
     doc: dict[str, object] = {
-        "schema_version": "1.0.0", "mode": "extractive",
+        "schema_version": "1.1.0", "mode": "extractive",
         "label": "Extractive summary: no generated text", "topics": [],
         "executive_summary": {"status": "omitted", "bullets": []}, "model": None,
         "prompt_version": None, "query_set_version": "1", "retrieval_set_id": None,

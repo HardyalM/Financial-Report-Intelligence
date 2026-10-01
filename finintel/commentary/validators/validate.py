@@ -14,8 +14,10 @@ from finintel.commentary.validators.citations import QuoteError, build_citation
 from finintel.commentary.validators.fields import mismatched_placeholders
 from finintel.commentary.validators.lexicon import advice_terms, direction_violations
 from finintel.commentary.validators.numbers import naked_numbers, unit_beside_placeholder
+from finintel.commentary.validators.text import unverified_quotes
 from finintel.contracts.commentary import (
     Citation,
+    Figure,
     Paragraph,
     ParagraphValidation,
     ParagraphValidationRemovedCitationsItem,
@@ -79,6 +81,7 @@ class ParagraphReport:
     citations: list[Citation] = field(default_factory=list)
     removed: list[dict[str, str]] = field(default_factory=list)
     violations: list[Violation] = field(default_factory=list)
+    figures: list[Figure] = field(default_factory=list)
 
     @property
     def accepted(self) -> bool:
@@ -149,11 +152,16 @@ def validate_output(
     return report
 
 
+def quotes_so_far(para: ParagraphReport) -> list[str]:
+    return [c.quote for c in para.citations]
+
+
 def _first_position(para: ParagraphReport, evidence: Mapping[str, Chunk]) -> int | None:
-    """Document position (character offset) of the passage a bullet cites first, if any survived."""
+    """Where in the report a bullet's first surviving quote begins (a document offset): the quote's
+    own position, not its chunk's, so bullets quoted from adjacent chunks are compared fairly."""
     if not para.citations:
         return None
-    return evidence[para.citations[0].chunk_id].char_start
+    return para.citations[0].char_start
 
 
 def _check_order(
@@ -220,6 +228,18 @@ def _check_paragraph(
     for key in placeholders(template):  # V4
         if key not in truth:
             para.violations.append(Violation("V4", f"unknown placeholder {{{{{key}}}}}", index))
+    for key in dict.fromkeys(placeholders(template)):
+        entry = truth.get(key)
+        if entry is not None:
+            para.figures.append(
+                Figure(placeholder=key, rendered=entry.rendered, pages=sorted(entry.pages))
+            )
+            if entry.rendered is not None and not entry.pages:  # V12: a figure must be traceable
+                para.violations.append(Violation("V12", f"{{{{{key}}}}} has no source page", index))
+    for span in unverified_quotes(template, quotes_so_far(para)):  # V11: quoted means cited
+        para.violations.append(
+            Violation("V11", f"quoted text is not in a cited quote: {span[:60]!r}", index)
+        )
     for problem in mismatched_placeholders(template, truth):  # V9: say what the number is
         para.violations.append(Violation("V9", problem, index))
     for beside in unit_beside_placeholder(template):  # V4: the placeholder already says it
@@ -262,6 +282,7 @@ def finalize(report: TopicReport, *, retried: bool) -> tuple[str, str | None, li
             template=p.template,
             rendered=p.rendered,
             citations=p.citations,
+            figures=p.figures,
             validation=ParagraphValidation(
                 retried=retried,
                 removed_citations=[

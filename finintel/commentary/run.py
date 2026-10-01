@@ -44,7 +44,7 @@ from finintel.narrative.models import Chunk
 from finintel.retrieval.pipeline import TopicResult
 from finintel.retrieval.queries import OPTIONAL_TOPICS, QUERY_SET_VERSION
 
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.1.0"
 DISCLAIMER = (
     "Research aid, not investment advice. Figures are extracted and computed by code from the "
     "filed accounts; narrative is quoted from the report with page references."
@@ -309,5 +309,9 @@ def pre_validation_metrics(first_pass: Mapping[str, Counter[str]]) -> dict[str, 
         "direction_violations": total["V7"],
         "unknown_placeholders": total["V4"],
         "schema_violations": total["V1"],
+        "figure_violations": total["V12"],
+        "unverified_quote_violations": total["V11"],
+        "placeholder_meaning_violations": total["V9"],
+        "out_of_order_bullets": total["V10"],
         "paragraphs_without_citation": total["V8"],
     }

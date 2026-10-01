@@ -7,24 +7,13 @@ from collections.abc import Collection, Mapping
 
 from finintel.commentary.render import PLACEHOLDER, TruthEntry
 from finintel.commentary.validators.text import blank_verified_quotes
+from finintel.commentary.words import DOWN, UP
 
 ADVICE = re.compile(
     r"\b(?:buy|buys|sell|sells|hold|holds|recommend|recommends|recommended|recommendation|"
     r"undervalued|overvalued|target prices?|attractive investment|should invest)\b",
     re.IGNORECASE,
 )
-_UP_TEXT = """
-improved improve improves improving improvement rose rise rises risen rising
-increased increase increases increasing grew grow grows grown growing higher
-strengthened strengthening expanded climbed gained
-"""
-UP = frozenset(_UP_TEXT.split())
-_DOWN_TEXT = """
-fell fall falls fallen falling declined decline declines declining decreased
-decrease decreases decreasing weakened weakening lower dropped drop contracted
-deteriorated deterioration slipped eroded
-"""
-DOWN = frozenset(_DOWN_TEXT.split())
 _WORD = re.compile(r"[A-Za-z]+")
 _SENTENCE_END = re.compile(r"(?<=[.!?])\s+")
 

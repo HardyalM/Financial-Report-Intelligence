@@ -112,3 +112,17 @@ def verified_spans(text: str, verified_quotes: list[str]) -> list[str]:
         if inner and simple(inner) and any(simple(inner) in q for q in normalised):
             spans.append(inner)
     return spans
+
+
+def unverified_quotes(text: str, verified_quotes: list[str]) -> list[str]:
+    """Quotation-marked spans of `text` that are NOT a substring of a verified quote.
+
+    Quotation marks assert that the report says those words: that must be true, and cited."""
+    normalised = [simple(q) for q in verified_quotes]
+    bad = []
+    for m in _QUOTED.finditer(text):
+        inner = m.group(1) if m.group(1) is not None else m.group(2)
+        span = simple(inner or "")
+        if span and not any(span in q for q in normalised):
+            bad.append(inner)
+    return bad

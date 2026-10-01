@@ -293,8 +293,8 @@ These checks are created in M0 and run in CI.
 ## M5.2 — Commentary generation
 
 **Read first:** RAG §3.4, §4; EVAL §3.4, §3.6, §4.
-**Allowed paths:** `finintel/commentary/**`, `finintel/llm/**`, `finintel/cli/**`, `finintel/narrative/models.py`, `finintel/narrative/sections.py`, `finintel/facts/**`, `docs/ARCHITECTURE.md`, `finintel/retrieval/lexical.py`, `finintel/retrieval/pipeline.py`, `scripts/gate.py`, `scripts/scope.yaml`, `tests/**`.
-*Amended 2026-10-01 in the M5.2 session: the chunker no longer drops a key audit matter headed "(Parent company)" inside the auditor's report (CHUNKER_VERSION 1.1.0), and retrieval gains an evidence-coverage floor (finintel/retrieval), and supplemental facts (ADR-011, option A) are read by finintel/facts. The stage runs as `finintel commentary` (finintel/cli) and the gate adds the mode and ratings conditions (scripts/gate.py). Scoring reads the tech lead's label shapes (`kind`, `q`, `pages`, `must_mention`).*
+**Allowed paths:** `finintel/commentary/**`, `finintel/llm/**`, `finintel/cli/**`, `finintel/narrative/models.py`, `finintel/narrative/sections.py`, `finintel/facts/**`, `schemas/commentary.schema.json`, `finintel/contracts/**`, `scripts/make_ratings_draft.py`, `docs/ARCHITECTURE.md`, `finintel/retrieval/lexical.py`, `finintel/retrieval/pipeline.py`, `scripts/gate.py`, `scripts/scope.yaml`, `tests/**`.
+*Amended 2026-10-01 in the M5.2 session (ratings fix: commentary schema 1.1.0 adds per-paragraph `figures` with source pages, ADR-012): the chunker no longer drops a key audit matter headed "(Parent company)" inside the auditor's report (CHUNKER_VERSION 1.1.0), and retrieval gains an evidence-coverage floor (finintel/retrieval), and supplemental facts (ADR-011, option A) are read by finintel/facts. The stage runs as `finintel commentary` (finintel/cli) and the gate adds the mode and ratings conditions (scripts/gate.py). Scoring reads the tech lead's label shapes (`kind`, `q`, `pages`, `must_mention`).*
 
 **Gate:**
 - [ ] G1–G6 pass.

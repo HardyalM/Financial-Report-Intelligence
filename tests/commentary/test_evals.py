@@ -227,3 +227,23 @@ def test_the_tech_leads_faithful_and_cited_form_is_read_with_a_stated_rule() -> 
     incomplete = score_ratings({"status": "rated", "items": items[:2]}, ids)
     assert incomplete["complete"] is False and incomplete["unrated"] == ["a:2"]
     assert score_ratings({"status": "rated", "items": [{"paragraph_id": "a:0"}]}, ids)["total"] == 0
+
+
+def test_ratings_count_only_for_the_run_they_name() -> None:
+    from finintel.commentary.ratings import claims_sha256
+
+    claims = {"a:0": "first claim", "a:1": "second claim"}
+    sha = claims_sha256(claims)
+    items = [{"paragraph_id": k, "faithful": True, "cited": True} for k in claims]
+    bound = {"status": "rated", "claims_sha256": sha, "items": items}
+    assert score_ratings(bound, list(claims), sha)["complete"] is True
+    other_run = claims_sha256({**claims, "a:1": "a regenerated sentence"})
+    stale = score_ratings(bound, list(claims), other_run)
+    assert (
+        stale["complete"] is False and stale["stale"] is True
+    )  # an older run's ratings do not carry over
+    unbound = {"status": "rated", "items": items}
+    assert score_ratings(unbound, list(claims), sha)["complete"] is False
+    assert (
+        score_ratings(unbound, list(claims))["complete"] is True
+    )  # no hash asked for: shape check only
