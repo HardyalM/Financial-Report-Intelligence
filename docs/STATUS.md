@@ -7,6 +7,31 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 ratings check — 2026-10-01 — ratings read, 86.2% supported: still FAILS the 90% bar
+
+Ratings were saved as `fixtures/expected/fixtures:expected:ratings.json` (mangled name, as before; the real
+`ratings.json` is still the 190-byte `not_rated` placeholder). Read in place, not moved or edited. The file uses
+`paragraph_id`, `faithful`, `cited`, `notes`; the scorer now reads that shape: faithful and cited = supported, anything
+else = unsupported, `contradicted` only from an explicit `rating` (two booleans cannot say a claim is false; the notes say
+"page does not state it").
+
+Result on the 29 displayed paragraphs of the M5.2 artefact: complete, 25 supported (86.2%), 4 unsupported, 0 contradicted.
+Gate: ratings.supported >= 0.9 FAIL; contradicted == 0 PASS. M5.2 stays unticked.
+
+The four unsupported: liquidity_and_capital:0 and :1 and executive_summary:3 state figures from the statement pack
+(current assets, current liabilities, current ratio, ROCE and its change) beside a quote from a page that does not print
+them (p. 172 capital note, p. 11 CEO statement); the numbers are correct and code-rendered, but the cited page does not back
+them. executive_summary:1 joins two claims (buyback p. 76, audit committee matters) and cites one page. Also noted: "fell by
+-1.6 pp" shows a double negative (direction word plus a signed change).
+Root cause: placeholders carry their own source page (pack items and facts have `page`), but a paragraph's only citations
+are narrative quotes, so a pack figure beside an unrelated quote reads as cited when it is not.
+
+To pass: rename the file to `fixtures/expected/ratings.json` (tech lead), and either re-rate after a fix or accept the miss.
+Candidate fix (not built): show each placeholder's source page as a code-derived citation, and require a paragraph's numeric
+claims and its narrative claims to be separately cited; ratings are per run, so a regenerated run needs re-rating.
+
+---
+
 ## M6.2 — 2026-10-01 — green except G2/G3 on the tech lead's uncommitted fixtures
 
 M6.2 green. The HTTP API serves every endpoint in EXTRACTION 6 plus uploads, report, commentary, pages (and the original

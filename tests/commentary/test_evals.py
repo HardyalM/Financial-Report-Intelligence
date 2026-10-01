@@ -208,3 +208,22 @@ def test_ratings_are_complete_only_when_every_displayed_paragraph_is_rated() -> 
     }
     r = score_ratings(bad, ids)
     assert r["contradicted"] == 1 and r["supported"] == 0.5
+
+
+def test_the_tech_leads_faithful_and_cited_form_is_read_with_a_stated_rule() -> None:
+    ids = ["a:0", "a:1", "a:2"]
+    items = [
+        {"paragraph_id": "a:0", "faithful": True, "cited": True, "notes": ""},
+        {"paragraph_id": "a:1", "faithful": True, "cited": False, "notes": "page does not say it"},
+        {"paragraph_id": "a:2", "faithful": False, "cited": False, "notes": ""},
+    ]
+    r = score_ratings({"status": "rated", "items": items}, ids)
+    assert r["complete"] and r["total"] == 3 and r["supported"] == 1 / 3
+    assert (
+        r["unsupported"] == ["a:1", "a:2"] and r["contradicted"] == 0
+    )  # never derived from booleans
+    explicit = [*items[:2], {"id": "a:2", "rating": "contradicted"}]
+    assert score_ratings({"status": "rated", "items": explicit}, ids)["contradicted"] == 1
+    incomplete = score_ratings({"status": "rated", "items": items[:2]}, ids)
+    assert incomplete["complete"] is False and incomplete["unrated"] == ["a:2"]
+    assert score_ratings({"status": "rated", "items": [{"paragraph_id": "a:0"}]}, ids)["total"] == 0
