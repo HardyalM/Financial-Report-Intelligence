@@ -48,7 +48,7 @@ eval-e2:
 	$(RUN) finintel eval-e2 $(COMPANY)
 
 test-db:
-	$(RUN) pytest -m network tests/retrieval/test_postgres.py -q
+	$(RUN) pytest -m network tests/retrieval/test_postgres.py tests/worker -q
 
 migrate:
 	$(RUN) python -m finintel.db migrate

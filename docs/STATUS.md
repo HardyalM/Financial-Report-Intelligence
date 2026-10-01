@@ -7,6 +7,36 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M6.1 — 2026-10-01 — green except G2/G3 on the tech lead's uncommitted fixtures
+
+M6.1 green. `finintel run fixtures/pdfs/company_a.pdf` ends `ready`; stored pack_sha 23728ccd...8021bd0 equals the file
+pipeline's. All six stages done on attempt 1; 1,210 chunks and 980 embeddings stored (bge-m3 memo); commentary row is
+generated (gemini-3.5-flash-lite, commentary-3). Prior milestone M5.2 is still open on the tech lead's human ratings.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: 897 passed, 16 deselected (the network-marked DB tests) |
+| `make test-db` | 16 passed: retrieval (5) + worker/schema (11) against real Postgres |
+| `uv run finintel run fixtures/pdfs/company_a.pdf` | exit 0, document `ready` |
+| `check_scope.py M6.1 --base dfdf67e` | only fixtures/expected/* (the tech lead's uncommitted files, G2/G3) |
+
+Built: migration 003 (jobs, statement_packs, extraction_reports, review_items, overrides append-only via trigger,
+ratio_packs, commentaries); finintel/storage FilesystemStore (originals at sha256/<hash>/<name>: the filename is part of
+the pack source, so storing under another name changed the hash); finintel/db jobs (claim with FOR UPDATE SKIP LOCKED,
+recover, retry/backoff) and persist; finintel/worker (stages ingest, text_layer, extract, ratios, index, commentary;
+each stage's outputs and its `done` mark commit in one transaction); `finintel run`.
+Tests (network-marked, throwaway schema): every table and column in ARCHITECTURE 2.1 (parsed from the doc); append-only
+overrides; excerpt run to ready with pack_sha equal to the file pipeline's; same file = same document, nothing re-queued;
+crash after a stage commits (every stage executes once); crash inside a stage (rolls back, second attempt, one output);
+injected Azure 503 (completes, reduced_verification true, engine_skipped azure_di); failing stage (3 attempts, backoff,
+`map:ValueError`, later stages never start); unit-ambiguous blocks (`needs_unit_confirmation`, nothing runs); a running
+stage is not claimed twice.
+Not built, noted for M6.2: statements_not_found ends the document `failed` instead of running commentary with an
+unavailable snapshot; override-triggered re-runs (jobs reset); `queued` documents are not reclaimed across workers beyond
+the lease; Langfuse traces.
+
+---
+
 ## M5.2 with mechanical own-passage rule (V10) — 2026-10-01 — every scripted condition PASSES; ratings (human) outstanding
 
 M5.2 not ticked: only `ratings.complete` and `ratings.supported` fail, and both are the tech lead's human ratings.

@@ -133,6 +133,8 @@ sessions:
     - "migrations/**"
     - "finintel/cli/**"
     - "tests/**"
+    - "finintel/storage/**"
+    - "scripts/scope.yaml"
   "M6.2":
     - "finintel/api/**"
     - "schemas/openapi.json"

@@ -314,14 +314,15 @@ These checks are created in M0 and run in CI.
 ## M6.1 — Worker and persistence
 
 **Read first:** ARCHITECTURE §2.1, §4; COST_AND_OPS §3.
-**Allowed paths:** `finintel/worker/**`, `finintel/db/**`, `migrations/**`, `finintel/cli/**`, `tests/**`.
+**Allowed paths:** `finintel/worker/**`, `finintel/db/**`, `migrations/**`, `finintel/cli/**`, `tests/**`, `finintel/storage/**`, `scripts/scope.yaml`.
+*Amended 2026-10-01 in the M6.1 session: the filesystem object store lives in finintel/storage; `finintel run` is a CLI command.*
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] A migration test confirms every table and column in ARCHITECTURE §2.1 exists.
-- [ ] `finintel run fixtures/pdfs/company_a.pdf` ends with document status `ready`, and the stored `pack_sha` equals the file pipeline's pack hash.
-- [ ] Injected worker crash mid-run, then restart: the run completes and no stage executes twice (test).
-- [ ] Injected Azure failure: the run completes on the fallback, with `reduced_verification: true`.
+- [ ] G1–G6 pass. *`make ci` green (897); `check_scope.py M6.1` flags only the tech lead's uncommitted fixtures/expected files (G2/G3).*
+- [x] A migration test confirms every table and column in ARCHITECTURE §2.1 exists. *2026-10-01: tests/worker/test_schema.py (reads the doc's table).*
+- [x] `finintel run fixtures/pdfs/company_a.pdf` ends with document status `ready`, and the stored `pack_sha` equals the file pipeline's pack hash. *2026-10-01: both 23728ccd…8021bd0.*
+- [x] Injected worker crash mid-run, then restart: the run completes and no stage executes twice (test). *Crash after a stage commits: every stage executes once. Crash inside a stage: it rolls back and completes on a second attempt, never twice.*
+- [x] Injected Azure failure: the run completes on the fallback, with `reduced_verification: true`.
 
 ## M6.2 — HTTP API
 

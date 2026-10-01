@@ -19,7 +19,9 @@ import json
 import sys
 from pathlib import Path
 
-from finintel.cli import chunks_cmd, commentary_cmd, extract_cmd
+import psycopg
+
+from finintel.cli import chunks_cmd, commentary_cmd, extract_cmd, run_cmd
 from finintel.cli import locate as locate_cmd
 from finintel.cli.common import HoldoutRefusedError
 from finintel.cli.inspect import (
@@ -99,6 +101,11 @@ def build_parser() -> argparse.ArgumentParser:
     e2p = commands.add_parser("eval-e2", help="compare ratios with fixtures/expected (M3)")
     e2p.add_argument("company", help='fixture name, e.g. "company_a"')
     e2p.add_argument("--cache-dir", type=Path)
+    run = commands.add_parser("run", help="submit a report and run the worker pipeline (M6.1)")
+    run.add_argument("target", help='a PDF path, or a fixture name such as "company_a"')
+    run.add_argument("--engines", choices=("local", "all"), default="local")
+    run.add_argument("--embedder", choices=("bge-m3", "fake"), default="bge-m3")
+    run.add_argument("--cache-dir", type=Path)
     cm = commands.add_parser("commentary", help="grounded commentary for a report (M5.2)")
     cm.add_argument("company", help='fixture name, e.g. "company_a"')
     cm.add_argument("--replay", type=Path, help="replay the recorded model calls in this artefact")
@@ -135,6 +142,8 @@ def main(argv: list[str] | None = None) -> int:
         return _extract(args, settings)
     if args.command == "eval-e2":
         return _eval_e2(args, settings)
+    if args.command == "run":
+        return _run(args, settings)
     if args.command == "commentary":
         return _commentary(args, settings)
     if args.command == "eval-e3":
@@ -288,6 +297,24 @@ def _eval_e2(args: argparse.Namespace, settings: Settings) -> int:
             )
     print(f"  -> {path}")
     return EXIT_OK
+
+
+def _run(args: argparse.Namespace, settings: Settings) -> int:
+    try:
+        return run_cmd.run_pipeline(
+            args.target,
+            settings.artifacts_dir,
+            args.cache_dir or settings.cache_dir,
+            engines=args.engines,
+            embedder=args.embedder,
+            out=sys.stdout,
+        )
+    except HoldoutRefusedError as exc:
+        print(f"finintel: refused {exc}: held out until M8.3", file=sys.stderr)
+        return EXIT_HOLDOUT
+    except (FileNotFoundError, ValueError, RuntimeError, IngestError, psycopg.Error) as exc:
+        print(f"finintel run: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return EXIT_FAILED
 
 
 def _commentary(args: argparse.Namespace, settings: Settings) -> int:
