@@ -33,12 +33,14 @@ Misses (id | expected | top-8 PDF pages | answer):
 v2 pages [7,8] "Growth Action Plan 2030" | 38,229,9,73,220,104,38,96 | validation_failed
 v3 pages [11,12] "underlying sales","volume" | 12,11,101,11,85,84,35,102 | ok, cited page 11, missed both required terms
 v4 pages [63,64] "Ice Cream" | 63,129,63,64,128,123,128,227 | validation_failed (passed in one earlier run; the model step varies)
+Caveat on v1/v7: they pass by returning all 14 risk bullets; v1 asks which risks' level increased, and the level
+(Increase / No change) is not in the indexed text, so the answer is a superset, not a filtered list.
 The pass margin is exactly 17; v4 flips between runs, so a different run can land at 16 or 18. Three runs on this build:
 risk 14/14 (before V10), 13/14, 14/14 (with V10); QA 13, 17, 17.
 
 To finish M5.2: rate each displayed paragraph in fixtures/expected/ratings.json (ids = artefacts/commentary/company_a.json
 "claims"), then `python scripts/gate.py M5.2`; replay: `finintel commentary company_a --replay
-artifacts/commentary/company_a.json` must reproduce `output` byte for byte (not yet run on this recording).
+artifacts/commentary/company_a.json` must reproduce `output` byte for byte (RUN: byte-identical, offline, 5 s, same e4/e8/qa; 50,410 bytes of `output`).
 
 | Command | Result |
 |---|---|
