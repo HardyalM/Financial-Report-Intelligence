@@ -102,6 +102,9 @@ sessions:
     - "migrations/**"
     - "docker-compose.yml"
     - "tests/**"
+    - "finintel/evals/e3.py"
+    - "finintel/cli/**"
+    - "scripts/scope.yaml"
   "M5.1":
     - "finintel/commentary/validators/**"
     - "finintel/commentary/render/**"

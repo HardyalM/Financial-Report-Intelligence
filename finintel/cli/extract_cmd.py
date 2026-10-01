@@ -133,3 +133,56 @@ def run_e2(company: str, cache_dir: Path, artifacts: Path) -> tuple[dict[str, An
         report = previous if previous.get("company") == pdf.stem else {}
     report.update({"company": pdf.stem, "e2": body})
     return report, write_report(report, target)
+
+
+def run_e3(
+    company: str, cache_dir: Path, artifacts: Path, labels_path: Path | None, backend: str
+) -> tuple[dict[str, Any], Path]:
+    """E3 retrieval against a labelled query file. The labels are read, never written."""
+    from finintel.cli.chunks_cmd import chunk_pdf
+    from finintel.evals import e3
+    from finintel.locate import locate
+    from finintel.parse.cached import cached_text_layer
+    from finintel.retrieval.embeddings import FakeEmbedder
+    from finintel.retrieval.pipeline import InMemoryIndex, OverlapReranker, retrieve_topic
+    from finintel.retrieval.queries import TopicQueries
+
+    pdf, sha, chunks, _ = chunk_pdf(company, cache_dir)
+    path = labels_path or Path("fixtures") / "expected" / f"{pdf.stem}.retrieval.json"
+    if not path.is_file():
+        raise FileNotFoundError(f"{path} is missing: retrieval labels are the tech lead's")
+    labels = json.loads(path.read_text(encoding="utf-8"))
+    layer, _ = cached_text_layer(pdf, sha, StageCache(cache_dir))
+    located = locate(layer)
+    embedder, reranker = FakeEmbedder(), OverlapReranker()
+    if backend == "postgres":
+        import psycopg
+
+        from finintel.db.migrate import database_url
+        from finintel.db.store import PostgresIndex, store_chunks, upsert_document
+
+        conn = psycopg.connect(database_url(), autocommit=True)
+        doc = upsert_document(
+            conn, sha256=sha, filename=pdf.name, page_count=layer.page_count,
+            document_type=located.profile.document_type.value,
+        )  # fmt: skip
+        store_chunks(conn, doc, chunks, embedder)
+        index: Any = PostgresIndex(conn, doc, embedder)
+    else:
+        index = InMemoryIndex(chunks, embedder)
+
+    def retrieve(query: str) -> list[str]:
+        topic = TopicQueries("adhoc", (query,), frozenset())
+        return [c.chunk_id for c in retrieve_topic(topic, index, reranker).chunks]
+
+    body = e3.compare(
+        labels, chunks, retrieve, folio_offset=located.folio_offset,
+        models={"embedding": embedder.model_id, "reranker": reranker.model_id, "backend": backend},
+    )  # fmt: skip
+    target = artifacts / "eval" / "latest" / "report.json"
+    report: dict[str, Any] = {}
+    if target.is_file():
+        previous = json.loads(target.read_text(encoding="utf-8"))
+        report = previous if previous.get("company") == pdf.stem else {}
+    report.update({"company": pdf.stem, "e3": body})
+    return report, write_report(report, target)

@@ -7,6 +7,44 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M4.2 — 2026-10-01 — GATE FAILED: e3.hit_at_8 = 0.00 (0/5)
+
+GATE FAILED at M4.2. `e3.hit_at_8 >= 0.8` not met: 0/5. Labels not edited. M4.2 unticked; M5 does not start.
+Embedding model fake-hash-bow-v1, reranker fake-overlap-v1 (offline stand-ins; no real embedder built yet).
+
+Labels: supplied as `fixtures:expected:company_a.retrieval.json.json` at the repo root (mangled name, not in
+`fixtures/expected/`; Claude cannot write there). Read in place via `--labels`; untouched. It uses printed
+pages; converted with the inferred folio offset 3 (PDF = printed + 3). It has no `id`/`topic`/`section`.
+
+| Query | Expected (printed -> PDF) | Retrieved top 8 (PDF pages) |
+|---|---|---|
+| principal risks | 31-37 -> 34-40 | 129, 54, 270, 63, 129, 54, 89, 290 |
+| strategy | 4-5 -> 7-8 | 63, 55-56, 177, 228, 44, 229, 278, 53 |
+| CEO on performance | 8-9 -> 11-12 | 35, 80, 101, 172, 275, 85, 73, 74 |
+| viability statement | 38-39 -> 41-42 | 129, 63, 74, 135, 124, 228, 296, 163 |
+| going concern | 133-134 -> 136-137 | 230, 140, 128, 123, 128, 76, 275, 145 |
+
+Observations (read-only, for the tech lead to judge; nothing changed):
+- Chunks at PDF 7-8 are "Our Strategy: GAP 2030" and at 11-12 "Chief Executive Officer's statement", so those two
+  labels point at the right content under offset 3 and the miss is genuine retrieval weakness (fake models).
+- Chunks at PDF 34-40 are "Performance highlights", at 41-42 "Financial Performance". "Our Principal Risks" is at
+  PDF 54-62 and "Viability statement" at 63; going concern text is at PDF 123 and 145 (notes), 136-137 is the
+  auditor's scope. The folio offset is evidently not constant across the report, so these three printed numbers do
+  not map to those sections by +3. Whether the labels or the conversion is wrong is the tech lead's call.
+
+| Command | Result |
+|---|---|
+| `uv run finintel eval-e3 company_a --labels "fixtures:expected:company_a.retrieval.json.json"` | 0/5, report in artifacts/eval/latest/report.json |
+| `uv run python scripts/gate.py M4.2` | exit 1 (FAIL e3.hit_at_8 >= 0.8) |
+| `make ci` | exit 0: 761 passed, 5 deselected |
+| `docker compose up -d db && make migrate` | exit 0 |
+| `make test-db` | 5 passed |
+
+Also open: scope check lists the stray labels file (G2) until it is moved to `fixtures/expected/company_a.retrieval.json`.
+Built: see M4.2 (partial) below.
+
+---
+
 ## M4.2 (partial) — 2026-10-01 — NOT green: E3 gate blocked on labels
 
 M4.2 partial. Postgres 17 + pgvector index built and tested; migrate gate passes. `make eval-e3` and the

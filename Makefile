@@ -1,7 +1,7 @@
 # Every target runs inside the uv-managed environment. Override RUN= to use another runner.
 RUN ?= uv run
 
-.PHONY: help lint format typecheck test contracts contracts-check scope ci inspect eval-e1 eval-e2 eval eval-live migrate test-db
+.PHONY: help lint format typecheck test contracts contracts-check scope ci inspect eval-e1 eval-e2 eval-e3 eval eval-live migrate test-db
 
 help:
 	@echo "make ci              lint, typecheck, test, contracts-check, scope (the standard gate G1 plus G5)"
@@ -40,6 +40,9 @@ ENGINES ?= local
 
 eval-e1:
 	$(RUN) finintel eval-e1 $(COMPANY) --engines $(ENGINES)
+
+eval-e3:
+	$(RUN) finintel eval-e3 $(COMPANY) $(if $(LABELS),--labels $(LABELS),)
 
 eval-e2:
 	$(RUN) finintel eval-e2 $(COMPANY)

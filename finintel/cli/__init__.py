@@ -99,6 +99,11 @@ def build_parser() -> argparse.ArgumentParser:
     e2p = commands.add_parser("eval-e2", help="compare ratios with fixtures/expected (M3)")
     e2p.add_argument("company", help='fixture name, e.g. "company_a"')
     e2p.add_argument("--cache-dir", type=Path)
+    e3p = commands.add_parser("eval-e3", help="retrieval hit@8 against labelled queries (M4.2)")
+    e3p.add_argument("company", help='fixture name, e.g. "company_a"')
+    e3p.add_argument("--labels", type=Path, help="label file (default fixtures/expected/...)")
+    e3p.add_argument("--backend", choices=("memory", "postgres"), default="memory")
+    e3p.add_argument("--cache-dir", type=Path)
     e1 = commands.add_parser("eval-e1", help="compare an extraction with fixtures/expected (M2.4)")
     e1.add_argument("company", help='fixture name, e.g. "company_a"')
     e1.add_argument("--engines", choices=("local", "all"), default="local")
@@ -124,6 +129,8 @@ def main(argv: list[str] | None = None) -> int:
         return _extract(args, settings)
     if args.command == "eval-e2":
         return _eval_e2(args, settings)
+    if args.command == "eval-e3":
+        return _eval_e3(args, settings)
     if args.command == "chunks":
         return _chunks(args, settings)
     return _inspect(args, settings)
@@ -271,6 +278,41 @@ def _eval_e2(args: argparse.Namespace, settings: Settings) -> int:
                 f"  {cell['period']} {cell['ratio']}: extracted {cell['extracted']}; "
                 f"labelled {cell['labelled']}"
             )
+    print(f"  -> {path}")
+    return EXIT_OK
+
+
+def _eval_e3(args: argparse.Namespace, settings: Settings) -> int:
+    try:
+        report, path = extract_cmd.run_e3(
+            args.company,
+            args.cache_dir or settings.cache_dir,
+            settings.artifacts_dir,
+            args.labels,
+            args.backend,
+        )
+    except HoldoutRefusedError as exc:
+        print(f"finintel: refused {exc}: held out until M8.3", file=sys.stderr)
+        return EXIT_HOLDOUT
+    except (FileNotFoundError, ValueError, RuntimeError, IngestError) as exc:
+        print(f"finintel eval-e3: {exc}", file=sys.stderr)
+        return EXIT_FAILED
+    e3 = report["e3"]
+    print(
+        f"{report['company']}: hit@8 {e3['hits']}/{e3['queries']} = {e3['hit_at_8']:.2f}  "
+        f"page basis {e3['page_basis']} (folio offset {e3['folio_offset']})  models {e3['models']}"
+    )
+    for cell in e3["cells"]:
+        print(
+            f"  {'HIT ' if cell['hit'] else 'MISS'} {cell['q']}  "
+            f"want pdf {cell['expected_pdf_pages']}"
+        )
+        if not cell["hit"]:
+            for r in cell["retrieved"]:
+                print(
+                    f"       got pdf {r['pdf_pages']}  {r['section']}  "
+                    f"{' > '.join(r['heading_path'])}"
+                )
     print(f"  -> {path}")
     return EXIT_OK
 

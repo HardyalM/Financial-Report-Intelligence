@@ -264,7 +264,8 @@ These checks are created in M0 and run in CI.
 ## M4.2 — Index and retrieval
 
 **Read first:** RAG §3; ARCHITECTURE §2.1; COST_AND_OPS §2.
-**Allowed paths:** `finintel/db/**`, `finintel/retrieval/**`, `migrations/**`, `docker-compose.yml`, `tests/**`.
+**Allowed paths:** `finintel/db/**`, `finintel/retrieval/**`, `migrations/**`, `docker-compose.yml`, `tests/**`, `finintel/evals/e3.py`, `finintel/cli/**`, `scripts/scope.yaml`.
+*Amended 2026-10-01 in the M4.2 session: the gate runs `finintel eval-e3` (finintel/cli, finintel/evals/e3.py). The labels file is read-only to Claude; `--labels` reads it from another path without copying it.*
 
 - [ ] Docker Postgres; migrations for `documents`, `chunks`, `chunk_embeddings`; FTS; embeddings (Voyage, local, fake); HNSW; RRF; rerank; priors; floor; topic query sets including bank and NHS variants.
 
