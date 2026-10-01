@@ -29,6 +29,7 @@ from finintel.commentary.run import CommentaryRun, allowed_years, build_commenta
 from finintel.contracts.commentary import Commentary
 from finintel.evals.e1 import write_report
 from finintel.extract import extract_pack
+from finintel.facts import extract_facts
 from finintel.llm import LLMProvider
 from finintel.llm.anthropic_provider import LLMError
 from finintel.llm.providers import select_provider
@@ -95,7 +96,8 @@ def run_commentary(
         raise RuntimeError(f"extraction blocked: {result.status}")
     pack = result.pack
     ratios = compute_ratios(pack)
-    truth = build_ground_truth(pack, ratios)
+    facts = extract_facts(layer, pack)
+    truth = build_ground_truth(pack, ratios, facts)
     offset = located.folio_offset
     labels = (
         {p: str(p - offset) for p in range(1, layer.page_count + 1)} if offset is not None else {}
@@ -111,7 +113,7 @@ def run_commentary(
     provider: LLMProvider | None = recorder or base
     run = build_commentary(
         provider=provider, pack=pack, ratios=ratios, chunks=chunks,
-        retrieved=retrieved, page_labels=labels,
+        retrieved=retrieved, page_labels=labels, facts=facts,
     )  # fmt: skip
     by_id = {c.chunk_id: c for c in chunks}
     years = allowed_years(pack)
@@ -147,7 +149,9 @@ def run_commentary(
                 "answers": {
                     qid: {
                         "status": a.status,
-                        "pages": sorted({c.page for p in a.paragraphs for c in p.citations}),
+                        "pages": sorted(
+                            {c.page for p in a.paragraphs for c in p.citations} | set(a.pages)
+                        ),
                         "text": [p.rendered for p in a.paragraphs],
                         "error": errors.get(qid),
                     }
@@ -168,7 +172,11 @@ def run_commentary(
         artifacts / "commentary" / f"{pdf.stem}.json",
         run,
         recorder.recording() if recorder is not None else None,
-        {"company": pdf.stem, "claims": claims},
+        {
+            "company": pdf.stem,
+            "claims": claims,
+            "supplemental_facts": facts.model_dump(mode="json"),
+        },
     )
     target = artifacts / "eval" / "latest" / "report.json"
     full: dict[str, Any] = {}
@@ -182,6 +190,15 @@ def run_commentary(
     write_report(full, target)
     report["notes"] = notes
     return run, report, out
+
+
+def _fact_pages(paragraph: Any, scoped: Mapping[str, Any]) -> tuple[int, ...]:
+    """The source pages of the pack or fact figure a numeric answer points at."""
+    if paragraph is None:
+        return ()
+    key = paragraph.template.strip("{}")
+    entry = scoped.get(key)
+    return tuple(entry.pages) if entry is not None else ()
 
 
 def _label(path: Path) -> dict[str, Any] | None:
@@ -207,7 +224,9 @@ def _ask_all(
     floors: list[str] = []
     latest = max((k.rsplit(":", 1)[-1] for k in truth if k.startswith("item:")), default="")
     scoped = {  # the latest period's items and ratios: what a lookup question can ask for
-        k: v for k, v in truth.items() if k.startswith(("item:", "ratio:")) and k.endswith(latest)
+        k: v
+        for k, v in truth.items()
+        if k.startswith(("item:", "ratio:", "fact:")) and k.endswith(latest)
     }
 
     def ask(q: Mapping[str, Any]) -> None:
@@ -224,7 +243,8 @@ def _ask_all(
                 answers[q["id"]] = Answer("error", [])
                 errors[q["id"]] = exc.code
                 return
-            answers[q["id"]] = Answer(status, [paragraph] if paragraph else [])
+            sources = _fact_pages(paragraph, scoped)
+            answers[q["id"]] = Answer(status, [paragraph] if paragraph else [], sources)
             errors.pop(q["id"], None)
             return
         if index.coverage(text) < COVERAGE_FLOOR:  # nothing to ground an answer: no model call

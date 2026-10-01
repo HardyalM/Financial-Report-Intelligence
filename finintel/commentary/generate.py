@@ -200,7 +200,11 @@ def answer_numeric(
     if raw["status"] == "insufficient_evidence" or key is None:
         return "insufficient_evidence", None
     entry = truth.get(str(key))
-    if entry is None or entry.rendered is None or not str(key).startswith(("item:", "ratio:")):
+    if (
+        entry is None
+        or entry.rendered is None
+        or not str(key).startswith(("item:", "ratio:", "fact:"))
+    ):
         return "validation_failed", None
     paragraph = Paragraph(
         template="{{" + str(key) + "}}",

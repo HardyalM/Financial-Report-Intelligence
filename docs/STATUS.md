@@ -7,6 +7,49 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 with supplemental facts (ADR-011, option A) — 2026-10-01 — scripted gate PASSES except ratings; tech lead's 14/14 risk bar MISSED (13/14)
+
+M5.2 not ticked: ratings are human and not done, and the tech lead's stated bar (risk recall 14/14) is missed in this
+run. Provider `gemini`, model `gemini-3.5-flash-lite`, generated mode, 27 displayed paragraphs. Fixtures and
+ratings.json untouched.
+
+| Condition | Result |
+|---|---|
+| generated; e4 unverified / naked / advice / mismatched placeholders | PASS (0/0/0/0) |
+| e8 KAM recall 3/3, going concern correct | PASS |
+| e8 risk recall | 13/14 = 0.93 (scripted bar >= 0.8 PASS; tech lead's bar 14/14 MISS) |
+| qa.passed >= 17 | PASS: 17/20 |
+| ratings complete / supported >= 0.9 | FAIL: human ratings not done (contradicted == 0 PASS) |
+
+Built: finintel/facts (ADR-011): SupplementalFacts read by row label from table geometry (header alignment, block
+period row, unit from header or printed suffix; no page given in advance; occurrences must agree within printed
+rounding, else null + warning). Extracted on company_a, all matching the tech lead's labels and each with source pages:
+basic EPS 2.30 (pp 141, 162), free cash flow 6,932 (pp 41, 43, 49), underlying operating profit 11,179 (p 47), Ice Cream
+operating profit 571 (p 149), parent investment 88,035 (pp 132, 197). Reached the model only as `fact:` placeholders; the
+numeric route returns a placeholder key and code renders it (no quote bypass). The meaning guard treats "underlying
+operating profit" as a different measure from the reported item. 15 extractor tests + 6 placeholder tests; the full-report
+test asserts the five values against fixtures/expected/company_a.qa.json.
+
+Numeric QA now passes n1-n6 and t1-t3 (n4 EUR2.30; n5 EUR6.9bn, pp 41/43/49; n6 EUR11.2bn, p 47; t2 EUR571.0m, p 149;
+t3 EUR88.0bn, pp 132/197). Note t2/t3 render with the generic money formatter (EUR571.0m, EUR88.0bn), which is rounded
+display; the scored value is the exact fact.
+
+Misses (id | expected | top-8 PDF pages | answer):
+v2 pages [7,8] "Growth Action Plan 2030" | 38,229,9,73,220,104,38,96 | validation_failed
+v3 pages [11,12] "underlying sales","volume" | 12,11,101,11,85,84,35,102 | validation_failed
+v4 pages [63,64] "Ice Cream" | 63,129,63,64,128,123,128,227 | validation_failed (it passed in the previous run: the model
+  step is not stable run to run)
+Risk recall 13/14: all 14 risk bullets exist, but "Legal and regulatory" cites page 55 (the section's overview passage,
+which lists risks and their levels), not its own page 62, so e8 correctly counts it missing. The earlier run had 14/14.
+The cite-its-own-page rule is not enforced mechanically: the model may cite the overview chunk for any risk.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: 896 passed |
+| `uv run python scripts/gate.py M5.2` | exit 1 only on ratings.complete and ratings.supported |
+
+---
+
 ## M5.2 with placeholder guard, code-built going concern, list routing — 2026-10-01 — GATE FAILED: qa 13/20
 
 GATE FAILED at M5.2 (one condition set short). Provider `gemini`, model `gemini-3.5-flash-lite`, generated mode, 30

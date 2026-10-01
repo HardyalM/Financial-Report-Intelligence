@@ -120,6 +120,8 @@ sessions:
     - "finintel/cli/**"
     - "finintel/narrative/models.py"
     - "finintel/narrative/sections.py"
+    - "finintel/facts/**"
+    - "docs/ARCHITECTURE.md"
     - "finintel/retrieval/lexical.py"
     - "finintel/retrieval/pipeline.py"
     - "scripts/gate.py"

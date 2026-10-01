@@ -37,6 +37,7 @@ from finintel.contracts.commentary import (
     Topic,
 )
 from finintel.contracts.ratio_pack import RatioPack
+from finintel.facts.models import SupplementalFacts
 from finintel.llm import LLMProvider
 from finintel.llm.anthropic_provider import LLMError
 from finintel.narrative.models import Chunk
@@ -170,8 +171,9 @@ def build_commentary(
     retrieved: Mapping[str, TopicResult],
     page_labels: Mapping[int, str] | None = None,
     query_set_version: str = QUERY_SET_VERSION,
+    facts: SupplementalFacts | None = None,
 ) -> CommentaryRun:
-    truth = build_ground_truth(pack, ratios)
+    truth = build_ground_truth(pack, ratios, facts)
     by_id = {c.chunk_id: c for c in chunks}
     years = allowed_years(pack)
     snapshot = numbers_snapshot(ratios, truth)

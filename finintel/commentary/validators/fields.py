@@ -40,6 +40,11 @@ FIELD_NAMES: dict[str, tuple[str, ...]] = {
     "current_ratio": ("current ratio",),
     "debt_to_equity": ("debt-to-equity", "debt to equity", "gearing", "leverage"),
     "roce": ("roce", "return on capital employed"),
+    "basic_eps": ("basic earnings per share", "basic eps", "earnings per share"),
+    "free_cash_flow": ("free cash flow",),
+    "underlying_operating_profit": ("underlying operating profit",),
+    "ice_cream_operating_profit": ("ice cream+operating profit",),
+    "parent_investment_in_subsidiaries": ("investments in subsidiaries", "investment in subsidiaries"),
 }  # fmt: skip
 _SENTENCE = re.compile(r"(?<=[.!?])\s+")
 
@@ -51,11 +56,40 @@ def _norm(text: str) -> str:
 def field_of(key: str) -> str | None:
     """The field a placeholder key is about: `item:cash:FY24` -> cash; a change -> its field."""
     parts = key.split(":")
-    if parts[0] in ("item", "ratio") and len(parts) >= 3:
+    if parts[0] in ("item", "ratio", "fact") and len(parts) >= 3:
         return parts[1]
     if parts[0] == "change" and len(parts) >= 5:
         return parts[2]
     return None
+
+
+#: Qualifiers that turn a named field into a different one: "underlying operating profit" is not
+#: the reported operating profit, so it does not name the statutory item.
+_QUALIFIED: dict[str, tuple[str, ...]] = {
+    "operating_profit": (
+        "underlying",
+        "adjusted",
+        "non underlying",
+        "segment",
+        "ice cream",
+        "core",
+    ),
+    "net_income": ("underlying", "adjusted"),
+    "revenue": ("underlying",),
+}
+
+
+def _named(name: str, bare: str, field: str) -> bool:
+    """`name` ("a+b" means both parts) occurs in `bare` and is not preceded by a qualifier."""
+    parts = [_norm(part) for part in name.split("+")]
+    if not all(part in bare for part in parts):
+        return False
+    banned = _QUALIFIED.get(field, ())
+    for match in re.finditer(re.escape(parts[0]), bare):
+        before = bare[: match.start()].rstrip()
+        if not any(before.endswith(q) for q in banned):
+            return True
+    return False
 
 
 def names_for(field: str) -> tuple[str, ...]:
@@ -77,7 +111,7 @@ def mismatched_placeholders(template: str, known: Collection[str] | None = None)
             field = field_of(key)
             if field is None:
                 continue
-            if not any(_norm(name) in bare for name in names_for(field)):
+            if not any(_named(name, bare, field) for name in names_for(field)):
                 problems.append(
                     f'{{{{{key}}}}} is not named in its sentence (say "{names_for(field)[0]}")'
                 )

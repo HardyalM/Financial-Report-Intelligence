@@ -32,6 +32,7 @@ _UNIT_WORDS = {"thousand": 1e3, "million": 1e6, "billion": 1e9}
 class Answer:
     status: str  # "ok" | "insufficient_evidence" | "validation_failed"
     paragraphs: Sequence[Paragraph]
+    pages: tuple[int, ...] = ()  # source pages of a pack or fact answer (it cites no chunk)
 
 
 def kind_of(question: Mapping[str, Any]) -> str:
@@ -69,15 +70,13 @@ def _quoted_numbers(para: Paragraph) -> list[float]:
     return [float(m.group(0).replace(",", "")) for s in spans for m in _NUMBER.finditer(s)]
 
 
-def _placeholder_amounts(
-    para: Paragraph, truth: Mapping[str, TruthEntry], unit_scale: int | None
-) -> list[float]:
-    """Money amounts (value x unit scale) of the item placeholders the paragraph uses."""
+def _placeholder_amounts(para: Paragraph, truth: Mapping[str, TruthEntry]) -> list[float]:
+    """Money amounts (base currency units) of the item and fact placeholders a paragraph uses."""
     amounts = []
     for m in PLACEHOLDER.finditer(para.template):
         entry = truth.get(m.group(1))
-        if m.group(1).startswith("item:") and entry and entry.value is not None and unit_scale:
-            amounts.append(entry.value * unit_scale)
+        if m.group(1).startswith(("item:", "fact:")) and entry and entry.amount is not None:
+            amounts.append(entry.amount)
     return amounts
 
 
@@ -90,7 +89,7 @@ def _states(
     unit_scale: int | None,
 ) -> bool:
     for p in paras:
-        if any(_close(a, amount * unit) for a in _placeholder_amounts(p, truth, unit_scale)):
+        if any(_close(a, amount * unit) for a in _placeholder_amounts(p, truth)):
             return True
         if any(_close(n, v) for n in _quoted_numbers(p) for v in accept):
             return True

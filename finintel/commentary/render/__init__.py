@@ -20,6 +20,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 from finintel.contracts.ratio_pack import RatioPack
+from finintel.facts.models import SupplementalFact, SupplementalFacts
 
 PLACEHOLDER = re.compile(r"\{\{([^{}]*)\}\}")
 SYMBOLS = {"GBP": "£", "EUR": "€", "USD": "$"}
@@ -29,6 +30,7 @@ REASON_TEXT = {
     "not_applicable": "not applicable",
     "withheld": "withheld",
     "unit_unknown": "unit not confirmed",
+    "conflicting_sources": "sources disagree",
 }
 Direction = str  # "up" | "down" | "flat"
 
@@ -41,6 +43,9 @@ class TruthEntry:
     reason: str | None
     direction: Direction | None  # None when no comparison is provided
     value: float | None = None  # the pack value behind `rendered`, in pack units (scoring only)
+    amount: float | None = None  # value in base currency units (item and fact values; scoring only)
+    pages: tuple[int, ...] = ()  # printed source pages; never shown to the model
+    note: str | None = None  # e.g. "non-GAAP measure"
 
     def text(self) -> str:
         if self.rendered is not None:
@@ -102,7 +107,9 @@ def _direction(rounded: Decimal) -> Direction:
     return "up" if rounded > 0 else "down" if rounded < 0 else "flat"
 
 
-def build_ground_truth(pack: Mapping[str, Any], ratios: RatioPack) -> dict[str, TruthEntry]:
+def build_ground_truth(
+    pack: Mapping[str, Any], ratios: RatioPack, facts: SupplementalFacts | None = None
+) -> dict[str, TruthEntry]:
     """Every placeholder the model may use, keyed `kind:id:period[:to]`, built by code."""
     truth: dict[str, TruthEntry] = {}
     unit_scale = pack.get("unit_scale")
@@ -125,12 +132,10 @@ def build_ground_truth(pack: Mapping[str, Any], ratios: RatioPack) -> dict[str, 
             elif unit_scale is None:
                 put(TruthEntry(key, None, "null", "unit_unknown", None))
             else:
-                put(
-                    TruthEntry(
-                        key, render_money(pv["value"], unit_scale, currency), "ok", None, direction,
-                        pv["value"],
-                    )
-                )  # fmt: skip
+                money = render_money(pv["value"], unit_scale, currency)
+                pages = (pv["page"],) if pv.get("page") else ()
+                amount = pv["value"] * unit_scale
+                put(TruthEntry(key, money, "ok", None, direction, pv["value"], amount, pages))
     for period in ratios.periods:
         change = into.get(period.period_id)
         for name, ratio in period.ratios.model_dump().items():
@@ -179,7 +184,26 @@ def build_ground_truth(pack: Mapping[str, Any], ratios: RatioPack) -> dict[str, 
                         key, render_percent_change(ic.percent), "ok", None, _direction(rounded)
                     )
                 )
+    for fact in facts.facts if facts else ():
+        put(_fact_entry(fact))
     return truth
+
+
+def _fact_entry(fact: SupplementalFact) -> TruthEntry:
+    """A supplemental fact as a placeholder: `fact:<id>:<period>`. Null stays null."""
+    key = f"fact:{fact.id}:{fact.period_id}"
+    if fact.value is None:
+        return TruthEntry(key, None, "null", "conflicting_sources", None)
+    if fact.per_share:
+        symbol = SYMBOLS.get(fact.currency or "", "")
+        rendered = f"{symbol}{_round(_dec(fact.value), 2)}"
+        amount = fact.value
+    else:
+        rendered = render_money(fact.value, fact.unit_scale, fact.currency)
+        amount = fact.value * fact.unit_scale
+    pages = tuple(sorted({s.page for s in fact.sources}))
+    note = "non-GAAP measure" if fact.is_apm else None
+    return TruthEntry(key, rendered, "ok", None, None, fact.value, amount, pages, note)
 
 
 def _places(ratio_name: str) -> int:

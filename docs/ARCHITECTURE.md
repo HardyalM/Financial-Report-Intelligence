@@ -309,6 +309,25 @@ Happy path first, then the failure path at each stage.
 
 ---
 
+### ADR-011 — Supplemental facts live beside the StatementPack, not in it (tech lead decision, option A)
+
+- **Context.** QA asks for figures the audited StatementPack has no item for: basic EPS, free cash flow, underlying
+  operating profit, a segment's operating profit, the parent's investment in subsidiaries. Several are non-GAAP
+  measures. The pack schema is locked (ADR-006) and ratios read only the pack.
+- **Decision.** A separate typed record, `SupplementalFacts` (`finintel/facts`). Each fact: `value`, `unit_scale`,
+  `currency`, `period_id`, `page`, `raw_text`, `confidence`, `is_apm`, and every agreeing source. Facts never enter
+  the pack and never feed a ratio. Read generically by row label from table geometry: columns by header alignment,
+  periods from the header or the block's period row, units from the header or a printed suffix. No page number is
+  given in advance. Occurrences must agree within printed rounding or the fact is null with a warning. They reach
+  commentary only as `fact:<id>:<period>` placeholders; the model never writes the figure and a verbatim quote is not
+  an alternative route.
+- **Consequences.** A figure with no readable row, column, period or unit is absent, not estimated. APMs are flagged
+  `is_apm` and rendered as such; the tech lead signs off the APM accounting. A fact on an excluded page (parent
+  accounts) is still read, because it is read from the text layer by label.
+- **Rejected.** Extending the pack schema (version bump, golden relabel, ratio engine exposure) and reading figures
+  from the labelled pages (answer-key leakage; would not generalise).
+
+
 ## 7. Threats specific to financial documents
 
 | Threat | How it happens | Defence | Test |
