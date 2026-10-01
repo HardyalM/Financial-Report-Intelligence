@@ -111,8 +111,14 @@ def validate_output(
     allowed_years: Collection[str] = (),
     page_labels: Mapping[int, str] | None = None,
     schema: Mapping[str, Any] = TOPIC_SCHEMA,
+    ordered: bool = False,
 ) -> TopicReport:
-    """One validation pass over a model's raw output (already parsed JSON)."""
+    """One validation pass over a model's raw output (already parsed JSON).
+
+    `ordered` (list bullets: one per risk, in order of appearance): each bullet must cite a passage
+    no earlier in the document than the previous bullet's. A bullet that cites an earlier passage
+    (typically the section's overview) is out of sequence and is rejected: V10.
+    """
     errors = sorted(Draft202012Validator(dict(schema)).iter_errors(raw), key=str)
     if errors:
         violations = [Violation("V1", e.message) for e in errors]
@@ -133,12 +139,44 @@ def validate_output(
             index, item, evidence, truth, allowed_years, page_labels or {}, counter
         )
         counter += len(para.citations)
+        if ordered:
+            _check_order(para, report.paragraphs, evidence, index)
         report.paragraphs.append(para)
         report.violations.extend(para.violations)
         report.violations.extend(
             Violation(r["code"], f"{r['chunk_id']}: {r['reason']}", index) for r in para.removed
         )
     return report
+
+
+def _first_position(para: ParagraphReport, evidence: Mapping[str, Chunk]) -> int | None:
+    """Document position (character offset) of the passage a bullet cites first, if any survived."""
+    if not para.citations:
+        return None
+    return evidence[para.citations[0].chunk_id].char_start
+
+
+def _check_order(
+    para: ParagraphReport,
+    earlier: Sequence[ParagraphReport],
+    evidence: Mapping[str, Chunk],
+    index: int,
+) -> None:
+    here = _first_position(para, evidence)
+    before = [p for p in earlier if _first_position(p, evidence) is not None]
+    if here is None or not before:
+        return
+    previous = _first_position(before[-1], evidence)
+    if previous is not None and here < previous:
+        para.violations.append(
+            Violation(
+                "V10",
+                "cites a passage earlier in the report than the previous bullet's: list the "
+                "items in order of appearance and cite the passage that describes this one, "
+                "not an overview",
+                index,
+            )
+        )
 
 
 def _check_reason(report: TopicReport, truth: Mapping[str, TruthEntry]) -> None:

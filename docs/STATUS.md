@@ -7,6 +7,46 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 with mechanical own-passage rule (V10) — 2026-10-01 — every scripted condition PASSES; ratings (human) outstanding
+
+M5.2 not ticked: only `ratings.complete` and `ratings.supported` fail, and both are the tech lead's human ratings.
+Provider `gemini`, model `gemini-3.5-flash-lite`, generated mode, 29 displayed paragraphs. Fixtures and ratings.json
+untouched.
+
+| Condition | Result |
+|---|---|
+| generated; e4 unverified / naked / advice / mismatched placeholders | PASS (0/0/0/0) |
+| e8 risk recall | 14/14 PASS (tech lead's bar met) |
+| e8 KAM recall | 3/3 PASS |
+| e8 going concern correct | PASS |
+| qa.passed >= 17 | PASS: 17/20 |
+| ratings complete / supported >= 0.9 | FAIL: not rated (contradicted == 0 PASS) |
+
+V10: list bullets (one per risk, in order of appearance) must each cite a passage no earlier in the report than the
+previous bullet's. The section overview is the first passage, so only the first bullet may cite it; a later bullet citing
+it is rejected and the violation goes back on the single retry (a retry never makes a topic worse). Relevance tests
+(title words in the chunk, lexical rank of the chunk for the title) could not enforce this: the overview contains both
+words of "Legal and regulatory" and ranks 2nd. Risk bullets now cite pages 55,56,56,57,57,58,58,59,59,60,60,61,61,62,
+so "Legal and regulatory" cites its own page 62.
+
+Misses (id | expected | top-8 PDF pages | answer):
+v2 pages [7,8] "Growth Action Plan 2030" | 38,229,9,73,220,104,38,96 | validation_failed
+v3 pages [11,12] "underlying sales","volume" | 12,11,101,11,85,84,35,102 | ok, cited page 11, missed both required terms
+v4 pages [63,64] "Ice Cream" | 63,129,63,64,128,123,128,227 | validation_failed (passed in one earlier run; the model step varies)
+The pass margin is exactly 17; v4 flips between runs, so a different run can land at 16 or 18. Three runs on this build:
+risk 14/14 (before V10), 13/14, 14/14 (with V10); QA 13, 17, 17.
+
+To finish M5.2: rate each displayed paragraph in fixtures/expected/ratings.json (ids = artefacts/commentary/company_a.json
+"claims"), then `python scripts/gate.py M5.2`; replay: `finintel commentary company_a --replay
+artifacts/commentary/company_a.json` must reproduce `output` byte for byte (not yet run on this recording).
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: 897 passed |
+| `uv run python scripts/gate.py M5.2` | exit 1 only on ratings.complete and ratings.supported |
+
+---
+
 ## M5.2 with supplemental facts (ADR-011, option A) — 2026-10-01 — scripted gate PASSES except ratings; tech lead's 14/14 risk bar MISSED (13/14)
 
 M5.2 not ticked: ratings are human and not done, and the tech lead's stated bar (risk recall 14/14) is missed in this

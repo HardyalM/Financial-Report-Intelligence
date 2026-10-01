@@ -182,6 +182,7 @@ def generate_risk_list(
         return validate_output(
             raw, topic="strategic_risks", evidence=evidence, truth={},
             allowed_years=allowed_years, page_labels=page_labels, schema=LIST_SCHEMA,
+            ordered=True,
         )  # fmt: skip
 
     return _call(provider, RISK_LIST_SYSTEM, risk_list_user(truth, section), validate)

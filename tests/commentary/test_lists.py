@@ -319,3 +319,51 @@ def test_list_questions_are_answered_from_the_validated_bullets() -> None:
         list_answer("What did the auditor say about cyber?", kam) is None
     )  # nothing matches: model path
     assert list_answer("How does the company describe its strategy?", kam) is None
+
+
+def test_list_bullets_must_cite_passages_in_order_of_appearance() -> None:
+    from finintel.commentary.generate import generate_risk_list
+    from finintel.commentary.validators import validate_output
+    from finintel.commentary.validators.validate import LIST_SCHEMA
+
+    chunks = risk_chunks()[:3]
+    ev = {c.chunk_id: c for c in chunks}
+    quotes = {
+        c.chunk_id: f"Risk passage number {i} describes a distinct exposure"
+        for i, c in enumerate(chunks)
+    }
+
+    def raw(order: list[str]) -> dict[str, Any]:
+        return {"bullets": [
+            {"template": f"Exposure {'abcdef'[n]}: described.", "citations": [{"chunk_id": cid, "quote": quotes[cid]}]}
+            for n, cid in enumerate(order)]}  # fmt: skip
+
+    def run(order: list[str]):  # type: ignore[no-untyped-def]
+        return validate_output(
+            raw(order),
+            topic="strategic_risks",
+            evidence=ev,
+            truth={},
+            schema=LIST_SCHEMA,
+            ordered=True,
+        )
+
+    ok = run(["r0", "r1", "r2"])
+    assert not ok.violations and all(p.accepted for p in ok.paragraphs)
+    same = run(["r0", "r1", "r1"])  # two risks described in one passage is fine
+    assert not same.violations
+    bad = run(["r0", "r1", "r2", "r0"])  # the last bullet cites the overview passage again
+    assert [v.code for v in bad.violations] == ["V10"] and bad.violations[0].paragraph == 3
+    assert [p.accepted for p in bad.paragraphs] == [True, True, True, False] and bad.needs_retry
+    unordered = validate_output(
+        raw(["r2", "r0"]), topic="strategic_risks", evidence=ev, truth={}, schema=LIST_SCHEMA
+    )  # without `ordered` nothing is checked
+    assert not unordered.violations
+
+    # through the generator: a violating first reply is retried with the feedback, then accepted
+    good = raw(["r0", "r1", "r2"])
+    first = raw(["r0", "r1", "r2", "r0"])
+    p = Scripted({"strategic_risks": [first, good]})
+    result = generate_risk_list(p, chunks, {}, allowed_years=())
+    assert result.retried and len(result.paragraphs) == 3
+    assert "V10 (paragraph 4)" in p.calls[1][1]
