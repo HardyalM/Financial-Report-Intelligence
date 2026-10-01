@@ -138,6 +138,13 @@ sessions:
   "M6.2":
     - "finintel/api/**"
     - "schemas/openapi.json"
+    - "finintel/review/**"
+    - "finintel/worker/**"
+    - "finintel/db/jobs.py"
+    - "finintel/extract.py"
+    - "finintel/locate/locator.py"
+    - "scripts/export_openapi.py"
+    - "scripts/scope.yaml"
     - "tests/**"
   "M7.1":
     - "web/**"

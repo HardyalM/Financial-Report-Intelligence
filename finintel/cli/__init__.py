@@ -106,6 +106,12 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--engines", choices=("local", "all"), default="local")
     run.add_argument("--embedder", choices=("bge-m3", "fake"), default="bge-m3")
     run.add_argument("--cache-dir", type=Path)
+    serve = commands.add_parser("serve", help="run the HTTP API and a worker (M6.2, local only)")
+    serve.add_argument("--host", default="127.0.0.1")
+    serve.add_argument("--port", type=int, default=8000)
+    serve.add_argument("--engines", choices=("local", "all"), default="local")
+    serve.add_argument("--embedder", choices=("bge-m3", "fake"), default="bge-m3")
+    serve.add_argument("--cache-dir", type=Path)
     cm = commands.add_parser("commentary", help="grounded commentary for a report (M5.2)")
     cm.add_argument("company", help='fixture name, e.g. "company_a"')
     cm.add_argument("--replay", type=Path, help="replay the recorded model calls in this artefact")
@@ -142,6 +148,15 @@ def main(argv: list[str] | None = None) -> int:
         return _extract(args, settings)
     if args.command == "eval-e2":
         return _eval_e2(args, settings)
+    if args.command == "serve":
+        return run_cmd.serve(
+            settings.artifacts_dir,
+            args.cache_dir or settings.cache_dir,
+            host=args.host,
+            port=args.port,
+            engines=args.engines,
+            embedder=args.embedder,
+        )
     if args.command == "run":
         return _run(args, settings)
     if args.command == "commentary":

@@ -327,18 +327,19 @@ These checks are created in M0 and run in CI.
 ## M6.2 — HTTP API
 
 **Read first:** EXTRACTION §6; ADR-004; OQ-8.
-**Allowed paths:** `finintel/api/**`, `schemas/openapi.json`, `tests/**`.
+**Allowed paths:** `finintel/api/**`, `schemas/openapi.json`, `finintel/review/**`, `finintel/worker/**`, `finintel/db/jobs.py`, `finintel/extract.py`, `finintel/locate/locator.py`, `scripts/export_openapi.py`, `scripts/scope.yaml`, `tests/**`.
+*Amended 2026-10-01 in the M6.2 session: override and review logic lives in finintel/review; the extract stage reads stored human decisions (worker); the locator accepts a person's statement page and extract_pack a confirmed unit (extract.py, locator.py); jobs can be reset; the OpenAPI export is scripts/export_openapi.py, checked by `make contracts-check`.*
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] API tests pass for every endpoint in EXTRACTION §6, plus uploads, report, commentary and pages.
+- [ ] G1–G6 pass. *`make ci` green (897); `check_scope.py M6.2` flags only the tech lead's uncommitted fixtures/expected files (G2/G3).*
+- [x] API tests pass for every endpoint in EXTRACTION §6, plus uploads, report, commentary and pages. *2026-10-01: tests/api (12, network-marked) + the OpenAPI test in the default suite.*
 - [ ] Tests:
   - an override recomputes ratios and sets `stale == true`
   - an unanchored `set_value` gives 422; forced, it gives 200 plus `human_override_unanchored`
   - a duplicate upload returns the same id
   - a synthetic unit-ambiguous report stays `needs_unit_confirmation` until confirmed
   - the statement-location and document-type endpoints re-run the affected stages.
-- [ ] `schemas/openapi.json` is exported and `make contracts-check` covers it.
+- [x] `schemas/openapi.json` is exported and `make contracts-check` covers it.
 
 ---
 

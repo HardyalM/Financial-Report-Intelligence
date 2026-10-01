@@ -83,3 +83,21 @@ def run_pipeline(
         err = f"  {job['error']}" if job["error"] else ""
         print(f"  {job['stage']:<11} {job['status']:<8} attempts={job['attempts']}{err}", file=out)
     return 0 if result["status"] == "ready" else 1
+
+
+def serve(
+    artifacts: Path, cache_dir: Path, *, host: str, port: int, engines: str, embedder: str
+) -> int:
+    """Run the HTTP API with a background worker (local only, no authentication: ADR-004)."""
+    import uvicorn
+
+    from finintel.api import create_app
+
+    env = {**read_dotenv(Path(".env")), **os.environ}
+    ctx = build_context(env, artifacts, cache_dir, engines=engines, embedder=embedder)
+
+    def connect() -> psycopg.Connection:
+        return psycopg.connect(database_url(), autocommit=True)
+
+    uvicorn.run(create_app(ctx, connect, start_worker=True), host=host, port=port, log_level="info")
+    return 0

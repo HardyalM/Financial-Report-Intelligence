@@ -25,9 +25,11 @@ test:
 
 contracts:
 	$(RUN) python scripts/gen_contracts.py
+	$(RUN) python scripts/export_openapi.py
 
 contracts-check:
 	$(RUN) python scripts/gen_contracts.py --check
+	$(RUN) python scripts/export_openapi.py --check
 
 scope:
 	$(RUN) python scripts/gen_scope.py --check
@@ -48,7 +50,7 @@ eval-e2:
 	$(RUN) finintel eval-e2 $(COMPANY)
 
 test-db:
-	$(RUN) pytest -m network tests/retrieval/test_postgres.py tests/worker -q
+	$(RUN) pytest -m network tests/retrieval/test_postgres.py tests/worker tests/api -q
 
 migrate:
 	$(RUN) python -m finintel.db migrate

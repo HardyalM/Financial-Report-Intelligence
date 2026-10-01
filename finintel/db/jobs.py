@@ -99,3 +99,15 @@ def mark_failed(
             )
             conn.execute("UPDATE documents SET status = 'failed' WHERE id = %s", (job.document_id,))
     return retry
+
+
+def reset(conn: psycopg.Connection, document_id: int, stages: Sequence[str]) -> None:
+    """Queue the given stages again (and mark the document processing). Used when a person's
+    decision changes an input: the affected stages re-run, the rest are left done."""
+    with conn.transaction():
+        conn.execute(
+            "UPDATE jobs SET status = 'queued', attempts = 0, error_code = NULL, "
+            "run_after = now(), finished_at = NULL WHERE document_id = %s AND stage = ANY(%s)",
+            (document_id, list(stages)),
+        )
+        conn.execute("UPDATE documents SET status = 'processing' WHERE id = %s", (document_id,))

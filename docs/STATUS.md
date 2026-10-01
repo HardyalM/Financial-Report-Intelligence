@@ -7,6 +7,43 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M6.2 — 2026-10-01 — green except G2/G3 on the tech lead's uncommitted fixtures
+
+M6.2 green. The HTTP API serves every endpoint in EXTRACTION 6 plus uploads, report, commentary, pages (and the original
+PDF), health and readiness. `finintel serve` runs it with a background worker (local only, no auth: ADR-004).
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: 897 passed, 28 deselected; `schemas/openapi.json up to date` in `contracts-check` |
+| `uv run pytest -m network tests` | 28 passed: retrieval 5, worker 11, API 12, against real Postgres |
+| smoke: `finintel serve` + `curl /healthz /readyz /reports/1` | ok / ok (database, storage) / 200 |
+| `check_scope.py M6.2 --base 5734cb4` | only fixtures/expected/* (the tech lead's uncommitted files, G2/G3) |
+
+Gate tests (tests/api, real worker and Postgres): an anchored `set_value` recomputes ratios from the new pack (operating
+margin = operating profit / the overridden revenue, 1e-9), appends an override with before/after, writes pack version 2
+(`source: override`, `engine: human_override`, confidence 1.0) and sets `stale == true`; an unanchored `set_value` is 422
+`unanchored_override`, forced without a reason 422 `reason_required`, forced with one 200 with `human_override_unanchored`
+(engine and warning); refused overrides (value not matching its raw text, unknown item or period, missing fields,
+set_null without a reason) change nothing; a candidate with a printed value can be accepted and a number-blind LLM pointer
+is refused (`candidate_without_value`); duplicate upload returns the same id (200, `duplicate: true`, nothing enqueued
+twice); not-a-PDF 415, encrypted 422 `encrypted_pdf`, too large 413; the synthetic `missing_unit` report stays
+`needs_unit_confirmation` (no pack, later jobs queued, nothing moves) until `unit-confirmation`, then finishes `ready`
+with GBP x 1000 and `unit_confirmed_manually`; `statement-location` re-runs extract, ratios, index and commentary and
+not ingest or text layer; `document-type` re-applies the applicability matrix (bank: all four ratios not_applicable) and
+re-runs ratios and commentary only; a re-extraction keeps a person's value override.
+
+Built: finintel/api (app, models), finintel/review (overrides: anchoring on the page's printed words, value/raw-text
+consistency, pack materialisation, document-type), jobs.reset, extract_stage honours stored human decisions, extract_pack
+`confirmed_unit` and `location_hints` (the locator takes a person's page for a statement; never a number),
+scripts/export_openapi.py (`make contracts` writes it, `contracts-check` fails on drift), `finintel serve`.
+Limits, for the tech lead: an override replaces one value; derived items (e.g. total_debt from borrowings) are not
+recomputed from it; overrides by "who" are not recorded (no authentication in v1); a forced unanchored override is
+recorded and marked but is not blocked from feeding a ratio (the ratio carries the manual badge); the review queue holds
+LLM pointers (number-blind) and warnings, but extraction does not yet persist engine candidates with values, so
+`accept_candidate` has nothing real to accept until it does; statements_not_found still ends `failed`.
+
+---
+
 ## M6.1 — 2026-10-01 — green except G2/G3 on the tech lead's uncommitted fixtures
 
 M6.1 green. `finintel run fixtures/pdfs/company_a.pdf` ends `ready`; stored pack_sha 23728ccd...8021bd0 equals the file

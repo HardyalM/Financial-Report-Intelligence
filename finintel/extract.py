@@ -8,6 +8,7 @@ or currency problem returns status != "ok" and no pack: there is no default and 
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -19,7 +20,7 @@ from finintel.contracts import validate_pack
 from finintel.ingest import ingest, score_digital_born
 from finintel.llm import LLMProvider, suggest_pointers
 from finintel.locate import LocateResult, locate
-from finintel.locate.models import EXTRACTED
+from finintel.locate.models import EXTRACTED, StatementType
 from finintel.mapping.aliases import load_aliases
 from finintel.parse.cached import cached_text_layer
 from finintel.parse.engines.azure_di_engine import (
@@ -64,15 +65,22 @@ def extract_pack(
     engines: str = "local",
     provider: LLMProvider | None = None,
     azure: AzureDiEngine | None = None,
+    location_hints: Mapping[StatementType, int] | None = None,
+    confirmed_unit: tuple[str, int] | None = None,
 ) -> ExtractionResult:
     """`engines="all"` adds the image-layout family (Azure DI) when `azure` is configured; without
     credentials, or if the vendor call fails, it is recorded as `engine_skipped` and the local path
-    carries on with a `reduced_verification` warning."""
+    carries on with a `reduced_verification` warning.
+
+    Two human decisions can be passed in (never numbers): `location_hints` names the page of a
+    statement the locator could not find or could not tell from another entity's, and
+    `confirmed_unit` is a (currency, unit_scale) a person read off the page when the header was
+    ambiguous. A confirmed unit is recorded on the pack as `unit_confirmed_manually`."""
     if engines not in ("local", "all"):
         raise ValueError(f"engines must be 'local' or 'all', not {engines!r}")
     record = ingest(pdf)
     layer, _ = cached_text_layer(pdf, record.sha256, cache)
-    located = locate(layer)
+    located = locate(layer, forced=location_hints)
     tables = statement_tables(pdf, record.sha256, layer, located, cache)
     notes: list[dict[str, Any]] = []
     for w in located.warnings:
@@ -105,7 +113,22 @@ def extract_pack(
         for e in engine_names
     }
     first = headers[engine_names[0]]
-    if any(
+    if confirmed_unit is not None and any(h.status != "ok" for h in headers.values()):
+        currency, scale = confirmed_unit
+        first = first.model_copy(update={"status": "ok", "currency": currency, "unit_scale": scale})
+        headers = {
+            e: h.model_copy(update={"status": "ok", "currency": currency, "unit_scale": scale})
+            for e, h in headers.items()
+        }
+        notes.append(
+            {
+                "code": "unit_confirmed_manually",
+                "message": f"unit confirmed by a person: {currency} x {scale:,}",
+                "item": None,
+                "page": None,
+            }
+        )
+    elif any(
         (h.status, h.currency, h.unit_scale) != (first.status, first.currency, first.unit_scale)
         for h in headers.values()
     ):
@@ -119,6 +142,8 @@ def extract_pack(
         )
         return ExtractionResult("needs_unit_confirmation", None, report, notes, located=located)
     for hw in first.warnings:
+        if confirmed_unit is not None and hw.code in ("unit_ambiguous", "currency_ambiguous"):
+            continue  # a person has settled it
         if hw.code in SCHEMA_CODES:
             notes.append({"code": hw.code, "message": hw.message, "item": None, "page": hw.page})
     report["header"] = first.model_dump(mode="json", exclude={"tables"})

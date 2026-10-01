@@ -51,7 +51,9 @@ HUMAN = {
 _ORDER = {kind: i for i, kind in enumerate(StatementType)}
 
 
-def locate(layer: TextLayer) -> LocateResult:
+def locate(layer: TextLayer, forced: Mapping[StatementType, int] | None = None) -> LocateResult:
+    """`forced` is a human decision about *where* a statement is (EXTRACTION section 2): the named
+    page, and the pages that continue it, are taken as the statement. It is never a number."""
     chrome = detect_chrome(layer)
     views = {page.page: PageView(page, chrome) for page in layer.pages}
     folios = infer_folios(list(views.values()))
@@ -71,7 +73,10 @@ def locate(layer: TextLayer) -> LocateResult:
     statements: dict[StatementType, StatementLocation] = {}
     selected: set[tuple[int, StatementType]] = set()
     for kind in StatementType:
-        location, chosen, notes = _select(kind, candidates, views, folios)
+        if forced and kind in forced and forced[kind] in views:
+            location, chosen, notes = _forced(kind, forced[kind], candidates, views, folios)
+        else:
+            location, chosen, notes = _select(kind, candidates, views, folios)
         statements[kind] = location
         selected |= {(page, kind) for page in chosen}
         warnings += notes
@@ -298,6 +303,36 @@ def _select(
         for link in links
     ]
     return location, list(run), notes
+
+
+def _forced(
+    kind: StatementType,
+    page: int,
+    candidates: Sequence[PageCandidate],
+    views: Mapping[int, PageView],
+    folios: Folios,
+) -> tuple[StatementLocation, list[int], list[LocateWarning]]:
+    """The statement is where a person said it is: that page and what continues it."""
+    run, links = _follow(page, kind, views)
+    title = next((c.title for c in candidates if c.page == page and c.statement_type is kind), None)
+    location = StatementLocation(
+        statement_type=kind,
+        status="found",
+        scope=Scope.GROUP,
+        pages=tuple(run),
+        page_labels=tuple(views[p].page.label or folios.label(p) for p in run),
+        title=title,
+        score=1.0,
+        continuations=tuple(links),
+        spread=any(is_spread(views[p]) for p in run),
+    )
+    note = LocateWarning(
+        code="statement_location_confirmed",
+        message=f"{HUMAN[kind]} located by a person on p.{page}",
+        page=page,
+        statement=kind,
+    )
+    return location, run, [note]
 
 
 def _follow(

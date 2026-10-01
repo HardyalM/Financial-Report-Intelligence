@@ -26,12 +26,13 @@ from finintel.extract import extract_pack
 from finintel.facts import extract_facts
 from finintel.ingest import ingest
 from finintel.locate import locate
-from finintel.locate.models import DocumentType
+from finintel.locate.models import DocumentType, StatementType
 from finintel.narrative import CHUNKER_VERSION
 from finintel.parse.cached import cached_text_layer
 from finintel.ratios import compute_ratios, pack_sha256
 from finintel.retrieval.pipeline import FusionOrderReranker, retrieve_all
 from finintel.retrieval.queries import QUERY_SET_VERSION
+from finintel.review import materialise
 from finintel.worker.context import RunContext
 
 log = structlog.get_logger(__name__)
@@ -105,17 +106,50 @@ def text_layer_stage(conn: psycopg.Connection, ctx: RunContext, doc: Doc) -> Out
     return Outcome()
 
 
+def load_overrides(conn: psycopg.Connection, document_id: int) -> list[dict[str, Any]]:
+    """The document's override rows, oldest first, as `{id, action, anchored, reason, payload}`."""
+    rows = conn.execute(
+        "SELECT id, action, anchored, reason, payload FROM overrides "
+        "WHERE document_id = %s ORDER BY id",
+        (document_id,),
+    ).fetchall()
+    return [
+        {"id": r[0], "action": r[1], "anchored": r[2], "reason": r[3], "payload": dict(r[4])}
+        for r in rows
+    ]
+
+
+def _decisions(
+    overrides: list[dict[str, Any]],
+) -> tuple[dict[StatementType, int], tuple[str, int] | None, str | None]:
+    """The latest human decisions that steer extraction: pages, a unit, a document type."""
+    hints: dict[StatementType, int] = {}
+    unit: tuple[str, int] | None = None
+    doc_type: str | None = None
+    for row in overrides:
+        payload = row["payload"]
+        if row["action"] == "statement_location":
+            hints[StatementType(payload["statement_type"])] = int(payload["page"])
+        elif row["action"] == "unit_confirmation":
+            unit = (str(payload["currency"]), int(payload["unit_scale"]))
+        elif row["action"] == "document_type":
+            doc_type = str(payload["document_type"])
+    return hints, unit, doc_type
+
+
 def extract_stage(conn: psycopg.Connection, ctx: RunContext, doc: Doc) -> Outcome:
+    overrides = load_overrides(conn, doc.id)
+    hints, unit, chosen_type = _decisions(overrides)
     result = extract_pack(
         _pdf(ctx, doc), StageCache(ctx.cache_dir), engines=ctx.engines, azure=ctx.azure,
-        provider=ctx.provider,
+        provider=ctx.provider, location_hints=hints or None, confirmed_unit=unit,
     )  # fmt: skip
     located = result.located
-    doc_type = located.profile.document_type.value if located else None
+    doc_type = chosen_type or (located.profile.document_type.value if located else None)
     persist.set_document(conn, doc.id, document_type=doc_type)
     if result.pack is None:
         return Outcome(halt=BLOCKING.get(result.status, "failed"), detail=result.status)
-    pack = result.pack
+    pack = materialise(result.pack, overrides)  # a person's decisions survive a re-extraction
     sha = pack_sha256(pack)
     codes = {w.get("code") for w in pack.get("warnings", [])}
     report = {
@@ -124,7 +158,7 @@ def extract_stage(conn: psycopg.Connection, ctx: RunContext, doc: Doc) -> Outcom
         "reduced_verification": "reduced_verification" in codes,
         "warnings": pack.get("warnings", []),
     }
-    pack_id = persist.store_pack(conn, doc.id, pack, sha, "extracted")
+    pack_id = persist.store_pack(conn, doc.id, pack, sha, "override" if overrides else "extracted")
     persist.store_report(conn, doc.id, pack_id, report)
     review = result.report.get("review", {})
     persist.store_review_items(

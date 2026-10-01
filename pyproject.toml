@@ -13,6 +13,9 @@ dependencies = [
     "structlog>=24.4",
     "pyyaml>=6",
     "psycopg[binary]>=3.3.6",
+    "fastapi>=0.142.2",
+    "uvicorn[standard]>=0.54.0",
+    "python-multipart>=0.0.32",
 ]
 
 [project.scripts]
@@ -67,6 +70,9 @@ select = ["E", "F", "I", "B", "UP", "N", "SIM", "RUF"]
 "finintel/commentary/validators/fields.py" = ["E501", "RUF001"]  # one field per line; dashes are the point
 "finintel/db/persist.py" = ["E501"]
 "finintel/cli/run_cmd.py" = ["E501"]
+"finintel/review/overrides.py" = ["E501"]
+"tests/api/*.py" = ["E501"]  # long literals and assertions
+"finintel/api/*.py" = ["E501"]  # route signatures and SQL read best unwrapped
 "tests/worker/*.py" = ["E501"]  # SQL and long assertions  # SQL statements read best on their own lines
 "tests/commentary/test_fact_placeholders.py" = ["E501"]
 "tests/facts/*.py" = ["E501"]  # table fixtures are laid out as printed

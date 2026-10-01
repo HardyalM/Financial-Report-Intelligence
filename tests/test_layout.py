@@ -65,13 +65,6 @@ def test_engine_declares_its_family(target: str, family: EngineFamily) -> None:
             engine.parse(Path("report.pdf"))
 
 
-def test_stubs_name_their_session() -> None:
-    from finintel.review import apply_overrides
-
-    with pytest.raises(NotImplementedError, match=r"M6\.2"):
-        apply_overrides(None, [])  # type: ignore[arg-type]
-
-
 def test_cli_without_a_command_prints_usage(capsys: pytest.CaptureFixture[str]) -> None:
     from finintel.cli import main
 

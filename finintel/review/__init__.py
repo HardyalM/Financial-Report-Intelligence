@@ -1,16 +1,25 @@
-"""Append-only human overrides and pack re-materialisation (EXTRACTION section 6)."""
+"""Human review: overrides, their anchoring check and the pack versions they materialise (M6.2).
 
-from dataclasses import dataclass
+A person may decide *where* to look, confirm a unit, name the document type, and set or null a
+value. A value a person sets must be printed on the page they name (anchored); an unanchored value
+is accepted only when forced with a reason and is marked for good. Nothing here edits an expected
+fixture, and nothing here estimates a number.
+"""
 
-from finintel._placeholders import not_yet
-from finintel.contracts import StatementPack
+from finintel.review.overrides import (
+    OverrideError,
+    ValueOverride,
+    anchored_on_page,
+    apply_document_type,
+    apply_value_override,
+    materialise,
+)
 
-
-@dataclass(frozen=True)
-class Override:
-    """One reviewer action. Fields are defined in M6.2."""
-
-
-def apply_overrides(pack: StatementPack, overrides: list[Override]) -> StatementPack:
-    """Return a new pack version with overrides applied and marked."""
-    not_yet("M6.2", "apply_overrides")
+__all__ = [
+    "OverrideError",
+    "ValueOverride",
+    "anchored_on_page",
+    "apply_document_type",
+    "apply_value_override",
+    "materialise",
+]
