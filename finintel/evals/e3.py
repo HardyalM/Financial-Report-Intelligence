@@ -1,7 +1,7 @@
 """E3 retrieval: does the top 8 for each labelled query cover an expected page? (EVAL 3.3)
 
 Labels are read, never written. `page_basis` in the label file says whether pages are printed
-folios (the default reading when the text mentions "printed") or PDF indices; folios are converted
+folios or PDF indices (see `uses_printed_pages`); folios are converted
 with the document's own inferred offset, and the offset used is recorded in the report. A query
 hits when any retrieved chunk's page range touches an expected page.
 """
@@ -19,7 +19,12 @@ Retrieve = Callable[[str], Sequence[str]]  # query -> chunk ids, best first
 
 
 def uses_printed_pages(labels: Mapping[str, Any]) -> bool:
-    return "printed" in str(labels.get("page_basis", "")).lower()
+    """PDF indices when the basis names PDF or viewer pages (even if it also says "not printed");
+    printed folios only when it names printed pages and neither of those."""
+    basis = str(labels.get("page_basis", "")).lower()
+    if "pdf" in basis or "viewer" in basis:
+        return False
+    return "printed" in basis
 
 
 def compare(

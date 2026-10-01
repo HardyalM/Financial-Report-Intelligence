@@ -37,3 +37,10 @@ def test_printed_labels_without_offset_fail_loudly() -> None:
     labels = {"page_basis": "printed", "queries": []}
     with pytest.raises(ValueError):
         e3.compare(labels, [], lambda q: [], folio_offset=None, models={})
+
+
+def test_basis_naming_pdf_pages_is_not_mistaken_for_printed() -> None:
+    note = "1-indexed PDF viewer pages, verified against the file. Not printed footer numbers."
+    assert not e3.uses_printed_pages({"page_basis": note})
+    assert e3.uses_printed_pages({"page_basis": "printed page numbers from the footer"})
+    assert not e3.uses_printed_pages({})
