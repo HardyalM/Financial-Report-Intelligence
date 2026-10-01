@@ -80,7 +80,7 @@ IMPORT_OWNERS = {
     "pymupdf": ("finintel/parse/", "finintel/ingest/"),
     "fitz": (),  # the legacy PyMuPDF name: use `import pymupdf`
     "pdfplumber": ("finintel/parse/engines/pdfplumber_engine.py",),
-    "httpx": ("finintel/parse/engines/azure_di_engine.py",),
+    "httpx": ("finintel/parse/engines/azure_di_engine.py", "finintel/llm/anthropic_provider.py"),
     "anthropic": (),  # LLM calls arrive in M2.4 (finintel/llm/)
     "voyageai": (),  # embeddings arrive in M4.2 (finintel/retrieval/)
 }

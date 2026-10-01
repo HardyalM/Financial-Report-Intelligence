@@ -40,6 +40,7 @@ class TruthEntry:
     status: str  # "ok" | "null"
     reason: str | None
     direction: Direction | None  # None when no comparison is provided
+    value: float | None = None  # the pack value behind `rendered`, in pack units (scoring only)
 
     def text(self) -> str:
         if self.rendered is not None:
@@ -126,9 +127,10 @@ def build_ground_truth(pack: Mapping[str, Any], ratios: RatioPack) -> dict[str, 
             else:
                 put(
                     TruthEntry(
-                        key, render_money(pv["value"], unit_scale, currency), "ok", None, direction
+                        key, render_money(pv["value"], unit_scale, currency), "ok", None, direction,
+                        pv["value"],
                     )
-                )
+                )  # fmt: skip
     for period in ratios.periods:
         change = into.get(period.period_id)
         for name, ratio in period.ratios.model_dump().items():
@@ -143,7 +145,7 @@ def build_ground_truth(pack: Mapping[str, Any], ratios: RatioPack) -> dict[str, 
             direction = None
             if change is not None and change.ratios[name].value is not None:
                 direction = _direction(_round(_dec(change.ratios[name].value), _places(name)))
-            put(TruthEntry(key, rendered, "ok", None, direction))
+            put(TruthEntry(key, rendered, "ok", None, direction, ratio["value"]))
     for change in ratios.changes:
         span = f"{change.from_period_id}:{change.to_period_id}"
         for name, rc in change.ratios.items():

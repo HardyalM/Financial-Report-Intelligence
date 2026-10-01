@@ -19,7 +19,7 @@ import json
 import sys
 from pathlib import Path
 
-from finintel.cli import chunks_cmd, extract_cmd
+from finintel.cli import chunks_cmd, commentary_cmd, extract_cmd
 from finintel.cli import locate as locate_cmd
 from finintel.cli.common import HoldoutRefusedError
 from finintel.cli.inspect import (
@@ -99,6 +99,11 @@ def build_parser() -> argparse.ArgumentParser:
     e2p = commands.add_parser("eval-e2", help="compare ratios with fixtures/expected (M3)")
     e2p.add_argument("company", help='fixture name, e.g. "company_a"')
     e2p.add_argument("--cache-dir", type=Path)
+    cm = commands.add_parser("commentary", help="grounded commentary for a report (M5.2)")
+    cm.add_argument("company", help='fixture name, e.g. "company_a"')
+    cm.add_argument("--replay", type=Path, help="replay the recorded model calls in this artefact")
+    cm.add_argument("--embedder", choices=("bge-m3", "fake"), default="bge-m3")
+    cm.add_argument("--cache-dir", type=Path)
     e3p = commands.add_parser("eval-e3", help="retrieval hit@8 against labelled queries (M4.2)")
     e3p.add_argument("company", help='fixture name, e.g. "company_a"')
     e3p.add_argument("--labels", type=Path, help="label file (default fixtures/expected/...)")
@@ -130,6 +135,8 @@ def main(argv: list[str] | None = None) -> int:
         return _extract(args, settings)
     if args.command == "eval-e2":
         return _eval_e2(args, settings)
+    if args.command == "commentary":
+        return _commentary(args, settings)
     if args.command == "eval-e3":
         return _eval_e3(args, settings)
     if args.command == "chunks":
@@ -279,6 +286,46 @@ def _eval_e2(args: argparse.Namespace, settings: Settings) -> int:
                 f"  {cell['period']} {cell['ratio']}: extracted {cell['extracted']}; "
                 f"labelled {cell['labelled']}"
             )
+    print(f"  -> {path}")
+    return EXIT_OK
+
+
+def _commentary(args: argparse.Namespace, settings: Settings) -> int:
+    import os
+
+    from finintel.cli.settings import read_dotenv
+
+    env = {**read_dotenv(Path(".env")), **os.environ}
+    try:
+        run, report, path = commentary_cmd.run_commentary(
+            args.company,
+            args.cache_dir or settings.cache_dir,
+            settings.artifacts_dir,
+            env,
+            replay=args.replay,
+            embedder_name=args.embedder,
+        )
+    except HoldoutRefusedError as exc:
+        print(f"finintel: refused {exc}: held out until M8.3", file=sys.stderr)
+        return EXIT_HOLDOUT
+    except (FileNotFoundError, ValueError, RuntimeError, KeyError, IngestError) as exc:
+        print(f"finintel commentary: {exc}", file=sys.stderr)
+        return EXIT_FAILED
+    c = run.commentary
+    label = f"  [{c.label}]" if c.label else ""
+    print(f"{args.company}: mode={c.mode}{label}")
+    if run.fallback_reason:
+        print(f"  model unavailable ({run.fallback_reason}): fell back to extractive")
+    print(f"  numbers: {run.snapshot['rendered']}")
+    for topic in c.topics:
+        print(f"  {topic.topic}: {topic.status}, {len(topic.paragraphs)} paragraph(s)")
+    print(f"  executive_summary: {c.executive_summary.status}, {len(c.executive_summary.bullets)}")
+    print(f"  e4 {report['e4']}")
+    for key in ("e8", "qa"):
+        if key in report:
+            print(f"  {key} {report[key]}")
+    for note in report["notes"]:
+        print(f"  {note}")
     print(f"  -> {path}")
     return EXIT_OK
 

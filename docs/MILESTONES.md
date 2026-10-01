@@ -293,7 +293,8 @@ These checks are created in M0 and run in CI.
 ## M5.2 — Commentary generation
 
 **Read first:** RAG §3.4, §4; EVAL §3.4, §3.6, §4.
-**Allowed paths:** `finintel/commentary/**`, `finintel/llm/**`, `tests/**`.
+**Allowed paths:** `finintel/commentary/**`, `finintel/llm/**`, `finintel/cli/**`, `scripts/gate.py`, `scripts/scope.yaml`, `tests/**`.
+*Amended 2026-10-01 in the M5.2 session: the stage runs as `finintel commentary` (finintel/cli) and the gate adds the mode and ratings conditions (scripts/gate.py). Scoring reads the tech lead's label shapes (`kind`, `q`, `pages`, `must_mention`).*
 
 **Gate:**
 - [ ] G1–G6 pass.

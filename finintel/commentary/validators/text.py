@@ -101,3 +101,14 @@ def blank_verified_quotes(text: str, verified_quotes: list[str]) -> str:
         return m.group(0)
 
     return _QUOTED.sub(sub, text)
+
+
+def verified_spans(text: str, verified_quotes: list[str]) -> list[str]:
+    """The quotation-marked spans of `text` that are substrings of a verified quote."""
+    normalised = [simple(q) for q in verified_quotes]
+    spans = []
+    for m in _QUOTED.finditer(text):
+        inner = m.group(1) if m.group(1) is not None else m.group(2)
+        if inner and simple(inner) and any(simple(inner) in q for q in normalised):
+            spans.append(inner)
+    return spans

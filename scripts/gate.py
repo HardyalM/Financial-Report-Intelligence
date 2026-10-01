@@ -41,6 +41,7 @@ CONDITIONS: dict[str, list[str]] = {
     "M3": ["e2.matched == e2.expected"],
     "M4.2": ["e3.hit_at_8 >= 0.8"],
     "M5.2": [
+        "commentary.mode == 'generated'",
         "e4.displayed_unverified_citations == 0",
         "e4.displayed_naked_numbers == 0",
         "e4.displayed_advice == 0",
@@ -49,6 +50,9 @@ CONDITIONS: dict[str, list[str]] = {
         "e8.going_concern_correct == True",
         "qa.total == 20",
         "qa.passed >= 17",
+        "ratings.complete == True",
+        "ratings.supported >= 0.9",
+        "ratings.contradicted == 0",
     ],
     "M8.1": ["e1.matched + e1.honest_null == e1.labelled", "e1.silent_wrong == 0"],
 }

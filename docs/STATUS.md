@@ -7,6 +7,53 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 (offline parts) — 2026-10-01 — NOT green: no live run, ratings not done
+
+M5.2 offline parts built and tested. Gate NOT met: it needs a live model run, which needs `ANTHROPIC_API_KEY`
+(`.env` sets only `ANTHROPIC_BASE_URL`), and the tech lead's `ratings.json` (status `not_rated`). M5.2 unticked.
+`make ci`: 854 passed. `pytest tests/commentary`: 87 passed. With the key unset the run exits 0 and is labelled
+extractive, as the gate requires; `gate.py M5.2` correctly fails on `commentary.mode == 'generated'` and the
+missing e8/qa/ratings sections, so an extractive run cannot pass the gate by satisfying e4 alone.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: 854 passed, 5 deselected |
+| `uv run pytest tests/commentary -q` | 87 passed |
+| `make eval-live COMPANY=company_a STAGE=commentary` (no key) | exit 0, mode=extractive, 12 paragraphs, e4 all zero |
+| `uv run python scripts/gate.py M5.2` | exit 1 (mode, e8, qa, ratings) |
+| `check_scope.py M5.2 --base bebf644` | only the tech lead's uncommitted fixtures/expected files (G2/G3) |
+
+Built: prompts (`commentary-1`; the model sees chunk ids and text, never pages), topic-scoped ground truth, context
+expansion (+-1 same-section neighbours, 3,500-token budget), topic and summary calls with validate -> retry once ->
+drop (retry never makes a topic worse), extractive mode, numbers snapshot, record/replay providers (replay is
+byte-identical), Anthropic adapter (httpx, MockTransport-tested only), E4 audit of displayed output re-derived from
+chunk text, E8 coverage, 20-question scoring, ratings arithmetic, `finintel commentary` and `make eval-live`.
+Not done: topic calls are sequential, not parallel; no "linked footnotes" in context expansion; the adapter has
+never run against the live API.
+
+The tech lead's label files (coverage, qa, ratings) arrived mid-session with a shape different from EVAL 3.4/3.6:
+`kind`/`q`/`pages`/`must_mention`, no aliases. Scorers follow the files, not the doc. Decisions to confirm:
+- Numeric answers: right when a displayed paragraph's `item:` placeholder has the labelled pack value in the
+  question's unit, or quotes (verified) a number in `accept`. The rounded rendering is never compared.
+  n3-n6 and t2 (net profit, EPS, free cash flow, underlying and Ice Cream operating profit) are not StatementPack
+  items beyond net income, so they can pass only through a verbatim quote.
+- Trap questions also fail when `not_answer` is stated by either route.
+- Narrative: `must_mention` means ALL terms; `pages` means any cited page (exact, not +-2).
+- Coverage: an item is covered when >= 60% of its name's content words (parentheticals dropped, plural-s stripped)
+  appear in a displayed paragraph citing within +-2 pages of any listed page. Going concern: must be discussed on or
+  near the listed pages; "material uncertainty" outside quotes counts as a claim unless negated ("no", "not",
+  "without"), derived from the label's conclusion because no `must_not_claim` is given.
+- Ratings: `{"status": "rated", "items": [{"id": "<topic>:<n>", "rating": "supported|unsupported|contradicted"}]}`,
+  ids from the artefact's `claims`; complete only when every displayed paragraph is rated once.
+Other: the evidence-floor is meaningless under the RRF-order reranker (scores are positions), so retrieval never
+declares insufficient_evidence for company_a; `qa.absent` questions rely on the model's own status.
+
+To finish M5.2: set `ANTHROPIC_API_KEY` in `.env`, run `make eval-live COMPANY=company_a STAGE=commentary`, rate the
+displayed paragraphs in `ratings.json`, then `python scripts/gate.py M5.2` and
+`finintel commentary company_a --replay artifacts/commentary/company_a.json` (must reproduce `output`).
+
+---
+
 ## M5.1 — 2026-10-01 — green, except G3 on the tech lead's uncommitted fixture edit
 
 M5.1 green. Schemas, renderer and validators V1-V8 built; T1-T18 pass on scripted outputs (network blocked).

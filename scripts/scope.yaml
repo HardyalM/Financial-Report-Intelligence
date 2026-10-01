@@ -117,6 +117,9 @@ sessions:
   "M5.2":
     - "finintel/commentary/**"
     - "finintel/llm/**"
+    - "finintel/cli/**"
+    - "scripts/gate.py"
+    - "scripts/scope.yaml"
     - "tests/**"
   "M6.1":
     - "finintel/worker/**"
