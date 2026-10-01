@@ -158,7 +158,13 @@ def test_a_full_generated_run_validates_against_the_schema_and_audits_clean() ->
     schema = json.loads((ROOT / "schemas" / "commentary.schema.json").read_text(encoding="utf-8"))
     assert list(Draft202012Validator(schema).iter_errors(c.model_dump(mode="json"))) == []
     audit = audit_commentary(c, {x.chunk_id: x for x in CHUNKS}, TRUTH, allowed_years=YEARS)
-    assert audit["displayed_paragraphs"] == 7
+    assert (
+        audit["displayed_paragraphs"] == 9
+    )  # topics 1+1+1+3 (liquidity is code-built) + 3 summary
+    liquidity = c.topics[3]
+    assert [len(p.figures) for p in liquidity.paragraphs] == [2, 3, 1] and not any(
+        p.citations for p in liquidity.paragraphs
+    )
     assert all(v == 0 for k, v in audit.items() if k != "displayed_paragraphs")
     assert c.topics[0].paragraphs[0].rendered.startswith("Revenue was €60.8bn, +1.9% on")
     assert c.statement_pack_sha == RATIOS.statement_pack_sha and len(c.ratio_pack_sha) == 64
@@ -180,8 +186,10 @@ def test_no_provider_means_extractive_and_labelled() -> None:
     assert all(t.status == "ok" and t.paragraphs for t in c.topics)
     audit = audit_commentary(c, {x.chunk_id: x for x in CHUNKS}, TRUTH, allowed_years=YEARS)
     assert audit["displayed_unverified_citations"] == 0 and audit["displayed_naked_numbers"] == 0
-    for p in (p for t in c.topics for p in t.paragraphs):
+    for p in (p for t in c.topics if t.topic != "liquidity_and_capital" for p in t.paragraphs):
         assert p.template.startswith("“") and p.rendered == p.template  # verbatim only
+    # liquidity is code-built from the pack in every mode: figures with pages, no model, no quote
+    assert all(p.figures and not p.citations for p in c.topics[3].paragraphs)
     assert run.snapshot["rendered"].startswith("Revenue €60.8bn (+1.9%)")
 
 
@@ -207,7 +215,8 @@ def test_retrieval_floor_statuses_skip_generation_entirely() -> None:
     run = commentary(p, retrieved=retrieved)
     statuses = {t.topic: t.status for t in run.commentary.topics}
     assert statuses["strategic_risks"] == "insufficient_evidence"
-    assert statuses["liquidity_and_capital"] == "omitted"
+    # liquidity is built from the pack, so a retrieval floor does not remove it
+    assert statuses["liquidity_and_capital"] == "ok"
     assert not any('TOPIC id="strategic_risks"' in u for _, u in p.calls)
 
 
@@ -227,7 +236,9 @@ def test_the_artifact_records_calls_and_the_snapshot(tmp_path: Any) -> None:
     path = write_artifact(tmp_path / "c.json", run, recorder.recording(), {"company": "t"})
     body = json.loads(path.read_text(encoding="utf-8"))
     assert set(body) >= {"output", "numbers_snapshot", "pre_validation", "recording", "company"}
-    assert len(body["recording"]["calls"]) == 5
+    assert (
+        len(body["recording"]["calls"]) == 4
+    )  # three topics and the summary: liquidity is code-built
     text = path.read_text(encoding="utf-8")
     assert "x-api-key" not in text and "sk-" not in text
 

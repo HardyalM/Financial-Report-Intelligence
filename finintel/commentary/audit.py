@@ -47,7 +47,7 @@ def audit_commentary(
     unsourced = unquoted = 0
     for para in displayed(commentary):
         total += 1
-        if not para.citations:
+        if not para.citations and not para.figures:  # a figure cites its own page
             no_citation += 1
         for cite in para.citations:
             if not _verified(cite, chunks):

@@ -79,6 +79,19 @@ def render_money(value: float, unit_scale: int, currency: str | None) -> str:
     return f"{sign}{symbol}{_round(magnitude, 0):,}"
 
 
+def render_exact(value: float, unit_scale: int, currency: str | None) -> str:
+    """The figure as printed, in its own unit: "\u20ac19,194 million".
+
+    Used only by bullets that code builds from the pack; never offered to a model."""
+    symbol = SYMBOLS.get(currency or "", f"{currency} " if currency else "")
+    number = _dec(value)
+    shown = f"{int(number):,}" if number == number.to_integral_value() else f"{number:,}"
+    unit = {1_000_000_000: " billion", 1_000_000: " million", 1_000: " thousand"}.get(
+        unit_scale, ""
+    )
+    return f"{symbol}{shown}{unit}"
+
+
 def render_ratio(value: float, unit: str) -> str:
     """Fractions as a percentage to one decimal (15.5%); multiples to two decimals (1.54x)."""
     if unit == "fraction":
@@ -137,6 +150,19 @@ def build_ground_truth(
                 pages: tuple[int, ...] = (pv["page"],) if pv.get("page") else ()
                 amount = pv["value"] * unit_scale
                 put(TruthEntry(key, money, "ok", None, direction, pv["value"], amount, pages))
+                exact = render_exact(pv["value"], unit_scale, currency)
+                put(
+                    TruthEntry(
+                        f"exact:{item_id}:{pv['period_id']}",
+                        exact,
+                        "ok",
+                        None,
+                        None,
+                        pv["value"],
+                        amount,
+                        pages,
+                    )
+                )
     ratio_pages: dict[tuple[str, str], tuple[int, ...]] = {}
     for period in ratios.periods:
         for name, ratio in period.ratios.model_dump().items():

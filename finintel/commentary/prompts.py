@@ -85,7 +85,6 @@ TOPIC_BRIEF: dict[str, str] = {
 
 #: (kind, id) pairs of GROUND_TRUTH_NUMBERS each topic may use. Empty means no numbers are offered.
 _PNL = ("revenue", "operating_profit", "profit_before_tax", "net_income")
-_BALANCE = ("current_assets", "current_liabilities", "total_debt", "total_equity")
 TOPIC_NUMBERS: dict[str, frozenset[tuple[str, str]]] = {
     "revenue_drivers": frozenset(
         {("item", i) for i in _PNL} | {("change", f"item:{i}") for i in _PNL}
@@ -93,11 +92,7 @@ TOPIC_NUMBERS: dict[str, frozenset[tuple[str, str]]] = {
     ),
     "strategic_risks": frozenset(),
     "governance_and_directors": frozenset(),
-    "liquidity_and_capital": frozenset(
-        {("item", i) for i in _BALANCE} | {("change", f"item:{i}") for i in _BALANCE}
-        | {("ratio", n) for n in ("current_ratio", "debt_to_equity", "roce")}
-        | {("change", f"ratio:{n}") for n in ("current_ratio", "debt_to_equity", "roce")}
-    ),
+    "liquidity_and_capital": frozenset(),  # code-built bullets (lists.liquidity_bullets): no model
 }  # fmt: skip
 
 

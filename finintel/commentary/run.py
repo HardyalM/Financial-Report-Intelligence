@@ -24,6 +24,7 @@ from finintel.commentary.generate import (
 from finintel.commentary.lists import (
     going_concern_bullets,
     kam_bullets,
+    liquidity_bullets,
     risk_section,
 )
 from finintel.commentary.prompts import PROMPT_VERSION, select_truth
@@ -45,6 +46,7 @@ from finintel.retrieval.pipeline import TopicResult
 from finintel.retrieval.queries import OPTIONAL_TOPICS, QUERY_SET_VERSION
 
 SCHEMA_VERSION = "1.1.0"
+LIQUIDITY = "liquidity_and_capital"
 DISCLAIMER = (
     "Research aid, not investment advice. Figures are extracted and computed by code from the "
     "filed accounts; narrative is quoted from the report with page references."
@@ -186,8 +188,8 @@ def build_commentary(
     if provider is not None:
         try:
             for topic, found in retrieved.items():
-                if found.status != "ok":
-                    continue
+                if found.status != "ok" or topic == LIQUIDITY:
+                    continue  # liquidity is built by code, not written by a model
 
                 def one(context: list[Chunk], topic: str = topic) -> CallResult:
                     return generate_topic(
@@ -212,7 +214,8 @@ def build_commentary(
                 first_pass[topic] = results[topic].first_pass
                 if topic == "governance_and_directors":
                     _add_code_built(results[topic], ids, chunks, truth, page_labels)
-            validated = [(t, p) for t, r in results.items() for p in r.paragraphs]
+            # A bullet made only of pack figures cites no passage; the summary cites passages.
+            validated = [(t, p) for t, r in results.items() for p in r.paragraphs if p.citations]
             if validated:
                 try:
                     summary = generate_summary(
@@ -230,7 +233,19 @@ def build_commentary(
 
     topics: list[Topic] = []
     for topic, found in retrieved.items():
-        if found.status != "ok":
+        if topic == LIQUIDITY:
+            built = liquidity_bullets(
+                ratios.periods[0].period_id if ratios.periods else "", truth, chunks, page_labels
+            )
+            topics.append(
+                Topic(
+                    topic=topic,
+                    status="ok" if built else "omitted",
+                    reason=None if built else "No balance-sheet figure was available.",
+                    paragraphs=built,
+                )
+            )
+        elif found.status != "ok":
             status = "omitted" if topic in OPTIONAL_TOPICS else "insufficient_evidence"
             topics.append(
                 Topic(

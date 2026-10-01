@@ -19,9 +19,9 @@ import re
 from collections.abc import Mapping, Sequence
 
 from finintel.commentary.extractive import opening_sentences
-from finintel.commentary.render import TruthEntry
-from finintel.commentary.validators import finalize, validate_output
-from finintel.contracts.commentary import Paragraph
+from finintel.commentary.render import PLACEHOLDER, TruthEntry, render_template
+from finintel.commentary.validators import finalize, mismatched_placeholders, validate_output
+from finintel.contracts.commentary import Figure, Paragraph, ParagraphValidation
 from finintel.narrative.models import Chunk
 
 MAX_LIST_BULLETS = 20
@@ -158,3 +158,116 @@ def going_concern_bullets(
             bullets.append(kept[0])
             seen.add(chunk.heading_path)
     return bullets
+
+
+# --------------------------------------------------------------- liquidity and capital
+
+_ROIC = re.compile(r"return on invested capital|\bROIC\b", re.IGNORECASE)
+_PERCENT = re.compile(r"\d+(?:\.\d+)?%")
+_SENTENCES = re.compile(r"(?<=[.!?])\s+(?=[A-Z\u201c\"(])")
+
+
+def _sentences(chunk: Chunk) -> list[str]:
+    return [" ".join(s.split()) for s in _SENTENCES.split(chunk.text.strip())]
+
+
+def _quotable(sentence: str) -> bool:
+    words = len(sentence.split())
+    return 5 <= words <= 60 and '"' not in sentence and "\u201c" not in sentence
+
+
+def _figure_paragraph(template: str, truth: Mapping[str, TruthEntry]) -> Paragraph | None:
+    """A bullet made only of placeholders and plain words, with each figure's own source page(s).
+    None if any figure is unavailable or has no page: the bullet is then not shown."""
+    keys = list(dict.fromkeys(m.group(1) for m in PLACEHOLDER.finditer(template)))
+    if any(k not in truth or truth[k].rendered is None or not truth[k].pages for k in keys):
+        return None
+    if mismatched_placeholders(template, truth):
+        return None
+    return Paragraph(
+        template=template,
+        rendered=render_template(template, truth),
+        citations=[],
+        figures=[
+            Figure(placeholder=k, rendered=truth[k].rendered, pages=sorted(truth[k].pages))
+            for k in keys
+        ],
+        validation=ParagraphValidation(retried=False, removed_citations=[]),
+    )
+
+
+def roic_bullet(
+    chunks: Sequence[Chunk],
+    truth: Mapping[str, TruthEntry],
+    page_labels: Mapping[int, str] | None = None,
+) -> Paragraph | None:
+    """The report's own underlying return on invested capital, quoted and not computed.
+
+    The sentence that states it and the one that defines it; each quote is verified and cited."""
+    prose = [c for c in _prose(chunks) if c.section_id not in EXCLUDED_FOR_RETURN]
+    stated = defined = None
+    for chunk in prose:
+        for sentence in _sentences(chunk):
+            low = sentence.lower()
+            if not (_quotable(sentence) and _ROIC.search(sentence)):
+                continue
+            if stated is None and "underlying" in low and _PERCENT.search(sentence):
+                stated = (chunk, sentence)
+            elif defined is None and "is calculated as" in low:
+                defined = (chunk, sentence)
+        if stated and defined:
+            break
+    if stated is None:
+        return None
+    picks = [stated, *([defined] if defined else [])]
+    template = (
+        "Underlying return on invested capital, as the report states it (quoted, not computed): "
+        f"\u201c{stated[1]}\u201d"
+    )
+    if defined:
+        template += f" The report defines it: \u201c{defined[1]}\u201d"
+    raw = {
+        "topic": "liquidity_and_capital", "status": "ok", "reason": None,
+        "paragraphs": [{
+            "template": template,
+            "citations": [{"chunk_id": c.chunk_id, "quote": q} for c, q in picks],
+        }],
+    }  # fmt: skip
+    report = validate_output(
+        raw, topic="liquidity_and_capital", evidence={c.chunk_id: c for c, _ in picks},
+        truth=truth, page_labels=page_labels,
+    )  # fmt: skip
+    kept = finalize(report, retried=False)[2]
+    return kept[0] if kept else None
+
+
+#: Sections whose "return on invested capital" is a remuneration target, not the company's result.
+EXCLUDED_FOR_RETURN = frozenset({"remuneration_report", "notes_other"})
+
+
+def liquidity_bullets(
+    period_id: str,
+    truth: Mapping[str, TruthEntry],
+    chunks: Sequence[Chunk],
+    page_labels: Mapping[int, str] | None = None,
+) -> list[Paragraph]:
+    """The liquidity and capital topic, built by code. No model writes it.
+
+    Balance-sheet lines and the current ratio computed from them (labelled computed), each citing
+    the page that prints its inputs; and the report's own return on invested capital, quoted. A
+    bullet whose figures are unavailable is omitted. ROCE is not shown (the report never prints it).
+    """
+    p = period_id
+    templates = [
+        f"Current assets were {{{{exact:current_assets:{p}}}}} and current liabilities were "
+        f"{{{{exact:current_liabilities:{p}}}}} on the consolidated balance sheet.",
+        "Current ratio, computed in code from current assets and current liabilities "
+        "(the ratio is not printed in the report): "
+        f"{{{{exact:current_assets:{p}}}}} / {{{{exact:current_liabilities:{p}}}}} = "
+        f"{{{{ratio:current_ratio:{p}}}}}.",
+        f"Total equity, including non-controlling interests, was {{{{exact:total_equity:{p}}}}} "
+        f"on the consolidated balance sheet.",
+    ]
+    bullets = [b for t in templates if (b := _figure_paragraph(t, truth)) is not None]
+    roic = roic_bullet(chunks, truth, page_labels)
+    return [*bullets, *([roic] if roic is not None else [])]

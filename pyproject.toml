@@ -76,6 +76,7 @@ select = ["E", "F", "I", "B", "UP", "N", "SIM", "RUF"]
 "tests/worker/*.py" = ["E501"]  # SQL and long assertions  # SQL statements read best on their own lines
 "tests/commentary/test_fact_placeholders.py" = ["E501"]
 "tests/commentary/test_figures.py" = ["E501"]
+"tests/commentary/test_liquidity.py" = ["E501"]
 "scripts/make_ratings_draft.py" = ["E501"]
 "tests/facts/*.py" = ["E501"]  # table fixtures are laid out as printed
 "tests/commentary/test_lists.py" = ["E501", "RUF001"]  # long literal fixtures, en dashes

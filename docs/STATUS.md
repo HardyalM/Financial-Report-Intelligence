@@ -7,6 +7,30 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 liquidity and capital built by code — 2026-10-01 — draft ready for re-rating
+
+Tech lead's decision: the model no longer writes `liquidity_and_capital` (every model paragraph was rejected). It is built in
+code, in every mode, like the KAM bullets: `lists.liquidity_bullets`. Figures come from the pack, never typed in code.
+- Balance-sheet bullets (placeholders `exact:<item>:<period>` render the printed amount: "EUR19,194 million"): current assets
+  and current liabilities; the current ratio computed in code from them, labelled computed, "not printed in the report"
+  (EUR19,194 million / EUR25,234 million = 0.76x); total equity incl. non-controlling interests (EUR22,555 million). Every
+  figure cites its own page, 143 (the consolidated balance sheet); nothing cites p. 172 or p. 11. A bullet whose figure is null or
+  has no page is omitted.
+- ROCE 17.2% is not shown in commentary (the report does not print it). It stays a locked, code-computed ratio on the ratio
+  cards and in the numbers snapshot (ADR-008: a locked ratio is never hidden); only the commentary no longer states it.
+- Return bullet: the report's own underlying ROIC, quoted not computed: "Underlying return on invested capital improved
+  190bps to 18.1% (2023: 16.2%)." (p. 16) and its definition "Underlying ROIC is calculated as ..." (p. 49). The p. 49
+  figures (18.1 / 16.2) sit in a table whose extracted text is interleaved and not quotable, so p. 49 is cited for the
+  definition. Remuneration-target mentions are excluded.
+- The summary no longer receives figure-only bullets (they cite no passage); `displayed_without_citation` counts a paragraph
+  only if it has neither a quote nor a figure.
+Regenerated run (gemini-3.5-flash-lite, commentary-4): 29 displayed paragraphs; liquidity 4 bullets; risk recall 13/14
+(Customer and channel again; the model's quote for it was not verbatim); KAM 3/3; going concern correct. New
+`docs/ratings_draft.md` (29 paragraphs, new claims_sha256) written for the tech lead; ratings.json untouched.
+`make ci`: 912 passed. 6 new tests (tests/commentary/test_liquidity.py), including company_a against the real PDF.
+
+---
+
 ## M5.2 after the ratings fix (ADR-012) — 2026-10-01 — all scripted conditions PASS except ratings (to be re-rated); risk recall 13/14
 
 Regenerated with prompt commentary-4, schema 1.1.0 (figures with source pages, V11 quoted means cited, V12 figures need a page,

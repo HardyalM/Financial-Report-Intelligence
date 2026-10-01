@@ -56,7 +56,7 @@ def _norm(text: str) -> str:
 def field_of(key: str) -> str | None:
     """The field a placeholder key is about: `item:cash:FY24` -> cash; a change -> its field."""
     parts = key.split(":")
-    if parts[0] in ("item", "ratio", "fact") and len(parts) >= 3:
+    if parts[0] in ("item", "ratio", "fact", "exact") and len(parts) >= 3:
         return parts[1]
     if parts[0] == "change" and len(parts) >= 5:
         return parts[2]
