@@ -7,6 +7,47 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M4.2 — 2026-10-01 — gate PASS at the bar (0.80); strategy query still misses
+
+M4.2 gate `e3.hit_at_8 >= 0.8` passes: 4/5 = 0.80 with local BAAI/bge-m3 + heading-aware hybrid. Exactly at the
+bar, with no margin. Labels not edited. Re-indexed from the PDF; no page inserted by hand. Sign-off "top 8 for
+principal risks on-topic" is the tech lead's and is open, so M4.2 is not ticked in MILESTONES.
+
+Models: embedding BAAI/bge-m3 (1024-d, mps), reranker none (RRF order). The bge reranker is a separate ~2 GB
+download, not in the bge-m3 one, and RRF met the bar; evidence-floor scores are positions, not relevance, in this mode.
+
+| Query | Expected PDF | Result |
+|---|---|---|
+| principal risks | 54-62 | HIT |
+| strategy | 7-8 | MISS |
+| CEO on performance | 11-12 | HIT |
+| viability statement | 63-64 | HIT |
+| going concern | 123, 145 | HIT |
+
+Strategy miss (top 8 PDF pages, dense cosine / BM25 / dense rank / BM25 rank):
+38 .670/4.12/2/20; 229 .667/4.35/4/17; 9 .631/4.75/18/8; 73 .612/4.75/36/7; 220 .631/4.04/20/21;
+104 .615/4.41/30/15; 38 .608/4.53/40/14; 96 .634/3.39/13/49.
+The PDF 7-8 chunks ("Our Strategy: GAP 2030" infographic fragments) rank dense 56-920 (cosine 0.25-0.60) and BM25
+10-34 (best 4.58, on page 8 "scaled artificial intelligence"); RRF 0.0106-0.0143 vs 0.0229+ for the top 8. The
+heading match did not outrank them: the section's text is short infographic labels with little query vocabulary.
+Not tuned further: raising the heading weight to chase this one query would overfit a 5-query set.
+
+| Command | Result |
+|---|---|
+| `make eval-e3 COMPANY=company_a` (memory backend, bge-m3) | 4/5 = 0.80 |
+| `uv run finintel eval-e3 company_a --backend postgres` | 4/5 = 0.80, same pages (Postgres FTS is `ts_rank_cd`, not BM25) |
+| `uv run python scripts/gate.py M4.2` | exit 0, PASS e3.hit_at_8 >= 0.8 |
+| `make migrate` / `make test-db` | 002 applied; 5 passed |
+| `make ci` | exit 0: 767 passed, 5 deselected |
+
+Built: migration 002 (HNSW for bge-m3; heading-weighted `tsv` via IMMUTABLE `heading_text`); finintel/retrieval/lexical.py
+(BM25F-style, heading weight 3, stopwords); local_models.py (BgeM3Embedder, MemoEmbedder disk memo); `--embedder`
+flag (bge-m3 default, fake for tests); optional dependency extra `local` (sentence-transformers). First run
+downloaded the model to ~/.cache/huggingface (4.3 GB).
+Open: scope check flags the tech lead's uncommitted relabel of fixtures/expected/company_a.retrieval.json (G2/G3).
+
+---
+
 ## M4.2 — 2026-10-01 — GATE FAILED: e3.hit_at_8 = 0.60 (3/5) after relabelling
 
 GATE FAILED at M4.2. `e3.hit_at_8 >= 0.8` not met: 3/5, on the tech lead's relabelled file (PDF viewer pages; not edited).

@@ -16,6 +16,7 @@ from typing import Protocol
 from finintel.locate.models import DocumentType
 from finintel.narrative.models import Chunk
 from finintel.retrieval.embeddings import Embedder, cosine, tokens
+from finintel.retrieval.lexical import Bm25
 from finintel.retrieval.queries import OPTIONAL_TOPICS, QUERY_SET_VERSION, TopicQueries, query_set
 
 PER_LIST = 50
@@ -123,6 +124,17 @@ def retrieve_all(
     return [retrieve_topic(t, backend, reranker) for t in query_set(document_type)]
 
 
+class FusionOrderReranker:
+    """No rerank model: keeps the fused (RRF) order by scoring on rank. The scores are positions,
+    not relevance, so the evidence floor means nothing in this mode; it is used for ranking only."""
+
+    model_id = "none (RRF order)"
+
+    def score(self, query: str, chunks: Sequence[ChunkLike]) -> list[float]:
+        n = len(chunks)
+        return [1.0 - i / max(n, 1) for i in range(n)]
+
+
 class OverlapReranker:
     """Offline reranker: fraction of query terms present in the chunk. Test/eval stand-in only."""
 
@@ -138,6 +150,7 @@ class InMemoryIndex:
 
     def __init__(self, chunks: Sequence[Chunk], embedder: Embedder) -> None:
         self._chunks = {c.chunk_id: c for c in chunks if not c.is_table}
+        self._bm25 = Bm25(list(self._chunks.values()))
         self._embedder = embedder
         ids = sorted(self._chunks)
         self._vecs = dict(
@@ -150,9 +163,7 @@ class InMemoryIndex:
         return ranked[:k]
 
     def lexical(self, query: str, k: int) -> list[str]:
-        q = set(tokens(query))
-        hits = [(len(q & set(tokens(c.text))), i) for i, c in self._chunks.items()]
-        return [i for n, i in sorted(hits, key=lambda h: (-h[0], h[1])) if n > 0][:k]
+        return [cid for cid, _ in self._bm25.rank(query, k)]
 
     def chunk(self, chunk_id: str) -> Chunk:
         return self._chunks[chunk_id]

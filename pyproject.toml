@@ -18,6 +18,11 @@ dependencies = [
 [project.scripts]
 finintel = "finintel.cli:main"
 
+[project.optional-dependencies]
+local = [
+    "sentence-transformers>=3",
+]
+
 [dependency-groups]
 dev = [
     "pytest>=8.3",

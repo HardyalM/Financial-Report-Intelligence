@@ -92,9 +92,11 @@ class PostgresIndex:
 
     def lexical(self, query: str, k: int = PER_LIST) -> list[str]:
         rows = self._conn.execute(
-            "SELECT chunk_id FROM chunks, websearch_to_tsquery('english', %s) q "
-            "WHERE document_id = %s AND NOT is_table AND tsv @@ q "
-            "ORDER BY ts_rank_cd(tsv, q) DESC, chunk_id LIMIT %s",
+            "WITH q AS (SELECT replace(plainto_tsquery('english', %s)::text, '&', '|')::tsquery "
+            "AS q) "
+            "SELECT chunk_id FROM chunks, q "
+            "WHERE document_id = %s AND NOT is_table AND tsv @@ q.q "
+            "ORDER BY ts_rank_cd(tsv, q.q) DESC, chunk_id LIMIT %s",
             (query, self._doc, k),
         ).fetchall()
         return [r[0] for r in rows]

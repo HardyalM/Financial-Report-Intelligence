@@ -136,15 +136,27 @@ def run_e2(company: str, cache_dir: Path, artifacts: Path) -> tuple[dict[str, An
 
 
 def run_e3(
-    company: str, cache_dir: Path, artifacts: Path, labels_path: Path | None, backend: str
+    company: str,
+    cache_dir: Path,
+    artifacts: Path,
+    labels_path: Path | None,
+    backend: str,
+    embedder_name: str = "bge-m3",
 ) -> tuple[dict[str, Any], Path]:
     """E3 retrieval against a labelled query file. The labels are read, never written."""
     from finintel.cli.chunks_cmd import chunk_pdf
     from finintel.evals import e3
     from finintel.locate import locate
     from finintel.parse.cached import cached_text_layer
-    from finintel.retrieval.embeddings import FakeEmbedder
-    from finintel.retrieval.pipeline import InMemoryIndex, OverlapReranker, retrieve_topic
+    from finintel.retrieval.embeddings import Embedder, FakeEmbedder
+    from finintel.retrieval.local_models import BgeM3Embedder, MemoEmbedder
+    from finintel.retrieval.pipeline import (
+        FusionOrderReranker,
+        InMemoryIndex,
+        OverlapReranker,
+        Reranker,
+        retrieve_topic,
+    )
     from finintel.retrieval.queries import TopicQueries
 
     pdf, sha, chunks, _ = chunk_pdf(company, cache_dir)
@@ -154,7 +166,13 @@ def run_e3(
     labels = json.loads(path.read_text(encoding="utf-8"))
     layer, _ = cached_text_layer(pdf, sha, StageCache(cache_dir))
     located = locate(layer)
-    embedder, reranker = FakeEmbedder(), OverlapReranker()
+    embedder: Embedder
+    reranker: Reranker
+    if embedder_name == "bge-m3":
+        embedder = MemoEmbedder(BgeM3Embedder(), cache_dir / "embeddings")
+        reranker = FusionOrderReranker()  # the bge reranker is a separate download; RRF order
+    else:
+        embedder, reranker = FakeEmbedder(), OverlapReranker()
     if backend == "postgres":
         import psycopg
 

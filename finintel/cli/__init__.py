@@ -103,6 +103,7 @@ def build_parser() -> argparse.ArgumentParser:
     e3p.add_argument("company", help='fixture name, e.g. "company_a"')
     e3p.add_argument("--labels", type=Path, help="label file (default fixtures/expected/...)")
     e3p.add_argument("--backend", choices=("memory", "postgres"), default="memory")
+    e3p.add_argument("--embedder", choices=("bge-m3", "fake"), default="bge-m3")
     e3p.add_argument("--cache-dir", type=Path)
     e1 = commands.add_parser("eval-e1", help="compare an extraction with fixtures/expected (M2.4)")
     e1.add_argument("company", help='fixture name, e.g. "company_a"')
@@ -290,6 +291,7 @@ def _eval_e3(args: argparse.Namespace, settings: Settings) -> int:
             settings.artifacts_dir,
             args.labels,
             args.backend,
+            args.embedder,
         )
     except HoldoutRefusedError as exc:
         print(f"finintel: refused {exc}: held out until M8.3", file=sys.stderr)
