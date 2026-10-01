@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/schemas/citation.schema.json",
+  "title": "Citation",
+  "description": "A verified quote. The model supplies chunk_id and quote only; every other field is computed by code (ADR-003).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "citation_id",
+    "chunk_id",
+    "quote",
+    "match",
+    "char_start",
+    "char_end",
+    "page",
+    "page_end",
+    "page_label",
+    "section",
+    "heading_path",
+    "note_number",
+    "is_footnote",
+    "bbox"
+  ],
+  "properties": {
+    "citation_id": {
+      "type": "string"
+    },
+    "chunk_id": {
+      "type": "string"
+    },
+    "quote": {
+      "type": "string",
+      "description": "As the model wrote it (5-60 words); verified against the chunk text after normalisation."
+    },
+    "match": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "normalised"
+      ]
+    },
+    "char_start": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Offset of the quote in the document's narrative text (chunk.char_start + offset in the chunk), computed by code."
+    },
+    "char_end": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "1-based PDF page of the quote's first character. Always code-derived."
+    },
+    "page_end": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "page_label": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Printed folio when known."
+    },
+    "section": {
+      "type": "string"
+    },
+    "heading_path": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "note_number": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "is_footnote": {
+      "type": "boolean"
+    },
+    "bbox": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        }
+      },
+      "description": "One [page, x0, y0, x1, y1] per page the quote touches, display-space points."
+    }
+  }
+}

@@ -282,12 +282,13 @@ These checks are created in M0 and run in CI.
 ## M5.1 — Commentary contracts and validators (no LLM)
 
 **Read first:** RAG §4–6; ADR-003; ADR-005.
-**Allowed paths:** `finintel/commentary/validators/**`, `finintel/commentary/render/**`, `schemas/citation.schema.json`, `schemas/commentary.schema.json`, `finintel/contracts/**`, `tests/**`.
+**Allowed paths:** `finintel/commentary/validators/**`, `finintel/commentary/render/**`, `schemas/citation.schema.json`, `schemas/commentary.schema.json`, `finintel/contracts/**`, `scripts/gen_contracts.py`, `scripts/scope.yaml`, `tests/**`.
+*Amended 2026-10-01 in the M5.1 session: the two new schemas are generated into finintel/contracts by scripts/gen_contracts.py (two TARGETS lines).*
 
 **Gate:**
 - [ ] G1–G6 pass.
-- [ ] `pytest tests/commentary -q` passes, including **T1–T18** (scripted outputs; the network is blocked).
-- [ ] Renderer tests pass for £m, £000 and $m scales, percentages, percentage-point changes and null rendering.
+- [x] `pytest tests/commentary -q` passes, including **T1–T18** (scripted outputs; the network is blocked). *2026-10-01: 56 passed.*
+- [x] Renderer tests pass for £m, £000 and $m scales, percentages, percentage-point changes and null rendering. *2026-10-01: tests/commentary/test_render.py, 18 cases.*
 
 ## M5.2 — Commentary generation
 

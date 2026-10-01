@@ -14,15 +14,20 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
+from finintel.contracts.commentary import Citation, Commentary, Paragraph, Topic
 from finintel.contracts.ratio_pack import RatioPack
 from finintel.contracts.statement_pack import LineItem, PeriodValue, StatementPack
 
 __all__ = [
     "CANONICAL_ITEMS",
+    "Citation",
+    "Commentary",
     "LineItem",
+    "Paragraph",
     "PeriodValue",
     "RatioPack",
     "StatementPack",
+    "Topic",
     "load_schema",
     "schema_dir",
     "validate_pack",

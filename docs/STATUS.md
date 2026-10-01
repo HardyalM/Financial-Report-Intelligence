@@ -7,6 +7,41 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.1 — 2026-10-01 — green, except G3 on the tech lead's uncommitted fixture edit
+
+M5.1 green. Schemas, renderer and validators V1-V8 built; T1-T18 pass on scripted outputs (network blocked).
+`pytest tests/commentary -q`: 56 passed. `make ci`: 823 passed, 5 deselected. No LLM, no provider code.
+`check_scope.py M5.1 --base m4.1` flags only `fixtures/expected/company_a.retrieval.json` (G2/G3): the tech
+lead's relabel is still uncommitted. Claude does not commit expected files. G1-G6 therefore not ticked.
+
+| Command | Result |
+|---|---|
+| `uv run pytest tests/commentary -q` | 56 passed (T1-T18 in test_hallucination.py; render 18; quotes/numbers/schemas) |
+| `make ci` | exit 0: 823 passed, 5 deselected |
+| `uv run python scripts/gen_contracts.py --check` (inside ci) | up to date |
+
+Built: schemas/citation.schema.json, schemas/commentary.schema.json (generated finintel/contracts/citation.py,
+commentary.py; the commentary schema embeds the citation def, a test keeps the two identical);
+finintel/commentary/render (exact half-up rendering; GROUND_TRUTH builder keyed `kind:id:period`);
+finintel/commentary/validators (quote location with an offset map, citation builder with page and bbox from the
+char->page map, V5 naked numbers incl. spelled-out, V6 advice, V7 direction, V1/V2/V4/V8 orchestration,
+`feedback` and `finalize` for the M5.2 retry-then-drop loop).
+
+Design points to review:
+- Ratio and item placeholders carry the direction of the change into their period (None for the earliest
+  period). A direction word beside a placeholder with no direction is a violation (RAG V7).
+- V7 pairs each direction word with the nearest placeholder in its sentence, so mixed sentences can be valid.
+- Text inside double quotation marks is exempt from V5/V6/V7 only when it is a substring of a verified quote
+  (T12). So the model can quote an injected sentence verbatim; it is then shown as a quotation, not asserted (T7).
+- Strict by design: "one" (not "one of"), "half" and any digit outside a period label, a cited note number or a
+  quote are violations; "growth", "up", "down" are not direction words.
+- RAG T13 calls the direction mismatch "soft"; V7 says hard. Implemented as hard (retry, then drop).
+- The summary schema requires 3-5 bullets; it validates through the same V1-V8, with evidence limited to chunks
+  cited by validated paragraphs (`summary_evidence`).
+Not built (M5.2): prompts, provider adapter, topic and summary calls, retry loop, extractive mode, persistence.
+
+---
+
 ## M4.2 — 2026-10-01 — gate PASS at the bar (0.80); strategy query still misses
 
 M4.2 gate `e3.hit_at_8 >= 0.8` passes: 4/5 = 0.80 with local BAAI/bge-m3 + heading-aware hybrid. Exactly at the

@@ -58,8 +58,12 @@ select = ["E", "F", "I", "B", "UP", "N", "SIM", "RUF"]
 # Generated from schemas/statement_pack.schema.json by `make contracts`; never edited by hand.
 "finintel/contracts/statement_pack.py" = ["ALL"]
 "finintel/contracts/ratio_pack.py" = ["ALL"]
+"finintel/contracts/citation.py" = ["ALL"]
+"finintel/contracts/commentary.py" = ["ALL"]
 # A table of section-title regular expressions: one pattern per line is the readable form.
 "finintel/narrative/sections.py" = ["E501"]
+# Typographic characters are the point of these tests.
+"tests/commentary/test_quotes.py" = ["RUF001"]
 
 [tool.mypy]
 python_version = "3.12"

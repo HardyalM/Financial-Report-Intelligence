@@ -111,6 +111,8 @@ sessions:
     - "schemas/citation.schema.json"
     - "schemas/commentary.schema.json"
     - "finintel/contracts/**"
+    - "scripts/gen_contracts.py"
+    - "scripts/scope.yaml"
     - "tests/**"
   "M5.2":
     - "finintel/commentary/**"
