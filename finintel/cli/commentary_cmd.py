@@ -10,6 +10,7 @@ Writes artifacts/commentary/{stem}.json and the e4/e8/qa sections of the eval re
 from __future__ import annotations
 
 import json
+import time
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -46,6 +47,9 @@ from finintel.retrieval.pipeline import (
     retrieve_topic,
 )
 from finintel.retrieval.queries import TopicQueries
+
+ERROR_PASSES = 3
+ERROR_COOLDOWN_S = 90.0
 
 COVERAGE_FORMAT = (
     '{ "page_basis": "1-indexed PDF viewer pages",\n'
@@ -202,7 +206,8 @@ def _ask_all(
     scoped = {  # the latest period's items and ratios: what a lookup question can ask for
         k: v for k, v in truth.items() if k.startswith(("item:", "ratio:")) and k.endswith(latest)
     }
-    for q in labels["questions"]:
+
+    def ask(q: Mapping[str, Any]) -> None:
         text = question_text(q)
         if "answer" in q:  # a figure question: answered from the statement pack, placeholder only
             try:
@@ -210,13 +215,14 @@ def _ask_all(
             except LLMError as exc:
                 answers[q["id"]] = Answer("error", [])
                 errors[q["id"]] = exc.code
-                continue
+                return
             answers[q["id"]] = Answer(status, [paragraph] if paragraph else [])
-            continue
+            errors.pop(q["id"], None)
+            return
         if index.coverage(text) < COVERAGE_FLOOR:  # nothing to ground an answer: no model call
             answers[q["id"]] = Answer("insufficient_evidence", [])
             floors.append(q["id"])
-            continue
+            return
         topic = TopicQueries("adhoc", (text,), frozenset())
         found = retrieve_topic(topic, index, reranker)
 
@@ -230,7 +236,20 @@ def _ask_all(
         except LLMError as exc:  # one failed question is a failed question, not a lost run
             answers[q["id"]] = Answer("error", [])
             errors[q["id"]] = exc.code
-            continue
+            return
         answers[q["id"]] = Answer(out.status, out.paragraphs)
+        errors.pop(q["id"], None)
+
+    for q in labels["questions"]:
+        ask(q)
+    # A question the provider never answered (an outage, not a wrong answer) gets more passes after
+    # a cool-down. Answered questions are never re-asked, so a result is never shopped for.
+    for _ in range(ERROR_PASSES):
+        pending = [q for q in labels["questions"] if answers[q["id"]].status == "error"]
+        if not pending:
+            break
+        time.sleep(ERROR_COOLDOWN_S)
+        for q in pending:
+            ask(q)
     errors.update({qid: "evidence_floor" for qid in floors})
     return answers, errors

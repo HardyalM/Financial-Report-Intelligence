@@ -7,6 +7,57 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 Gemini run with lists, floor, pack route — 2026-10-01 — GATE FAILED: qa 10/20, going concern flipped
+
+GATE FAILED at M5.2. Provider `gemini`, model `gemini-3.5-flash-lite`, mode generated. Fixtures and ratings.json
+untouched. M5.2 unticked. Two generated runs on this build (the first lost 9 QA answers to Gemini 503s; QA now re-asks
+only unanswered questions after a cool-down, never answered ones).
+
+| Condition | Run A (9 errors) | Run B (clean) |
+|---|---|---|
+| e4 unverified / naked / advice | 0/0/0 | 0/0/0 (27 displayed paragraphs) |
+| e8 risk recall | 14/14 PASS | 14/14 PASS |
+| e8 KAM recall | 3/3 PASS | 3/3 PASS |
+| e8 going concern correct | True PASS | False FAIL |
+| qa.passed >= 17 | 6 | 10 FAIL |
+| ratings complete | not rated | not rated |
+
+Going concern is not stable between runs: in run B the governance topic's model paragraphs were all rejected (pre-
+validation: 2 fabricated quotes, 2 naked numbers across 5 calls), so only the three code-built KAM bullets remained
+and no paragraph discussed going concern. It passed in run A because the model paragraphs survived.
+
+Run B passed n1 n2 n3 v4 v6 v7 a1 a2 a3 t1. Misses (id | expected | top-8 PDF pages | answer):
+n4 EPS 2.3 | pack route | insufficient_evidence (EPS is not a pack item)
+n5 FCF 6,932 | pack route | insufficient_evidence (not a pack item)
+n6 underlying op profit 11,179 | pack route | insufficient_evidence (not a pack item)
+t2 Ice Cream 571 | pack route | insufficient_evidence (not a pack item)
+t3 parent investment 88,035 | pack route | insufficient_evidence (not a pack item)
+v1 [55,59,60,62] | 55,55,240,63,57,239,265,257 | insufficient_evidence by the evidence floor (coverage 0.63 < 0.68)
+v5 [123] | 128,123,128,145,76,129,91,140 | insufficient_evidence by the evidence floor (coverage 0.59)
+v2 [7,8] | 38,229,9,73,220,104,38,96 | ok, cited p9: Growth Action Plan strategy text (page 9, not 7-8)
+v3 [11,12] | 12,11,101,11,85,84,35,102 | ok, cited p11: "Unilever made solid progress in EUR19.2bn ..." (a WRONG figure: a placeholder used for the
+  wrong item; EUR19.2bn is current assets; also missed a must_mention term)
+v8 [131] | 131,131,189,134,188,189,90,146 | ok, cited p131 (auditor testing satisfactory); missed must_mention "3230"
+
+Arithmetic ceiling under the current rules: n4 n5 n6 t2 t3 cannot pass (figures not in the pack, quotes disallowed
+on the numeric route) and v1 v5 are refused by the floor, so at most 13/20 can pass against a bar of 17.
+Findings:
+- v3 shows a displayed wrong number. The validators allow any known placeholder; they do not check that the placeholder
+  means what the sentence says. This is the product's central risk ("does not lie about money") and is not mechanically
+  caught. A guard is possible but not built: bind each placeholder to a label the sentence must carry, or require the
+  model to name the item and verify it. Needs the tech lead's call.
+- The evidence floor (0.68, calibrated on E3 only) refuses two answerable questions (v1, v5) and catches all three
+  absent ones (a1 0.47, a2 0.57, a3 0.47). Moving it to 0.58 would pass both but is tuned to the QA labels; not done.
+- LLM output varies run to run (going concern), so a single run is not a stable pass or fail.
+- e8 recall of 14/14 and 3/3 is earned from the report's own text, not from the label file.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: 872 passed |
+| `uv run python scripts/gate.py M5.2` | exit 1 (going concern, qa 10/20, ratings) |
+
+---
+
 ## M5.2 lists + floor + numeric route — 2026-10-01 — built; Gemini run NOT completed (503s), gate not re-run
 
 M5.2 NOT passed and NOT re-measured: every attempt to run the new commentary against Gemini fell back to extractive
