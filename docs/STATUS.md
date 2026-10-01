@@ -7,6 +7,72 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 — 2026-10-01 — GATE FAILED: live local run (llama3.1) is generated but too weak
+
+GATE FAILED at M5.2. Run is a real model run, labelled `local` (Ollama, `llama3.1`, OpenAI-compatible
+`/v1/chat/completions`, mode=generated, no fallback). Not an extractive stub. M5.2 unticked. Fixtures untouched,
+ratings.json untouched (still not_rated).
+
+| Gate condition | Result |
+|---|---|
+| commentary.mode == 'generated' | PASS |
+| e4 displayed unverified citations / naked numbers / advice | PASS (0 / 0 / 0, over 4 displayed paragraphs) |
+| e8.risk_recall >= 0.8 | FAIL: 0/14 |
+| e8.kam_recall >= 0.8 | FAIL: 0/3 |
+| e8.going_concern_correct | FAIL (no governance paragraph survived) |
+| qa.total == 20 / qa.passed >= 17 | total PASS; passed 2/20 FAIL |
+| ratings.complete / supported >= 0.9 | FAIL: human ratings not done (contradicted == 0 is vacuous) |
+
+Commentary: revenue_drivers, governance_and_directors, liquidity_and_capital = validation_failed (0 paragraphs);
+strategic_risks 1 paragraph; executive_summary 3 bullets. Pre-validation (5 calls): unknown placeholders 5, naked
+numbers 3, schema 2, fabricated/out-of-set quote 1, no citation 1. Validators held: nothing unverified shown.
+
+Questions that missed (id | expected pages | top-8 PDF pages retrieved | answer):
+n2 [141] | 190,15,35,47,15,9,15,19 | validation_failed
+n3 [141] | 15,35,191,190,15,49,19,16 | validation_failed
+n4 [141] | 162,9,162,15,82,193,223,110 | validation_failed
+n5 [43,49] | 15,9,43,15,16,165,49,44 | ok: "Free cash flow for 2024 was EUR EUR6.1bnbn." (wrong figure)
+n6 [149] | 15,35,9,11,15,27,47,190 | validation_failed
+v1 [55,59,60,62] | 55,55,240,63,57,239,265,257 | validation_failed
+v2 [7,8] | 38,229,9,73,220,104,38,96 | validation_failed
+v3 [11,12] | 12,11,101,11,85,84,35,102 | validation_failed
+v4 [63,64] | 63,129,63,64,128,123,128,227 | validation_failed
+v5 [123] | 128,123,128,145,76,129,91,140 | ok: going concern basis answer (quotes/must_mention not satisfied)
+v6 [124,130,131,132] | 129,124,136,90,91,92,283,68 | validation_failed
+v8 [131] | 131,131,189,134,188,189,90,146 | validation_failed
+a1 absent | 83,219,218,213,293,60,61,83 | validation_failed (should be insufficient_evidence)
+a2 absent | 82,117,193,159,67,280,111,124 | validation_failed
+a3 absent | 81,193,82,193,76,15,223,217 | validation_failed
+t1 [141] | 47,47,47,15,9,15,148,149 | validation_failed
+t2 [35,149] | 35,16,149,11,244,79,190,35 | ok: "Ice Cream operating profit 2024 was EUR EUR9.4bn." (the group figure: the trap)
+t3 [132] | 248,203,124,194,145,185,153,11 | ok: "investment in subsidiaries is EUR EUR6.1bnbn ... group turnover EUR EUR60.8bnbn" (wrong)
+Passed: n1, v7.
+
+Findings:
+- Retrieval and the model both contribute. An expected page is NOT in the top 8 for n2, n3, n4, n6, v2 (page 9
+  only, not 7-8) and n6; it IS in the top 8 for n5, v1, v3, v4, v5, v6, v8, t1, t2, t3-adjacent pages and the model
+  still failed or answered wrongly on most of them. Under the 900-token local evidence budget the model sees only
+  2-5 pages per question.
+- Ollama's OpenAI-compatible endpoint has a fixed 4,096-token context (measured: a 6.5k-token prompt lost its first
+  lines, i.e. the rules). Prompts are sized to fit (evidence 900 tokens, prompt guard 10,500 chars, shrink-to-fit,
+  retry skipped when too long). This is the main quality limiter for the local run.
+- Displayed answers contained semantic errors the mechanical validators cannot catch: n5, t2, t3 each used an
+  existing placeholder for the wrong concept (e.g. group operating profit for Ice Cream; figures the question did
+  not ask for). Validators check numbers are placeholders or quotes, not that the placeholder means what the claim says.
+- The model also writes its own currency symbol and "bn" around a placeholder, printing "EUR EUR60.8bn" and "bnbn".
+  V5 does not flag these (no digits outside the placeholder). Candidate follow-up: reject unit text adjacent to a
+  placeholder. Not changed here.
+Local provider hardening added: retry once on 5xx/timeout (new seed), 180 s timeout, per-question failure no
+longer aborts the run, evidence shrink-to-fit, prompt_too_long guard, per-question answers recorded in report.qa.
+
+| Command | Result |
+|---|---|
+| `make eval-live COMPANY=company_a STAGE=commentary` | exit 0, mode=generated provider=local |
+| `uv run python scripts/gate.py M5.2` | exit 1 |
+| `make ci` | exit 0: 861 passed |
+
+---
+
 ## M5.2 (offline parts) — 2026-10-01 — NOT green: no live run, ratings not done
 
 M5.2 offline parts built and tested. Gate NOT met: it needs a live model run, which needs `ANTHROPIC_API_KEY`

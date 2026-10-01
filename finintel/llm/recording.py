@@ -27,6 +27,8 @@ class RecordingProvider:
         self.name = inner.name
         self.model_id: str = getattr(inner, "model_id", inner.name)
         self.calls: dict[str, str] = {}
+        if hasattr(inner, "context_tokens"):
+            self.context_tokens: int = inner.context_tokens
 
     def complete(self, system: str, user: str) -> str:
         reply = self.inner.complete(system, user)
@@ -34,7 +36,14 @@ class RecordingProvider:
         return reply
 
     def recording(self) -> dict[str, Any]:
-        return {"provider": self.name, "model_id": self.model_id, "calls": dict(self.calls)}
+        out: dict[str, Any] = {
+            "provider": self.name,
+            "model_id": self.model_id,
+            "calls": dict(self.calls),
+        }
+        if hasattr(self, "context_tokens"):
+            out["context_tokens"] = self.context_tokens  # prompts depend on it, so replay needs it
+        return out
 
 
 class ReplayProvider:
@@ -42,6 +51,8 @@ class ReplayProvider:
         self.name: str = recording["provider"]
         self.model_id: str = recording["model_id"]
         self._calls: Mapping[str, str] = recording["calls"]
+        if "context_tokens" in recording:
+            self.context_tokens = int(recording["context_tokens"])
 
     def complete(self, system: str, user: str) -> str:
         try:

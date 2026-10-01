@@ -59,7 +59,7 @@ inspect:
 eval:
 	@echo "make eval is implemented in M2.4 (docs/MILESTONES.md)." >&2; exit 2
 
-# STAGE=commentary: live model if ANTHROPIC_API_KEY is set, else extractive; exits 0 either way.
+# STAGE=commentary: local Ollama by default, else extractive; exits 0 either way.
 eval-live:
 	@test "$(STAGE)" = commentary || { echo "make eval-live supports STAGE=commentary" >&2; exit 2; }
 	$(RUN) finintel commentary $(COMPANY)

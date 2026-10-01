@@ -296,3 +296,56 @@ def test_provider_from_env_needs_a_key() -> None:
     p = provider_from_env({"ANTHROPIC_API_KEY": "k", "FININTEL_COMMENTARY_MODEL": "m-1"})
     assert p is not None and p.model_id == "m-1"
     assert RISKC.chunk_id == "c_risk"
+
+
+class Tight:
+    """Refuses prompts over a size, as a small-context local model's guard does."""
+
+    name = "tight"
+    model_id = "tight-1"
+    context_tokens = 1000
+
+    def __init__(self, limit: int) -> None:
+        self.limit = limit
+        self.sizes: list[int] = []
+
+    def complete(self, system: str, user: str) -> str:
+        self.sizes.append(len(system) + len(user))
+        if len(system) + len(user) > self.limit:
+            raise LLMError("prompt_too_long", "too many chars")
+        return json.dumps(GOOD["strategic_risks"])
+
+
+def test_evidence_shrinks_until_the_prompt_fits_the_models_context() -> None:
+    from finintel.commentary.run import fitted_context
+
+    chunks = [
+        chunk(f"c{i}", ("word " * 150).strip(), section="s", char_start=i * 1000) for i in range(6)
+    ]
+    p = Tight(limit=2600)
+    seen: list[int] = []
+
+    def call(context: list) -> int:  # type: ignore[type-arg]
+        seen.append(len(context))
+        p.complete("s" * 300, "".join(c.text for c in context))
+        return len(context)
+
+    got = fitted_context(p, [c.chunk_id for c in chunks], chunks, call)
+    assert got < 6 and seen[0] > got and seen == sorted(seen, reverse=True)
+    never = Tight(limit=10)
+    with pytest.raises(LLMError):
+        fitted_context(never, ["c0"], chunks, lambda ctx: never.complete("s", ctx[0].text))
+
+
+def test_a_retry_prompt_that_does_not_fit_keeps_the_first_pass() -> None:
+    class RetryTooLong(Tight):
+        def complete(self, system: str, user: str) -> str:
+            self.sizes.append(len(user))
+            if "<VIOLATIONS>" in user:
+                raise LLMError("prompt_too_long", "retry")
+            return json.dumps(mixed)
+
+    first_ok = GOOD["strategic_risks"]["paragraphs"][0]
+    mixed = {**GOOD["strategic_risks"], "paragraphs": [first_ok, BAD["paragraphs"][0]]}
+    r = generate_topic(RetryTooLong(10**6), "strategic_risks", CHUNKS, TRUTH, allowed_years=YEARS)
+    assert r.status == "ok" and len(r.paragraphs) == 1 and r.retried is False

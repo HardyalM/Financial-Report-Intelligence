@@ -313,7 +313,8 @@ def _commentary(args: argparse.Namespace, settings: Settings) -> int:
         return EXIT_FAILED
     c = run.commentary
     label = f"  [{c.label}]" if c.label else ""
-    print(f"{args.company}: mode={c.mode}{label}")
+    who = f" provider={c.model.provider} model={c.model.model_id}" if c.model else ""
+    print(f"{args.company}: mode={c.mode}{who}{label}")
     if run.fallback_reason:
         print(f"  model unavailable ({run.fallback_reason}): fell back to extractive")
     print(f"  numbers: {run.snapshot['rendered']}")

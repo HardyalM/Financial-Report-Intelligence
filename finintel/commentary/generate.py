@@ -37,6 +37,7 @@ from finintel.commentary.validators import (
 from finintel.commentary.validators.validate import SUMMARY_SCHEMA
 from finintel.contracts.commentary import Paragraph
 from finintel.llm import LLMProvider
+from finintel.llm.anthropic_provider import LLMError
 from finintel.narrative.models import Chunk
 
 _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.IGNORECASE)
@@ -69,7 +70,15 @@ def _call(provider: LLMProvider, system: str, user: str, validate: Validate) -> 
     if not first.needs_retry:
         status, reason, paragraphs = finalize(first, retried=False)
         return CallResult(status, reason, paragraphs, False, counts, first.violations)
-    retry_reply = provider.complete(system, retry_user(user, reply, feedback(first)))
+    try:
+        retry_reply = provider.complete(system, retry_user(user, reply, feedback(first)))
+    except LLMError as exc:
+        if exc.code != "prompt_too_long":
+            raise
+        # The retry prompt (original + previous output + violations) does not fit this model's
+        # context. No retry happens: drop what failed, keep what passed.
+        status, reason, paragraphs = finalize(first, retried=False)
+        return CallResult(status, reason, paragraphs, False, counts, first.violations)
     second = _validate(retry_reply, validate)
     first_kept = sum(p.accepted for p in first.paragraphs)
     second_kept = sum(p.accepted for p in second.paragraphs)

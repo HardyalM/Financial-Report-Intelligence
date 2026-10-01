@@ -131,7 +131,7 @@ def evidence_block(chunks: Sequence[Chunk]) -> str:
 
 
 def topic_user(topic: str, truth: Mapping[str, TruthEntry], chunks: Sequence[Chunk]) -> str:
-    numbers = json.dumps(truth_payload(truth), indent=1, ensure_ascii=False)
+    numbers = json.dumps(truth_payload(truth), separators=(",", ":"), ensure_ascii=False)
     return (
         f'<TOPIC id="{topic}">{TOPIC_BRIEF[topic]}</TOPIC>\n'
         f"<GROUND_TRUTH_NUMBERS>\n{numbers}\n</GROUND_TRUTH_NUMBERS>\n"
@@ -144,7 +144,7 @@ def summary_user(
 ) -> str:
     """`paragraphs` are (topic, validated template). The templates keep their placeholders."""
     listed = "\n".join(f"[{topic}] {template}" for topic, template in paragraphs)
-    numbers = json.dumps(truth_payload(truth), indent=1, ensure_ascii=False)
+    numbers = json.dumps(truth_payload(truth), separators=(",", ":"), ensure_ascii=False)
     return (
         f"<VALIDATED_PARAGRAPHS>\n{listed}\n</VALIDATED_PARAGRAPHS>\n"
         f"<GROUND_TRUTH_NUMBERS>\n{numbers}\n</GROUND_TRUTH_NUMBERS>\n"
@@ -180,7 +180,7 @@ Reply with JSON only, in this shape:
 
 
 def qa_user(question: str, truth: Mapping[str, TruthEntry], chunks: Sequence[Chunk]) -> str:
-    numbers = json.dumps(truth_payload(truth), indent=1, ensure_ascii=False)
+    numbers = json.dumps(truth_payload(truth), separators=(",", ":"), ensure_ascii=False)
     return (
         f"<QUESTION>{_neutral(question)}</QUESTION>\n"
         f"<GROUND_TRUTH_NUMBERS>\n{numbers}\n</GROUND_TRUTH_NUMBERS>\n"

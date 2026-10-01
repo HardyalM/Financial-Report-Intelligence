@@ -9,11 +9,11 @@ from __future__ import annotations
 import hashlib
 import json
 from collections import Counter
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
-from finintel.commentary.context import expand_context
+from finintel.commentary.context import TOKEN_BUDGET, expand_context
 from finintel.commentary.extractive import LABEL, extractive_paragraphs
 from finintel.commentary.generate import CallResult, generate_summary, generate_topic
 from finintel.commentary.prompts import PROMPT_VERSION, select_truth
@@ -72,6 +72,30 @@ def allowed_years(pack: Mapping[str, Any]) -> set[str]:
     return years
 
 
+def context_budget(provider: object) -> int:
+    """Evidence tokens per call: the provider's own limit (a small local context) or the default."""
+    return int(getattr(provider, "context_tokens", TOKEN_BUDGET))
+
+
+def fitted_context[T](
+    provider: object,
+    selected: Sequence[str],
+    chunks: Sequence[Chunk],
+    call: Callable[[list[Chunk]], T],
+) -> T:
+    """Run `call` on the expanded context; if the provider says the prompt does not fit its
+    context, shrink the evidence budget and try again, down to the single best chunk."""
+    budget = context_budget(provider)
+    while True:
+        context = expand_context(selected, chunks, budget)
+        try:
+            return call(context)
+        except LLMError as exc:
+            if exc.code != "prompt_too_long" or len(context) <= 1:
+                raise
+            budget = int(budget * 0.7)
+
+
 def build_commentary(
     *,
     provider: LLMProvider | None,
@@ -97,17 +121,33 @@ def build_commentary(
             for topic, found in retrieved.items():
                 if found.status != "ok":
                     continue
-                context = expand_context([c.chunk_id for c in found.chunks], chunks)
-                results[topic] = generate_topic(
-                    provider, topic, context, truth, allowed_years=years, page_labels=page_labels
+
+                def one(context: list[Chunk], topic: str = topic) -> CallResult:
+                    return generate_topic(
+                        provider,
+                        topic,
+                        context,
+                        truth,
+                        allowed_years=years,
+                        page_labels=page_labels,
+                    )
+
+                results[topic] = fitted_context(
+                    provider, [c.chunk_id for c in found.chunks], chunks, one
                 )
                 first_pass[topic] = results[topic].first_pass
             validated = [(t, p) for t, r in results.items() for p in r.paragraphs]
             if validated:
-                summary = generate_summary(
-                    provider, validated, by_id, truth, allowed_years=years, page_labels=page_labels
-                )
-                first_pass["executive_summary"] = summary.first_pass
+                try:
+                    summary = generate_summary(
+                        provider, validated, by_id, truth,
+                        allowed_years=years, page_labels=page_labels,
+                    )  # fmt: skip
+                    first_pass["executive_summary"] = summary.first_pass
+                except LLMError as exc:
+                    if exc.code != "prompt_too_long":
+                        raise
+                    summary = None  # the summary prompt does not fit: no summary, topics stand
         except LLMError as exc:
             use_model, fallback = False, exc.code
             results, summary, first_pass = {}, None, {}
