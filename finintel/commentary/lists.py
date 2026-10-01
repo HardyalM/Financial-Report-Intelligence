@@ -107,3 +107,54 @@ def risk_section(retrieved_ids: Sequence[str], chunks: Sequence[Chunk]) -> list[
         return []
     heading = max(set(anchors), key=anchors.count)
     return [c for c in _prose(chunks) if c.heading_path == heading]
+
+
+_GOING_CONCERN = re.compile(r"^going concern$", re.IGNORECASE)
+
+
+def going_concern_bullets(
+    retrieved_ids: Sequence[str],
+    chunks: Sequence[Chunk],
+    truth: Mapping[str, TruthEntry],
+    page_labels: Mapping[int, str] | None = None,
+) -> list[Paragraph]:
+    """One code-built bullet for each passage headed exactly "Going concern" (the directors'
+    statement, the accounting-policy note). The pages are found by heading, never named, and no
+    model writes the bullet. If no such passage was retrieved for the topic, there is no bullet."""
+    by_id = {c.chunk_id: c for c in chunks}
+    anchored = any(
+        _GOING_CONCERN.match(by_id[i].heading_path[-1].strip())
+        or by_id[i].section_id == "going_concern"
+        for i in retrieved_ids
+        if i in by_id
+    )
+    if not anchored:
+        return []
+    bullets: list[Paragraph] = []
+    seen: set[tuple[str, ...]] = set()
+    for chunk in _prose(chunks):
+        if not _GOING_CONCERN.match(chunk.heading_path[-1].strip()) or chunk.heading_path in seen:
+            continue
+        group = [c for c in _prose(chunks) if c.heading_path == chunk.heading_path]
+        sentences = [(c, opening_sentences(c.text)) for c in group]
+        pick = next(((c, s) for c, s in sentences if s and "going concern" in s.lower()), None)
+        pick = pick or next(((c, s) for c, s in sentences if s), None)
+        if pick is None:
+            continue
+        holder, sentence = pick
+        raw = {
+            "topic": "governance_and_directors", "status": "ok", "reason": None,
+            "paragraphs": [{
+                "template": f"Going concern: \u201c{sentence}\u201d",
+                "citations": [{"chunk_id": holder.chunk_id, "quote": sentence}],
+            }],
+        }  # fmt: skip
+        report = validate_output(
+            raw, topic="governance_and_directors", evidence={holder.chunk_id: holder},
+            truth=truth, page_labels=page_labels,
+        )  # fmt: skip
+        kept = finalize(report, retried=False)[2]
+        if kept:
+            bullets.append(kept[0])
+            seen.add(chunk.heading_path)
+    return bullets

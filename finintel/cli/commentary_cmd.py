@@ -24,7 +24,9 @@ from finintel.commentary.generate import CallResult, answer_numeric, generate_an
 from finintel.commentary.qa import Answer, question_text, score_qa
 from finintel.commentary.ratings import score_ratings
 from finintel.commentary.render import build_ground_truth
+from finintel.commentary.routing import list_answer
 from finintel.commentary.run import CommentaryRun, allowed_years, build_commentary, fitted_context
+from finintel.contracts.commentary import Commentary
 from finintel.evals.e1 import write_report
 from finintel.extract import extract_pack
 from finintel.llm import LLMProvider
@@ -136,7 +138,7 @@ def run_commentary(
             notes.append(f"{pdf.stem}.coverage.json is missing; format:\n{COVERAGE_FORMAT}")
         if qa_labels is not None:
             answers, errors = _ask_all(
-                provider, qa_labels, chunks, index, reranker, truth, years, labels
+                provider, qa_labels, chunks, index, reranker, truth, years, labels, run.commentary
             )
             report["qa"] = {
                 **score_qa(
@@ -198,6 +200,7 @@ def _ask_all(
     truth: Any,
     years: Any,
     page_labels: Mapping[int, str],
+    commentary: Commentary,
 ) -> tuple[dict[str, Answer], dict[str, str]]:
     answers: dict[str, Answer] = {}
     errors: dict[str, str] = {}
@@ -209,6 +212,11 @@ def _ask_all(
 
     def ask(q: Mapping[str, Any]) -> None:
         text = question_text(q)
+        listed = list_answer(text, commentary) if "answer" not in q else None
+        if listed is not None:  # a list-shaped question: answered from the validated bullets
+            answers[q["id"]] = listed
+            errors.pop(q["id"], None)
+            return
         if "answer" in q:  # a figure question: answered from the statement pack, placeholder only
             try:
                 status, paragraph = answer_numeric(provider, text, scoped)

@@ -14,7 +14,7 @@ from typing import Any
 from finintel.commentary.render import TruthEntry
 from finintel.narrative.models import Chunk
 
-PROMPT_VERSION = "commentary-2"
+PROMPT_VERSION = "commentary-3"
 
 _RULES = """\
 You are a research aid for credit and equity analysts. UK English.
@@ -67,8 +67,9 @@ TOPIC_BRIEF: dict[str, str] = {
         "and the mitigations described."
     ),
     "governance_and_directors": (
-        "Going concern and viability conclusions, the audit committee's significant issues, key "
-        "audit matters, and notable board or directors' report disclosures."
+        "The viability statement, the audit committee's significant issues, and notable board or "
+        "directors' report disclosures. Do not write about going concern or the auditor's key "
+        "audit matters: those are stated separately, by code, from the report's own passages."
     ),
     "liquidity_and_capital": (
         "Liquidity, net debt, refinancing, covenants and capital allocation, only where the "

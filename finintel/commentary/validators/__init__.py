@@ -6,6 +6,7 @@ still fails. A topic left with no paragraph is `validation_failed`, and the UI s
 """
 
 from finintel.commentary.validators.citations import QuoteError, build_citation
+from finintel.commentary.validators.fields import mismatched_placeholders
 from finintel.commentary.validators.lexicon import advice_terms, direction_violations
 from finintel.commentary.validators.numbers import naked_numbers, unit_beside_placeholder
 from finintel.commentary.validators.text import locate_quote, normalise
@@ -30,6 +31,7 @@ __all__ = [
     "feedback",
     "finalize",
     "locate_quote",
+    "mismatched_placeholders",
     "naked_numbers",
     "normalise",
     "summary_evidence",

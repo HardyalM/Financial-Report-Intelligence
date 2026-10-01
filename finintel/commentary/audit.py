@@ -11,7 +11,12 @@ from collections.abc import Collection, Iterator, Mapping
 from typing import Any
 
 from finintel.commentary.render import PLACEHOLDER, TruthEntry
-from finintel.commentary.validators import advice_terms, direction_violations, naked_numbers
+from finintel.commentary.validators import (
+    advice_terms,
+    direction_violations,
+    mismatched_placeholders,
+    naked_numbers,
+)
 from finintel.commentary.validators.text import simple
 from finintel.contracts.commentary import Commentary, Paragraph
 from finintel.narrative.models import Chunk
@@ -38,7 +43,7 @@ def audit_commentary(
     *,
     allowed_years: Collection[str] = (),
 ) -> dict[str, Any]:
-    unverified = naked = advice = unknown = direction = no_citation = total = 0
+    unverified = naked = advice = unknown = direction = no_citation = mismatched = total = 0
     for para in displayed(commentary):
         total += 1
         if not para.citations:
@@ -56,6 +61,8 @@ def audit_commentary(
             unknown += 1
         if direction_violations(para.template, quotes, truth):
             direction += 1
+        if mismatched_placeholders(para.template, truth):
+            mismatched += 1
     return {
         "displayed_paragraphs": total,
         "displayed_unverified_citations": unverified,
@@ -63,6 +70,7 @@ def audit_commentary(
         "displayed_advice": advice,
         "displayed_unknown_placeholders": unknown,
         "displayed_direction_violations": direction,
+        "displayed_mismatched_placeholders": mismatched,
         "displayed_without_citation": no_citation,
     }
 

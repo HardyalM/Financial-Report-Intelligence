@@ -7,6 +7,52 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 with placeholder guard, code-built going concern, list routing — 2026-10-01 — GATE FAILED: qa 13/20
+
+GATE FAILED at M5.2 (one condition set short). Provider `gemini`, model `gemini-3.5-flash-lite`, generated mode, 30
+displayed paragraphs. Fixtures and ratings.json untouched. M5.2 unticked.
+
+| Condition | Result |
+|---|---|
+| generated; e4 unverified / naked / advice | PASS (0/0/0) |
+| e4 mismatched placeholders (new) | PASS (0) |
+| e8 risk recall 14/14, KAM recall 3/3 | PASS |
+| e8 going concern correct | PASS (code-built bullets at the two "Going concern" headings, PDF 123 and 145) |
+| qa.passed >= 17 | FAIL: 13/20 (was 10) |
+| ratings complete / supported | FAIL: human ratings not done (contradicted == 0 PASS) |
+
+Built this round: V9 placeholder-meaning guard (each placeholder bound to a field; its own sentence must name the field;
+the v3 sentence is rejected; audit counts mismatches; gate requires 0); going-concern bullets built by code from
+passages headed exactly "Going concern" (pages found by heading, none named in code; no model); the model is told
+not to write about going concern or KAMs (prompt commentary-3); list-shaped QA questions (principal risks, key audit
+matters, going concern) are answered from the validated bullets by routing on the question's words.
+
+Passed: a1 a2 a3 n1 n2 n3 t1 v1 v4 v5 v6 v7 v8. Misses (id | expected | top-8 PDF pages | answer):
+n4 EPS 2.3 | pack route | insufficient_evidence
+n5 free cash flow 6,932 | pack route | insufficient_evidence
+n6 underlying operating profit 11,179 | pack route | insufficient_evidence
+t2 Ice Cream operating profit 571 | pack route | insufficient_evidence
+t3 parent investment 88,035 | pack route | insufficient_evidence
+v2 pages [7,8], "Growth Action Plan 2030" | 38,229,9,73,220,104,38,96 | cited 9 and 96 (strategy text; pages 7-8 not retrieved): fails by rule
+v3 pages [11,12], "underlying sales","volume" | 12,11,101,11,85,84,35,102 | cited 11: "...solid progress in 2024..." (no wrong figure now; missed the two required terms)
+
+Blocker, not built: item 3 (extend the pack with EPS, FCF, underlying operating profit, Ice Cream operating profit,
+parent investment). It changes the locked statement_pack schema (ADR + version), is M2-scale extraction, "from the
+labelled pages" would hardcode the answer key's pages, and FCF/underlying are non-GAAP measures and Ice Cream is
+segment data, not audited statement lines. Without it n4 n5 n6 t2 t3 cannot pass, so the ceiling is 15/20 against a
+bar of 17 (13 now; v2 and v3 are the other two). Two options for the tech lead: (A) a separate typed
+supplemental-facts record, outside the StatementPack, each fact with value, unit, period, page, raw_text, confidence,
+`is_apm`, extracted generically by row label from table text (not by labelled page), placeholder-only; (B) extend the
+StatementPack schema with an `is_apm` flag (ADR, version bump, golden labels updated by the tech lead). Either needs
+a decision, and the accounting for APMs needs sign-off.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: 876 passed |
+| `uv run python scripts/gate.py M5.2` | exit 1 (qa 13/20, ratings) |
+
+---
+
 ## M5.2 Gemini run with lists, floor, pack route — 2026-10-01 — GATE FAILED: qa 10/20, going concern flipped
 
 GATE FAILED at M5.2. Provider `gemini`, model `gemini-3.5-flash-lite`, mode generated. Fixtures and ratings.json

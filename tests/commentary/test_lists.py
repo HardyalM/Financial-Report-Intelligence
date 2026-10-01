@@ -220,3 +220,102 @@ def test_evidence_coverage_scores_rare_missing_words_low() -> None:
     )  # CET1 is nowhere in the report
     assert index.coverage("") == 0.0
     assert evidence_coverage(Bm25(chunks), "zzzz qqqq") == 0.0
+
+
+def test_a_placeholder_must_be_named_by_its_own_sentence() -> None:
+    from finintel.commentary.validators import mismatched_placeholders as bad
+
+    v3 = "The Chief Executive said Unilever made solid progress in {{item:current_assets:FY2024}}."
+    assert len(bad(v3)) == 1 and "current assets" in bad(v3)[0]
+    assert bad("Current assets were {{item:current_assets:FY2024}}.") == []
+    assert bad("Turnover was {{item:revenue:FY2024}}, {{change:item:revenue:FY2023:FY2024}}.") == []
+    assert bad("Operating margin was {{ratio:operating_margin:FY2024}}.") == []
+    assert bad("Debt to equity was {{ratio:debt_to_equity:FY2024}}.") == []
+    # each sentence must name its own placeholder: naming it elsewhere does not help
+    two = "Revenue grew. The figure was {{item:revenue:FY2024}}."
+    assert len(bad(two)) == 1
+    assert (
+        bad("The year ended well {{ratio:ebitda_margin:FY2024}}.", known={"item:revenue:FY2024"})
+        == []
+    )
+
+
+def test_the_guard_rejects_a_mislabelled_paragraph_in_the_pipeline() -> None:
+    from finintel.commentary.validators import validate_output
+    from tests.commentary.builders import Q_RISK, chunk, evidence, para, raw
+
+    chunks = chunk(
+        "c_a",
+        "Management identifies supply chain disruption as a principal risk, noting "
+        + Q_RISK
+        + " across the group.",
+    )
+    text = "The Chief Executive said progress came to {{item:current_assets:FY2024}}."
+    r = validate_output(
+        raw([para(text, ("c_a", Q_RISK))]), topic="strategic_risks",
+        evidence=evidence(chunks), truth=TRUTH,
+    )  # fmt: skip
+    assert {v.code for v in r.violations} == {"V9"} and r.needs_retry
+    assert r.paragraphs[0].accepted is False
+
+
+def test_going_concern_is_found_by_heading_and_needs_no_model() -> None:
+    from finintel.commentary.lists import going_concern_bullets
+
+    def gc(cid: str, page: int, heading: str, text: str, start: int) -> Chunk:
+        c = chunk(cid, text, page=page, section="going_concern", char_start=start)
+        return c.model_copy(update={"heading_path": ("Report", heading)})
+
+    chunks = [
+        gc(
+            "g1",
+            123,
+            "GOING CONCERN",
+            "The directors have prepared the accounts on the going concern basis for the period.",
+            0,
+        ),
+        gc(
+            "g2",
+            145,
+            "Going concern",
+            "These financial statements have been prepared on a going concern basis today.",
+            500,
+        ),
+        gc(
+            "g3",
+            128,
+            "3. Going concern, viability and principal risks",
+            "The auditor considered the going concern assessment of the directors carefully.",
+            900,
+        ),
+    ]
+    bullets = going_concern_bullets(["g1"], chunks, TRUTH)
+    assert [b.citations[0].page for b in bullets] == [123, 145]  # the exact-heading passages only
+    assert all(b.rendered.startswith("Going concern: “") for b in bullets)
+    assert (
+        going_concern_bullets(["x-not-retrieved"], chunks, TRUTH) == []
+    )  # nothing retrieved: omitted
+    assert going_concern_bullets(["g3"], [chunks[2]], TRUTH) == []  # no exact heading: omitted
+
+
+def test_list_questions_are_answered_from_the_validated_bullets() -> None:
+    from finintel.commentary.routing import list_answer
+
+    retrieved = {"governance_and_directors": TopicResult(
+        "governance_and_directors", "ok", (Retrieved("a0", 0.03, 0.9, 0.9, True),))}  # fmt: skip
+    replies = good_replies()
+    replies["governance_and_directors"] = [{
+        "topic": "governance_and_directors", "status": "insufficient_evidence",
+        "reason": "No evidence.", "paragraphs": []}]  # fmt: skip
+    kam = build_commentary(
+        provider=Scripted(replies), pack=PACK, ratios=RATIOS, chunks=KAM_CHUNKS, retrieved=retrieved
+    ).commentary
+    every = list_answer("What are the key audit matters?", kam)
+    assert every is not None and len(every.paragraphs) == 3
+    brazil = list_answer("What did the auditor say about the Brazil indirect tax matter?", kam)
+    assert brazil is not None and len(brazil.paragraphs) == 1
+    assert "Brazil" in brazil.paragraphs[0].rendered
+    assert (
+        list_answer("What did the auditor say about cyber?", kam) is None
+    )  # nothing matches: model path
+    assert list_answer("How does the company describe its strategy?", kam) is None

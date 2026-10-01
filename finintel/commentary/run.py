@@ -21,7 +21,11 @@ from finintel.commentary.generate import (
     generate_summary,
     generate_topic,
 )
-from finintel.commentary.lists import kam_bullets, risk_section
+from finintel.commentary.lists import (
+    going_concern_bullets,
+    kam_bullets,
+    risk_section,
+)
 from finintel.commentary.prompts import PROMPT_VERSION, select_truth
 from finintel.commentary.render import TruthEntry, build_ground_truth
 from finintel.commentary.snapshot import numbers_snapshot
@@ -112,19 +116,30 @@ def _risk_list(
         return None
 
 
-def _add_kams(
+def _add_code_built(
     result: CallResult,
     ids: Sequence[str],
     chunks: Sequence[Chunk],
     truth: Mapping[str, TruthEntry],
     page_labels: Mapping[int, str] | None,
 ) -> None:
-    """Append one code-built bullet per key audit matter to the governance topic."""
-    bullets = kam_bullets(ids, chunks, truth, page_labels)
-    if bullets:
-        result.paragraphs = [*result.paragraphs, *bullets]
+    """Going-concern and key-audit-matter bullets, built by code and placed around the model's."""
+    result.paragraphs = _with_code_built(result.paragraphs, ids, chunks, truth, page_labels)
+    if result.paragraphs:
         result.status = "ok"
         result.reason = None
+
+
+def _with_code_built(
+    paragraphs: Sequence[Paragraph],
+    ids: Sequence[str],
+    chunks: Sequence[Chunk],
+    truth: Mapping[str, TruthEntry],
+    page_labels: Mapping[int, str] | None,
+) -> list[Paragraph]:
+    going = going_concern_bullets(ids, chunks, truth, page_labels)
+    kams = kam_bullets(ids, chunks, truth, page_labels)
+    return [*going, *paragraphs, *kams]
 
 
 def fitted_context[T](
@@ -194,7 +209,7 @@ def build_commentary(
                     results[topic] = fitted_context(provider, ids, chunks, one)
                 first_pass[topic] = results[topic].first_pass
                 if topic == "governance_and_directors":
-                    _add_kams(results[topic], ids, chunks, truth, page_labels)
+                    _add_code_built(results[topic], ids, chunks, truth, page_labels)
             validated = [(t, p) for t, r in results.items() for p in r.paragraphs]
             if validated:
                 try:
@@ -237,8 +252,8 @@ def build_commentary(
                 page_labels,
             )
             if topic == "governance_and_directors":
-                paragraphs += kam_bullets(
-                    [c.chunk_id for c in found.chunks], chunks, truth, page_labels
+                paragraphs = _with_code_built(
+                    paragraphs, [c.chunk_id for c in found.chunks], chunks, truth, page_labels
                 )
             topics.append(
                 Topic(

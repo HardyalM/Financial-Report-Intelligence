@@ -194,7 +194,8 @@ class Broken:
 
 def test_a_provider_failure_falls_back_to_extractive_and_says_so() -> None:
     run = commentary(Broken())
-    assert run.commentary.mode == "extractive" and run.fallback_reason == "anthropic transport_error: ConnectError"
+    reason = "anthropic transport_error: ConnectError"
+    assert run.commentary.mode == "extractive" and run.fallback_reason == reason
     assert run.commentary.model is None and run.commentary.label
 
 

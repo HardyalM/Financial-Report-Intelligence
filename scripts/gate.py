@@ -45,6 +45,7 @@ CONDITIONS: dict[str, list[str]] = {
         "e4.displayed_unverified_citations == 0",
         "e4.displayed_naked_numbers == 0",
         "e4.displayed_advice == 0",
+        "e4.displayed_mismatched_placeholders == 0",
         "e8.risk_recall >= 0.8",
         "e8.kam_recall >= 0.8",
         "e8.going_concern_correct == True",
