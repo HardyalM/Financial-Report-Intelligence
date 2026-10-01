@@ -1,0 +1,32 @@
+{
+  "company": "company_a",
+  "source": "Unilever Annual Report and Accounts 2025",
+  "page_basis": "printed page numbers from the report footer / contents. If your PDF viewer is offset (cover makes viewer page = printed + 1 or + 2), replace these with the viewer page numbers before saving.",
+  "queries": [
+    {
+      "q": "What are the principal risks?",
+      "must_include_page_any_of": [31, 32, 33, 34, 35, 36, 37],
+      "why": "Contents: Our Principal Risks 31; Principal Risks 32; site disclosure says pages 31 to 37."
+    },
+    {
+      "q": "How does Unilever describe its strategy?",
+      "must_include_page_any_of": [4, 5],
+      "why": "Contents: Our Strategy 4."
+    },
+    {
+      "q": "What did the Chief Executive say about performance?",
+      "must_include_page_any_of": [8, 9],
+      "why": "Contents: Chief Executive Officer’s Statement 8."
+    },
+    {
+      "q": "What is the viability statement?",
+      "must_include_page_any_of": [38, 39],
+      "why": "Contents: Viability Statement 38."
+    },
+    {
+      "q": "What did the directors say about going concern?",
+      "must_include_page_any_of": [133, 134],
+      "why": "Notes start at 133; basis of preparation includes going concern."
+    }
+  ]
+}
