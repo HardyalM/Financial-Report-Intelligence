@@ -4,6 +4,7 @@
     python scripts/gate.py M2.1                      # runs the locator on the fixture PDFs
     python scripts/gate.py M2.2                      # builds StatementTables for company_a
     python scripts/gate.py M2.3                      # reads company_a's units and periods
+    python scripts/gate.py M4.1                      # chunks company_a and audits the chunks
 
 Exit codes: 0 = all conditions hold; 1 = a condition fails or the report is missing;
 2 = this session's scripted check is not implemented yet (it is added in that session).
@@ -52,7 +53,7 @@ CONDITIONS: dict[str, list[str]] = {
     "M8.1": ["e1.matched + e1.honest_null == e1.labelled", "e1.silent_wrong == 0"],
 }
 # Scripted checks that compare pipeline output with labels; each is written in its own session.
-PENDING = {"M4.1", "M8.1"}
+PENDING = {"M8.1"}
 
 _COMPARE = {
     ast.Eq: operator.eq,
@@ -288,7 +289,86 @@ def gate_m23() -> tuple[int, list[str]]:
     return (0 if all(ok for ok, _ in checks) else 1), lines
 
 
+def check_m41(
+    chunks: list[dict[str, Any]],
+    excluded: Mapping[int, str],
+    tables: Mapping[int, list[tuple[float, float, float, float]]],
+) -> list[tuple[bool, str]]:
+    """M4.1 audit of chunk records (as dicts) against the excluded pages and independent tables."""
+    no_page = [c["chunk_id"] for c in chunks if not c.get("page_start") or c["page_start"] < 1]
+    in_statements = [
+        c["chunk_id"]
+        for c in chunks
+        if c["section_id"] in ("primary_statements", "company_statements")
+    ]
+    on_excluded = sorted(
+        {p for c in chunks for p in range(c["page_start"], c["page_end"] + 1) if p in excluded}
+    )
+    overlaps = []
+    for c in chunks:
+        if c["is_table"] or c["is_footnote"]:
+            continue
+        for line in c["line_boxes"]:
+            x0, y0, x1, y1 = line["bbox"]
+            area = max(x1 - x0, 0.01) * max(y1 - y0, 0.01)
+            for tx0, ty0, tx1, ty1 in tables.get(line["page"], []):
+                inter = max(min(x1, tx1) - max(x0, tx0), 0.0) * max(
+                    min(y1, ty1) - max(y0, ty0), 0.0
+                )
+                if inter >= 0.5 * area:
+                    overlaps.append((c["chunk_id"], line["page"]))
+    prose = sum(1 for c in chunks if not c["is_table"] and not c["is_footnote"])
+    return [
+        (not no_page, f"{len(chunks)} chunks, {len(no_page)} without page_start"),
+        (
+            not in_statements,
+            f"{len(in_statements)} chunks in primary_statements or company_statements",
+        ),
+        (
+            not on_excluded,
+            f"{len(on_excluded)} excluded statement pages carry chunks {on_excluded[:5]}",
+        ),
+        (
+            not overlaps,
+            f"{len(overlaps)} prose lines overlap an independent table region "
+            f"({prose} prose chunks){_first(overlaps)}",
+        ),
+    ]
+
+
+def _first(overlaps: list[tuple[str, int]]) -> str:
+    return f"; first on p.{overlaps[0][1]}" if overlaps else ""
+
+
+def gate_m41() -> tuple[int, list[str]]:
+    from finintel.cache import StageCache
+    from finintel.cli.chunks_cmd import as_json, chunk_pdf
+    from finintel.ingest import sha256_file
+    from finintel.locate.signals import PageView
+    from finintel.narrative.tables import NUMERIC_SHARE, numeric_share
+    from finintel.parse.cached import cached_text_layer
+    from finintel.parse.ruled_tables import ruled_tables
+
+    pdf = ROOT / "fixtures" / "pdfs" / "company_a.pdf"
+    if not pdf.exists():
+        return 1, ["FAIL  fixtures/pdfs/company_a.pdf is required"]
+    cache_dir = ROOT / "artifacts" / "cache"
+    path, sha, chunks, excluded = chunk_pdf("company_a", cache_dir)
+    records = as_json(path, sha, chunks, excluded)["chunks"]
+    layer, _ = cached_text_layer(pdf, sha256_file(pdf), StageCache(cache_dir))
+    # Independent of the chunker's own density detector: PyMuPDF's ruled-table finder, kept where
+    # the boxed region is mostly figures (a boxed paragraph of prose is not a table).
+    tables = {
+        page: [b for b in boxes if numeric_share(PageView(layer.page(page)), b) >= NUMERIC_SHARE]
+        for page, boxes in ruled_tables(pdf, sha, StageCache(cache_dir)).items()
+    }
+    checks = check_m41(records, excluded, tables)
+    lines = [f"{'PASS' if ok else 'FAIL'}  {text}" for ok, text in checks]
+    return (0 if all(ok for ok, _ in checks) else 1), lines
+
+
 SCRIPTED: dict[str, Callable[[], tuple[int, list[str]]]] = {
+    "M4.1": gate_m41,
     "M2.1": gate_m21,
     "M2.2": gate_m22,
     "M2.3": gate_m23,

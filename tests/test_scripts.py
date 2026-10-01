@@ -110,8 +110,12 @@ def test_gate_missing_report_fails(tmp_path: Path) -> None:
     assert gate.run("M3", tmp_path / "absent.json")[0] == 1
 
 
-def test_gate_pending_and_command_only_sessions(tmp_path: Path) -> None:
-    assert gate.run("M4.1", tmp_path / "absent.json")[0] == 2
+def test_gate_pending_and_command_only_sessions(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(gate, "PENDING", {"M0"})
+    assert gate.run("M0", tmp_path / "absent.json")[0] == 2
+    monkeypatch.undo()
     assert gate.run("M0", tmp_path / "absent.json")[0] == 0
 
 

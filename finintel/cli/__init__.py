@@ -5,6 +5,7 @@
     finintel extract <pdf|fixture> [--json]      M2.4 StatementPack from the local engines
     finintel eval-e1 <fixture> --engines local   M2.4 golden-cell comparison
     finintel eval-e2 <fixture>                   M3 ratio comparison at 1e-9
+    finintel chunks <pdf|fixture> [--json]       M4.1 narrative chunks
 
 Exit codes: 0 ok; 1 a document was refused or failed, or its statements need review; 2 usage;
 3 a held-out path was requested.
@@ -18,7 +19,7 @@ import json
 import sys
 from pathlib import Path
 
-from finintel.cli import extract_cmd
+from finintel.cli import chunks_cmd, extract_cmd
 from finintel.cli import locate as locate_cmd
 from finintel.cli.common import HoldoutRefusedError
 from finintel.cli.inspect import (
@@ -91,6 +92,10 @@ def build_parser() -> argparse.ArgumentParser:
     extract.add_argument("--json", action="store_true", help="print the pack as JSON")
     extract.add_argument("--engines", choices=("local", "all"), default="local")
     extract.add_argument("--cache-dir", type=Path)
+    chunks = commands.add_parser("chunks", help="chunk the narrative of a report (M4.1)")
+    chunks.add_argument("target", help='a PDF path, or a fixture name such as "company_a"')
+    chunks.add_argument("--json", action="store_true", help="print all chunks as JSON")
+    chunks.add_argument("--cache-dir", type=Path)
     e2p = commands.add_parser("eval-e2", help="compare ratios with fixtures/expected (M3)")
     e2p.add_argument("company", help='fixture name, e.g. "company_a"')
     e2p.add_argument("--cache-dir", type=Path)
@@ -119,6 +124,8 @@ def main(argv: list[str] | None = None) -> int:
         return _extract(args, settings)
     if args.command == "eval-e2":
         return _eval_e2(args, settings)
+    if args.command == "chunks":
+        return _chunks(args, settings)
     return _inspect(args, settings)
 
 
@@ -265,4 +272,22 @@ def _eval_e2(args: argparse.Namespace, settings: Settings) -> int:
                 f"labelled {cell['labelled']}"
             )
     print(f"  -> {path}")
+    return EXIT_OK
+
+
+def _chunks(args: argparse.Namespace, settings: Settings) -> int:
+    try:
+        pdf, sha, chunks, excluded = chunks_cmd.chunk_pdf(
+            args.target, args.cache_dir or settings.cache_dir
+        )
+    except HoldoutRefusedError as exc:
+        print(f"finintel chunks: refused {exc}: held out until M8.3", file=sys.stderr)
+        return EXIT_HOLDOUT
+    except (FileNotFoundError, IngestError) as exc:
+        print(f"finintel chunks: {exc}", file=sys.stderr)
+        return EXIT_FAILED
+    if args.json:
+        chunks_cmd.dump_json(pdf, sha, chunks, excluded, sys.stdout)
+    else:
+        chunks_cmd.report(pdf, chunks, excluded, sys.stdout)
     return EXIT_OK

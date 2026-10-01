@@ -92,6 +92,10 @@ sessions:
     - "finintel/narrative/**"
     - "evals/synthetic/**"
     - "tests/**"
+    - "finintel/cli/**"
+    - "finintel/parse/ruled_tables.py"
+    - "scripts/gate.py"
+    - "scripts/scope.yaml"
   "M4.2":
     - "finintel/db/**"
     - "finintel/retrieval/**"

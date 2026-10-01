@@ -52,6 +52,8 @@ select = ["E", "F", "I", "B", "UP", "N", "SIM", "RUF"]
 # Generated from schemas/statement_pack.schema.json by `make contracts`; never edited by hand.
 "finintel/contracts/statement_pack.py" = ["ALL"]
 "finintel/contracts/ratio_pack.py" = ["ALL"]
+# A table of section-title regular expressions: one pattern per line is the readable form.
+"finintel/narrative/sections.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -69,6 +71,9 @@ module = [
     "tests.inspect.synthetic",
     "evals.synthetic.render",
     "scripts.make_golden_excerpt",
+    "finintel.parse.ruled_tables",
+    "tests.narrative.builders",
+    "scripts.gate",
 ]
 disallow_untyped_calls = false
 

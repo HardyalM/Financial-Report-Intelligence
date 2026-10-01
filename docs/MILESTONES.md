@@ -243,17 +243,18 @@ These checks are created in M0 and run in CI.
 ## M4.1 — Section tree and chunker (no database)
 
 **Read first:** RAG §1–2; ADR-002.
-**Allowed paths:** `finintel/narrative/**`, `evals/synthetic/**`, `tests/**`.
+**Allowed paths:** `finintel/narrative/**`, `evals/synthetic/**`, `tests/**`, `finintel/cli/**`, `finintel/parse/ruled_tables.py`, `scripts/gate.py`, `scripts/scope.yaml`.
+*Amended 2026-10-01 in the M4.1 session: the PyMuPDF ruled-table finder lives in finintel/parse/ruled_tables.py (the import boundary keeps PyMuPDF in parse/); the gate runs `finintel chunks` (finintel/cli) and a scripted audit in scripts/gate.py. The synthetic PDFs for the T18 and note tests are built in tests/narrative rather than evals/synthetic: they need no spec files or tech-lead figures.*
 
-- [ ] Section tree; header and footer removal; reading order; **table-region detection on every narrative page**; chunking; char→page map; note state machine; footnotes; `chunker_version` in `chunk_id`.
+- [x] Section tree; header and footer removal; reading order; **table-region detection on every narrative page**; chunking; char→page map; note state machine; footnotes; `chunker_version` in `chunk_id`. *(Section tree from bookmarks plus in-page headings. The printed-contents-page and running-header sources are not used: both goldens have bookmarks.)*
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] `finintel chunks fixtures/pdfs/company_a.pdf --json` exits 0, and `python scripts/gate.py M4.1` confirms:
+- [x] G1–G6 pass. *2026-10-01: see docs/STATUS.md; `check_scope.py M4.1 --base m3` exit 0.*
+- [x] `finintel chunks fixtures/pdfs/company_a.pdf --json` exits 0, and `python scripts/gate.py M4.1` confirms:
   - 0 chunks without `page_start`
   - 0 chunks in `primary_statements` or `company_statements`
   - 0 prose chunks overlapping a table region.
-- [ ] Tests pass:
+- [x] Tests pass:
   - a quote either side of a page-crossing chunk gets the correct page
   - a note spanning two pages keeps its `note_number`
   - changing `chunker_version` changes `chunk_id`

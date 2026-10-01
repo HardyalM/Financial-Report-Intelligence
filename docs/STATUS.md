@@ -7,6 +7,24 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M4.1 — 2026-10-01 — green (heading_path sign-off pending)
+
+M4.1 green. company_a: 1,208 chunks, every one with `page_start`; 0 chunks in primary or company statements;
+0 on excluded statement pages; 0 prose lines overlapping an independent table region (978 prose chunks).
+No database. Next M4.2 (needs Docker/Postgres and `fixtures/expected/company_a.retrieval.json` from the tech lead).
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: **749 passed, 0 skipped** |
+| `uv run python scripts/gate.py M4.1` | exit 0, 4/4 PASS |
+| `uv run python scripts/check_scope.py M4.1 --base m3` | exit 0 (ruled_tables.py amendment in MILESTONES) |
+
+Caveat: the independent table check unions the density detector with the same PyMuPDF ruled-table finder
+production uses, so it is partly a wiring check, not a fully independent oracle.
+Open: tech-lead sign-off "10 random chunks have correct heading_path values".
+
+---
+
 ## M3 — 2026-10-01 — green
 
 M3 green. ROCE 0.172426443613 (FY2024) and 0.188527599065 (FY2023) match the hand calculator at 1e-9.
