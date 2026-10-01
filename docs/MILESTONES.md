@@ -297,17 +297,17 @@ These checks are created in M0 and run in CI.
 *Amended 2026-10-01 in the M5.2 session (ratings fix: commentary schema 1.1.0 adds per-paragraph `figures` with source pages, ADR-012): the chunker no longer drops a key audit matter headed "(Parent company)" inside the auditor's report (CHUNKER_VERSION 1.1.0), and retrieval gains an evidence-coverage floor (finintel/retrieval), and supplemental facts (ADR-011, option A) are read by finintel/facts. The stage runs as `finintel commentary` (finintel/cli) and the gate adds the mode and ratings conditions (scripts/gate.py). Scoring reads the tech lead's label shapes (`kind`, `q`, `pages`, `must_mention`).*
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] `make eval-live COMPANY=company_a STAGE=commentary` exits 0 and writes `artifacts/commentary/company_a.json`.
-- [ ] `python scripts/gate.py M5.2` exits 0, requiring:
+- [ ] G1–G6 pass. *`make ci` green (912); `check_scope.py M5.2` flags only the tech lead's uncommitted fixtures/expected files (G2/G3).*
+- [x] `make eval-live COMPANY=company_a STAGE=commentary` exits 0 and writes `artifacts/commentary/company_a.json`. *2026-10-01: Gemini run, 29 displayed paragraphs.*
+- [x] `python scripts/gate.py M5.2` exits 0, requiring: *2026-10-01: exit 0 (all 15 conditions PASS). Caveat: risk recall is 13/14, not the tech lead's stated 14/14 (Customer and channel: the model's quote was not verbatim).*
   - `e4.displayed_unverified_citations == 0`
   - `e4.displayed_naked_numbers == 0`
   - `e4.displayed_advice == 0`
   - `e8.risk_recall >= 0.8`, `e8.kam_recall >= 0.8`, `e8.going_concern_correct == true`
   - `qa.passed >= 17` (with `qa.total == 20`).
-- [ ] With the LLM key unset, the run exits 0 and the output is labelled `extractive`.
-- [ ] Replaying the recorded run offline reproduces a byte-identical `output`.
-- [ ] `ratings.json` is complete: supported ≥ 90 %, contradicted = 0. *(You rate; the check is arithmetic.)*
+- [x] With the LLM key unset, the run exits 0 and the output is labelled `extractive`. *tests/commentary (no provider => extractive, labelled; provider failure falls back).*
+- [x] Replaying the recorded run offline reproduces a byte-identical `output`. *2026-10-01: 52,027 bytes, identical.*
+- [x] `ratings.json` is complete: supported ≥ 90 %, contradicted = 0. *(You rate; the check is arithmetic.)* *2026-10-01: 29/29 rated, 27 supported (93.1%), 0 contradicted; bound to claims_sha256 8790d825.*
 
 ---
 

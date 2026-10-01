@@ -7,6 +7,30 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 — 2026-10-01 — scripted gate PASSES (exit 0); two caveats for the tech lead
+
+M5.2 gate green. `python scripts/gate.py M5.2` exits 0: all 15 conditions PASS, including the human ratings. Provider gemini
+(gemini-3.5-flash-lite), generated mode, 29 displayed paragraphs, claims_sha256 8790d825e7c3870e...a626b.
+
+| Condition | Result |
+|---|---|
+| generated; e4 unverified / naked / advice / mismatched / figures without a source / unverified quotes | PASS (0 each) |
+| e8 KAM recall 3/3; going concern correct | PASS |
+| e8 risk recall | 13/14 = 0.93: gate threshold (>= 0.8) PASS; tech lead's stated 14/14 NOT met |
+| qa.passed >= 17 | PASS: 18/20 (v2, v3 miss) |
+| ratings complete / supported >= 0.9 / contradicted == 0 | PASS: 29/29, 27 supported (93.1%), 0 contradicted |
+| replay offline | byte-identical `output` (52,027 bytes) |
+
+Ratings (tech lead, `fixtures/expected/ratings.json`, bound to this run's hash): unsupported `executive_summary:1` (buyback p. 76 and
+an SEC sentence on p. 91, one page cited) and `executive_summary:3` (liquidity figures beside a page-11 quote).
+Caveats: (1) risk recall 13/14 against the tech lead's 14/14 — "Customer and channel" is dropped because the model's quote for it is
+not verbatim; runs vary (14/14 once, 13/14 four times). (2) The executive summary is where the remaining unsupported claims are; it
+still restates liquidity figures beside an unrelated quote (the guard checks figures cite their own pages, which they now do; the
+rater judged the sentence-to-page match). The G2/G3 scope flags are the tech lead's uncommitted fixtures/expected files.
+Not re-run: the `FININTEL_PROVIDER=none` end-to-end (covered by tests); the artefact and report were restored after the replay.
+
+---
+
 ## M5.2 liquidity and capital built by code — 2026-10-01 — draft ready for re-rating
 
 Tech lead's decision: the model no longer writes `liquidity_and_capital` (every model paragraph was rejected). It is built in
