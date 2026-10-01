@@ -16,7 +16,7 @@ from typing import Protocol
 from finintel.locate.models import DocumentType
 from finintel.narrative.models import Chunk
 from finintel.retrieval.embeddings import Embedder, cosine, tokens
-from finintel.retrieval.lexical import Bm25
+from finintel.retrieval.lexical import Bm25, evidence_coverage
 from finintel.retrieval.queries import OPTIONAL_TOPICS, QUERY_SET_VERSION, TopicQueries, query_set
 
 PER_LIST = 50
@@ -28,6 +28,11 @@ TOP_N = 8
 #: Initial value; calibrated against company_a.retrieval.json at M4.2.
 EVIDENCE_FLOOR = 0.30
 FLOOR_MIN_CHUNKS = 2
+#: Query-evidence coverage below which a question gets `insufficient_evidence` before any model
+#: is called (lexical.evidence_coverage). Calibrated on the five E3 retrieval queries only: their
+#: minimum is 0.73, less a 0.05 margin. It was not tuned on the QA labels; it refuses some
+#: answerable questions whose rare words the report does not repeat (reported in STATUS).
+COVERAGE_FLOOR = 0.68
 
 
 class ChunkLike(Protocol):
@@ -164,6 +169,9 @@ class InMemoryIndex:
 
     def lexical(self, query: str, k: int) -> list[str]:
         return [cid for cid, _ in self._bm25.rank(query, k)]
+
+    def coverage(self, query: str) -> float:
+        return evidence_coverage(self._bm25, query)
 
     def chunk(self, chunk_id: str) -> Chunk:
         return self._chunks[chunk_id]

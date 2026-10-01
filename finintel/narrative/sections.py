@@ -26,7 +26,7 @@ DEFAULT_SECTION = "narrative_other"
 _RULES: tuple[tuple[str, re.Pattern[str]], ...] = tuple(
     (sid, re.compile(pattern))
     for sid, pattern in (
-        ("company_statements", r"\b(?:company accounts|parent company|company (?:financial statements|balance sheet|income statement|statement)|notes to the company)\b"),
+        ("company_statements", r"\b(?:company accounts|company (?:financial statements|balance sheet|income statement|statement)|notes to the company)\b"),
         ("primary_statements", r"^(?:consolidated |group )?(?:income statement|balance sheet|statement of (?:comprehensive income|financial position|cash flows?|changes in (?:taxpayers' )?equity|profit or loss)|cash flow statement)\b"),
         ("remuneration_report", r"\b(?:remuneration report|remuneration committee|directors' remuneration|remuneration policy)\b"),
         ("shareholder_information", r"\b(?:shareholder information|shareholders' information|investor information|shareholder services|annual general meeting|notice of (?:annual general )?meeting)\b"),
@@ -60,6 +60,8 @@ _RULES: tuple[tuple[str, re.Pattern[str]], ...] = tuple(
 )  # fmt: skip
 
 _COMPANY = dict(_RULES)["company_statements"]
+_PARENT = re.compile(r"\bparent company\b")
+_AUDITORS = dict(_RULES)["auditors_report"]
 _NOTE_HEADING = re.compile(
     r"^(?:(?i:note)\s+)?(?P<num>\d{1,2}[A-Z]?)(?P<sub>\.\d{1,2})?\s*[.:]?\s+(?P<title>[A-ZÀ-Þ(].*)$"
 )
@@ -74,8 +76,13 @@ MAX_HEADING_WORDS = 16
 
 def classify(path: Sequence[str]) -> str:
     """Section id for a heading path (bookmark chain plus in-page headings)."""
-    if any(_COMPANY.search(normalise(title)) for title in path):
-        return "company_statements"  # parent-company material is never outvoted by a deeper title
+    norms = [normalise(title) for title in path]
+    # Parent-company material is never outvoted by a deeper title, with one exception: inside the
+    # auditor's report a key audit matter may be about the parent ("4.3 Investments ... (Parent
+    # company)"), and that is narrative the reader needs, not the parent's own accounts.
+    in_audit_report = any(_AUDITORS.search(n) for n in norms)
+    if any(_COMPANY.search(n) or (_PARENT.search(n) and not in_audit_report) for n in norms):
+        return "company_statements"
     for title in reversed(path):
         norm = normalise(title)
         for section_id, pattern in _RULES:

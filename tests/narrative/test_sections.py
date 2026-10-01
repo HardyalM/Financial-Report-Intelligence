@@ -146,3 +146,16 @@ def test_the_m4_1_audit_passes_clean_chunks_and_catches_each_violation() -> None
     )  # tables may sit there
     far = {10: [(40.0, 300.0, 520.0, 400.0)]}
     assert all(ok for ok, _ in gate.check_m41([_chunk("a")], {}, far))
+
+
+def test_a_key_audit_matter_about_the_parent_stays_in_the_auditors_report() -> None:
+    kam = (
+        "KPMG Independent Auditor's Report",
+        "4. Key Audit matters",
+        "4.3 Investments and subsidiaries (Parent company)",
+    )
+    assert classify(kam) == "auditors_report"
+    # the parent's own accounts are still excluded, inside or outside an audit report
+    assert classify(("Parent company balance sheet",)) == "company_statements"
+    assert classify(("Financial statements", "Parent company information")) == "company_statements"
+    assert classify(("Company accounts", "Notes")) == "company_statements"

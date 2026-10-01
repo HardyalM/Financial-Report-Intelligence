@@ -47,7 +47,7 @@ def chunk(
         char_page_map=page_map,
         line_boxes=tuple(boxes) if boxes is not None else (default_box,),
         section_id=section,
-        heading_path=("Strategic report", "Principal risks"),
+        heading_path=("Strategic report", section.replace("_", " ").title()),
         note_number=note_number,
     )  # fmt: skip
 

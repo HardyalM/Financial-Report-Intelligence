@@ -16,11 +16,15 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from finintel.commentary.prompts import (
+    NUMERIC_SYSTEM,
     QA_SYSTEM,
+    RISK_LIST_SYSTEM,
     SUMMARY_SYSTEM,
     SYSTEM,
+    numeric_user,
     qa_user,
     retry_user,
+    risk_list_user,
     select_truth,
     summary_user,
     topic_user,
@@ -34,8 +38,8 @@ from finintel.commentary.validators import (
     summary_evidence,
     validate_output,
 )
-from finintel.commentary.validators.validate import SUMMARY_SCHEMA
-from finintel.contracts.commentary import Paragraph
+from finintel.commentary.validators.validate import LIST_SCHEMA, SUMMARY_SCHEMA
+from finintel.contracts.commentary import Paragraph, ParagraphValidation
 from finintel.llm import LLMProvider
 from finintel.llm.anthropic_provider import LLMError
 from finintel.narrative.models import Chunk
@@ -161,3 +165,47 @@ def generate_answer(
         )  # fmt: skip
 
     return _call(provider, QA_SYSTEM, qa_user(question, truth, chunks), validate)
+
+
+def generate_risk_list(
+    provider: LLMProvider,
+    section: Sequence[Chunk],
+    truth: Mapping[str, TruthEntry],
+    *,
+    allowed_years: Collection[str],
+    page_labels: Mapping[int, str] | None = None,
+) -> CallResult:
+    """One bullet per principal risk the section describes, each citing its own passage."""
+    evidence = {c.chunk_id: c for c in section}
+
+    def validate(raw: Any) -> TopicReport:
+        return validate_output(
+            raw, topic="strategic_risks", evidence=evidence, truth={},
+            allowed_years=allowed_years, page_labels=page_labels, schema=LIST_SCHEMA,
+        )  # fmt: skip
+
+    return _call(provider, RISK_LIST_SYSTEM, risk_list_user(truth, section), validate)
+
+
+def answer_numeric(
+    provider: LLMProvider, question: str, truth: Mapping[str, TruthEntry]
+) -> tuple[str, Paragraph | None]:
+    """Eval-only numeric lookup from the statement pack. The model returns a placeholder key, never
+    a figure; code checks the key exists, then renders it. Returns (status, paragraph)."""
+    reply = provider.complete(NUMERIC_SYSTEM, numeric_user(question, truth))
+    raw = parse_reply(reply)
+    if not isinstance(raw, dict) or raw.get("status") not in ("ok", "insufficient_evidence"):
+        return "validation_failed", None
+    key = raw.get("placeholder")
+    if raw["status"] == "insufficient_evidence" or key is None:
+        return "insufficient_evidence", None
+    entry = truth.get(str(key))
+    if entry is None or entry.rendered is None or not str(key).startswith(("item:", "ratio:")):
+        return "validation_failed", None
+    paragraph = Paragraph(
+        template="{{" + str(key) + "}}",
+        rendered=entry.text(),
+        citations=[],
+        validation=ParagraphValidation(retried=False, removed_citations=[]),
+    )
+    return "ok", paragraph

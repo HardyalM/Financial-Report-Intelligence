@@ -188,3 +188,48 @@ def qa_user(question: str, truth: Mapping[str, TruthEntry], chunks: Sequence[Chu
         f"<GROUND_TRUTH_NUMBERS>\n{numbers}\n</GROUND_TRUTH_NUMBERS>\n"
         f"{evidence_block(chunks)}"
     )
+
+
+RISK_LIST_SYSTEM = (
+    _RULES
+    + """\
+EVIDENCE is the principal-risks section of the report. Name each distinct principal risk the \
+text describes, one bullet per risk, in the order they appear (at most 20 bullets).
+Each bullet: a short risk title (a noun phrase from the text, no digits) and one sentence on what \
+the report says about it. Cite exactly one quote (5 to 60 words) copied from the passage that \
+describes THAT risk, so each bullet cites its own passage and page. Do not merge risks and do not \
+invent one the text does not describe. State no number except through a placeholder.
+Reply with JSON only, in this shape:
+{"bullets": [{"template": "<Risk title>: <one sentence>",
+              "citations": [{"chunk_id": "<id>", "quote": "<exact words from that chunk>"}]}]}
+"""
+)
+
+
+def risk_list_user(truth: Mapping[str, TruthEntry], chunks: Sequence[Chunk]) -> str:
+    return (
+        f'<TOPIC id="strategic_risks">{TOPIC_BRIEF["strategic_risks"]}</TOPIC>\n'
+        f"{evidence_block(chunks)}"
+    )
+
+
+NUMERIC_SYSTEM = (
+    _RULES
+    + """\
+You are choosing which figure from the filed accounts answers one QUESTION. You never write a \
+figure. Pick the one placeholder key from GROUND_TRUTH_NUMBERS (an item or ratio key) whose \
+definition is what the question asks for, for the period it asks about. Respect qualifiers such as \
+"reported, not underlying". If no key in GROUND_TRUTH_NUMBERS is that figure, say so; do not \
+choose a nearby one.
+Reply with JSON only, in this shape:
+{"status": "ok" | "insufficient_evidence", "placeholder": "<key>" | null}
+"""
+)
+
+
+def numeric_user(question: str, truth: Mapping[str, TruthEntry]) -> str:
+    numbers = json.dumps(truth_payload(truth), separators=(",", ":"), ensure_ascii=False)
+    return (
+        f"<QUESTION>{_neutral(question)}</QUESTION>\n"
+        f"<GROUND_TRUTH_NUMBERS>\n{numbers}\n</GROUND_TRUTH_NUMBERS>"
+    )

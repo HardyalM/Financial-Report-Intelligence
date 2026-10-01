@@ -9,15 +9,21 @@ from __future__ import annotations
 import hashlib
 import json
 from collections import Counter
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Collection, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
 from finintel.commentary.context import TOKEN_BUDGET, expand_context
 from finintel.commentary.extractive import LABEL, extractive_paragraphs
-from finintel.commentary.generate import CallResult, generate_summary, generate_topic
+from finintel.commentary.generate import (
+    CallResult,
+    generate_risk_list,
+    generate_summary,
+    generate_topic,
+)
+from finintel.commentary.lists import kam_bullets, risk_section
 from finintel.commentary.prompts import PROMPT_VERSION, select_truth
-from finintel.commentary.render import build_ground_truth
+from finintel.commentary.render import TruthEntry, build_ground_truth
 from finintel.commentary.snapshot import numbers_snapshot
 from finintel.contracts.commentary import (
     Commentary,
@@ -77,6 +83,50 @@ def context_budget(provider: object) -> int:
     return int(getattr(provider, "context_tokens", TOKEN_BUDGET))
 
 
+LIST_MIN_BUDGET = 3000  # a provider with less context than this cannot take the whole section
+LIST_MAX_TOKENS = 12_000
+LIST_MIN_CHUNKS = 3  # a list over one passage is just a paragraph
+
+
+def _risk_list(
+    provider: LLMProvider,
+    ids: Sequence[str],
+    chunks: Sequence[Chunk],
+    truth: Mapping[str, TruthEntry],
+    years: Collection[str],
+    page_labels: Mapping[int, str] | None,
+) -> CallResult | None:
+    """One bullet per principal risk, if the section was retrieved and the model can read it all."""
+    if context_budget(provider) < LIST_MIN_BUDGET:
+        return None
+    section = risk_section(ids, chunks)
+    if len(section) < LIST_MIN_CHUNKS or sum(c.token_count for c in section) > LIST_MAX_TOKENS:
+        return None
+    try:
+        return generate_risk_list(
+            provider, section, truth, allowed_years=years, page_labels=page_labels
+        )
+    except LLMError as exc:
+        if exc.code != "prompt_too_long":
+            raise
+        return None
+
+
+def _add_kams(
+    result: CallResult,
+    ids: Sequence[str],
+    chunks: Sequence[Chunk],
+    truth: Mapping[str, TruthEntry],
+    page_labels: Mapping[int, str] | None,
+) -> None:
+    """Append one code-built bullet per key audit matter to the governance topic."""
+    bullets = kam_bullets(ids, chunks, truth, page_labels)
+    if bullets:
+        result.paragraphs = [*result.paragraphs, *bullets]
+        result.status = "ok"
+        result.reason = None
+
+
 def fitted_context[T](
     provider: object,
     selected: Sequence[str],
@@ -132,10 +182,19 @@ def build_commentary(
                         page_labels=page_labels,
                     )
 
-                results[topic] = fitted_context(
-                    provider, [c.chunk_id for c in found.chunks], chunks, one
+                ids = [c.chunk_id for c in found.chunks]
+                listed = (
+                    _risk_list(provider, ids, chunks, truth, years, page_labels)
+                    if topic == "strategic_risks"
+                    else None
                 )
+                if listed is not None and listed.paragraphs:
+                    results[topic] = listed  # one bullet per principal risk, from the section
+                else:
+                    results[topic] = fitted_context(provider, ids, chunks, one)
                 first_pass[topic] = results[topic].first_pass
+                if topic == "governance_and_directors":
+                    _add_kams(results[topic], ids, chunks, truth, page_labels)
             validated = [(t, p) for t, r in results.items() for p in r.paragraphs]
             if validated:
                 try:
@@ -149,7 +208,7 @@ def build_commentary(
                         raise
                     summary = None  # the summary prompt does not fit: no summary, topics stand
         except LLMError as exc:
-            use_model, fallback = False, exc.code
+            use_model, fallback = False, str(exc)
             results, summary, first_pass = {}, None, {}
 
     topics: list[Topic] = []
@@ -177,6 +236,10 @@ def build_commentary(
                 select_truth(truth, topic),
                 page_labels,
             )
+            if topic == "governance_and_directors":
+                paragraphs += kam_bullets(
+                    [c.chunk_id for c in found.chunks], chunks, truth, page_labels
+                )
             topics.append(
                 Topic(
                     topic=topic,

@@ -47,6 +47,14 @@ TOPIC_SCHEMA = {
         "paragraphs": {"type": "array", "items": _PARAGRAPH},
     },
 }
+LIST_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["bullets"],
+    "properties": {
+        "bullets": {"type": "array", "minItems": 1, "maxItems": 20, "items": _PARAGRAPH}
+    },
+}
 SUMMARY_SCHEMA = {
     "type": "object",
     "additionalProperties": False,

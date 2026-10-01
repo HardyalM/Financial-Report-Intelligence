@@ -23,16 +23,14 @@ OLLAMA_MODEL = "llama3.1"
 #: Ollama serves the OpenAI-compatible endpoint with a fixed 4,096-token context (measured: a longer
 #: prompt loses its first lines, which are the rules). Prompts are sized to fit, and refused if not.
 ATTEMPTS = 2
-BACKOFF_S = 8.0
+BACKOFF_S = 10.0
 LOCAL_TIMEOUT_S = 180.0
 LOCAL_MAX_TOKENS = 800
 LOCAL_EVIDENCE_TOKENS = 900
 LOCAL_MAX_PROMPT_CHARS = 10_500
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai"
 GEMINI_MAX_TOKENS = 4096  # room for a model that spends tokens thinking before it answers
-GEMINI_MODEL = (
-    "gemini-3.1-flash-lite"  # the 3.x flash models returned 503 under load; override: GEMINI_MODEL
-)
+GEMINI_MODEL = "gemini-3.5-flash-lite"  # flash-lite family; 3.1 and the flash models 503 under load
 
 
 class OpenAICompatProvider:
@@ -82,7 +80,7 @@ class OpenAICompatProvider:
                 ):
                     raise
                 last = exc
-                log.warning("llm.retry", provider=self.name, attempt=attempt + 1, code=exc.code)
+                log.warning("llm.retry", provider=self.name, attempt=attempt + 1, error=str(exc))
                 time.sleep(BACKOFF_S * (attempt + 1))
         assert last is not None
         raise last
@@ -147,5 +145,5 @@ def gemini(env: Mapping[str, str]) -> OpenAICompatProvider | None:
         model_id=env.get("GEMINI_MODEL", "").strip() or GEMINI_MODEL,
         api_key=key,
         max_tokens=GEMINI_MAX_TOKENS,
-        attempts=4,
+        attempts=6,
     )

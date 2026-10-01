@@ -67,3 +67,25 @@ class Bm25:
                 scored.append((cid, s))
         scored.sort(key=lambda kv: (-kv[1], kv[0]))
         return scored[:k]
+
+
+def evidence_coverage(bm25: Bm25, query: str, depth: int = 20) -> float:
+    """How much of the query's meaning one retrieved chunk carries (0 to 1).
+
+    The share of the query's content words, weighted by rarity (idf), found together in the best of
+    the top `depth` lexical chunks. A word that appears nowhere in the document counts at maximum
+    weight, so a question about a figure or entity the report never mentions scores low however
+    close its dense neighbours are. Used as an evidence floor before any model is called.
+    """
+    wanted = set(terms(query))
+    if not wanted:
+        return 0.0
+    n = len(bm25._tf)
+    unseen = math.log(1 + (n + 0.5) / 0.5)
+    weight = {t: bm25._idf.get(t, unseen) for t in wanted}
+    total = sum(weight.values())
+    best = 0.0
+    for cid, _ in bm25.rank(query, depth):
+        present = sum(w for t, w in weight.items() if t in bm25._tf[cid])
+        best = max(best, present / total)
+    return best

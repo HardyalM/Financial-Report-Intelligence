@@ -19,7 +19,7 @@ from finintel.cli.chunks_cmd import chunk_pdf
 from finintel.commentary.artifact import read_recording, write_artifact
 from finintel.commentary.audit import audit_commentary, displayed_ids
 from finintel.commentary.coverage import score_coverage
-from finintel.commentary.generate import CallResult, generate_answer
+from finintel.commentary.generate import CallResult, answer_numeric, generate_answer
 from finintel.commentary.qa import Answer, question_text, score_qa
 from finintel.commentary.ratings import score_ratings
 from finintel.commentary.render import build_ground_truth
@@ -37,6 +37,7 @@ from finintel.ratios import compute_ratios
 from finintel.retrieval.embeddings import Embedder, FakeEmbedder
 from finintel.retrieval.local_models import BgeM3Embedder, MemoEmbedder
 from finintel.retrieval.pipeline import (
+    COVERAGE_FLOOR,
     FusionOrderReranker,
     InMemoryIndex,
     OverlapReranker,
@@ -196,12 +197,26 @@ def _ask_all(
 ) -> tuple[dict[str, Answer], dict[str, str]]:
     answers: dict[str, Answer] = {}
     errors: dict[str, str] = {}
+    floors: list[str] = []
     latest = max((k.rsplit(":", 1)[-1] for k in truth if k.startswith("item:")), default="")
     scoped = {  # the latest period's items and ratios: what a lookup question can ask for
         k: v for k, v in truth.items() if k.startswith(("item:", "ratio:")) and k.endswith(latest)
     }
     for q in labels["questions"]:
         text = question_text(q)
+        if "answer" in q:  # a figure question: answered from the statement pack, placeholder only
+            try:
+                status, paragraph = answer_numeric(provider, text, scoped)
+            except LLMError as exc:
+                answers[q["id"]] = Answer("error", [])
+                errors[q["id"]] = exc.code
+                continue
+            answers[q["id"]] = Answer(status, [paragraph] if paragraph else [])
+            continue
+        if index.coverage(text) < COVERAGE_FLOOR:  # nothing to ground an answer: no model call
+            answers[q["id"]] = Answer("insufficient_evidence", [])
+            floors.append(q["id"])
+            continue
         topic = TopicQueries("adhoc", (text,), frozenset())
         found = retrieve_topic(topic, index, reranker)
 
@@ -217,4 +232,5 @@ def _ask_all(
             errors[q["id"]] = exc.code
             continue
         answers[q["id"]] = Answer(out.status, out.paragraphs)
+    errors.update({qid: "evidence_floor" for qid in floors})
     return answers, errors

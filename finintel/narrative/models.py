@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict
 
 #: Semantic version of the chunking rules. Part of every chunk_id: changing the rules changes all
 #: ids, which marks stored commentary stale so citations never point at vanished chunks.
-CHUNKER_VERSION = "1.0.0"
+CHUNKER_VERSION = "1.1.0"
 
 TARGET_MIN_TOKENS = 300
 TARGET_MAX_TOKENS = 450

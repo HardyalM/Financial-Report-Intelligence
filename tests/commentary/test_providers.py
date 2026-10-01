@@ -121,4 +121,4 @@ def test_seed_is_sent_to_local_only_and_gemini_retries_server_errors(
     replies = iter([200])
     loc.complete("s", "u")
     assert bodies[-1]["seed"] == 0
-    assert gemini({"GEMINI_API_KEY": "k"}).model_id == "gemini-3.1-flash-lite"  # type: ignore[union-attr]
+    assert gemini({"GEMINI_API_KEY": "k"}).model_id == "gemini-3.5-flash-lite"  # type: ignore[union-attr]

@@ -7,6 +7,46 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 lists + floor + numeric route — 2026-10-01 — built; Gemini run NOT completed (503s), gate not re-run
+
+M5.2 NOT passed and NOT re-measured: every attempt to run the new commentary against Gemini fell back to extractive
+because Gemini returned HTTP 503 "high demand" on the real prompts (tiny prompts sometimes return 200). Fallback runs
+are labelled extractive and do not count. Fixtures and ratings.json untouched.
+
+Built for the tech lead's decision (change the commentary; bar unchanged):
+- Chunker fix (M4.1 code, CHUNKER_VERSION 1.1.0): a key audit matter headed "(Parent company)" inside the auditor's
+  report was classified company_statements and dropped from the index (PDF 132 had no chunks). It is now kept, so the
+  third KAM exists. M4.1 gate 4/4 PASS (1,210 chunks), M4.2 gate PASS (hit@8 0.80).
+- governance_and_directors: one code-built bullet per key audit matter (numbered sub-headings under the auditor's
+  "Key audit matters" heading; title plus the first quotable sentence of its own section, cited at its own page),
+  only if the auditor's report was retrieved. Works in extractive mode too: 3 bullets on company_a.
+- strategic_risks: one model call over the principal-risks section (all chunks under the retrieved risks heading),
+  one bullet per distinct risk, each citing its own passage; every bullet passes V1-V8; skipped for small-context
+  providers (local Ollama) and sections under 3 chunks. Cap 20 (not 14: a generic cap, no label count).
+- Numeric QA (questions with an `answer`): answered from the statement pack, no retrieval; the model returns a
+  placeholder key only, code renders it. A figure the pack does not hold gets insufficient_evidence. Consequence:
+  n4 (EPS), n5 (free cash flow), n6 (underlying profit), t2 (Ice Cream) and t3 (parent investment) cannot pass by
+  construction, so QA is capped at 15/20 under this rule against a bar of 17. Needs the tech lead's decision.
+- Evidence floor before any model call for narrative/absent QA: idf-weighted query-term coverage of the best chunk
+  (`lexical.evidence_coverage`), COVERAGE_FLOOR 0.68, calibrated on the five E3 queries only (min 0.73, margin 0.05),
+  not on QA. Measured on QA: a1 0.47, a2 0.57, a3 0.47 are refused; v1 0.63 and v5 0.59 (answerable) would also be
+  refused. Dense cosine and BM25 did not separate absent from present questions (a1-a3 cosine 0.61-0.64, as high as
+  real queries).
+Decision I did not follow literally: "one bullet per principal risk in company_a.coverage.json". That file is the e8
+answer key; generating from it would pass recall by construction. Lists come from the report's own structure and text.
+Also: risk names (e.g. "Consumer preference") are not in the indexed chunk text, so recall depends on the model titling
+each passage in words that overlap the labelled names.
+Adapter: default `gemini-3.5-flash-lite` (3.1-flash-lite and the flash models 503 intermittently; 2.0/2.5 closed to new
+users); 6 attempts with 10 s-linear backoff; errors now carry the HTTP status in the fallback reason.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0: 872 passed |
+| `uv run python scripts/gate.py M4.1` / `M4.2` | PASS / PASS |
+| `make eval-live COMPANY=company_a STAGE=commentary` (Gemini) | fell back to extractive: HTTP 503 after retries |
+
+---
+
 ## M5.2 Gemini run — 2026-10-01 — GATE FAILED: qa 7/20, e8 0
 
 GATE FAILED at M5.2. Provider `gemini`, model `gemini-3.1-flash-lite`, mode generated, no fallback. Fixtures and
