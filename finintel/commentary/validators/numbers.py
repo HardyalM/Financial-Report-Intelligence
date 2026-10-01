@@ -68,3 +68,17 @@ def naked_numbers(
             continue
         found.append(m.group(0))
     return found
+
+
+_SYMBOL_BEFORE = re.compile(r"[\u00a3\u20ac$]\s?\{\{[^{}]*\}\}")
+_UNIT_WORDS = r"(?:bn|m|k|x|pp|billion|million|thousand|per cent|percent|percentage points?)\b"
+_UNIT_AFTER = re.compile(r"\{\{[^{}]*\}\}\s?(?:" + _UNIT_WORDS + r"|%)", re.IGNORECASE)
+
+
+def unit_beside_placeholder(template: str) -> list[str]:
+    """Currency symbols or unit words written beside a placeholder. A rendered placeholder already
+    carries its currency, scale, sign and unit ("\u20ac60.8bn", "15.5%", "+0.4 pp"), so the model's
+    own would print twice ("\u20ac\u20ac60.8bn", "15.5%%")."""
+    return [m.group(0) for m in _SYMBOL_BEFORE.finditer(template)] + [
+        m.group(0) for m in _UNIT_AFTER.finditer(template)
+    ]

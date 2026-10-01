@@ -7,6 +7,21 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 rerun — 2026-10-01 — GATE FAILED again: qa 3/20 (local llama3.1, prompt commentary-2)
+
+GATE FAILED at M5.2. Same conditions fail: e8 risk 0/14, kam 0/3, going concern, qa.passed 3/20, ratings not done.
+Provider `local`, mode generated. Fixtures and ratings.json untouched. M5.2 unticked.
+Change tested: V4 now rejects currency or unit text beside a placeholder, and prompt commentary-2 says so. The
+doubled units ("EUR EUR60.8bn", "bnbn") are gone from displayed answers (n5 now "EUR6.1bn"). Passed: v6, v7, a1
+(from 2 to 3 passes). Displayed answers that are still wrong: n5 "Free cash flow ... EUR6.1bn" (expected 6,932m), a3
+(a quoted "No dividends are payable" answer to an absent question, should be insufficient_evidence).
+Pre-validation (5 calls): unknown placeholders 9, naked numbers 4, schema 2, fabricated quote 1, no citation 1.
+Most calls end validation_failed: the 8B model under a 4,096-token context does not follow the placeholder and
+quote contract. More prompt or validator tuning will not close a 3/20 -> 17/20 gap with this model.
+Needs a decision from the tech lead: a larger local context or model, or a hosted provider (FININTEL_PROVIDER).
+
+---
+
 ## M5.2 — 2026-10-01 — GATE FAILED: live local run (llama3.1) is generated but too weak
 
 GATE FAILED at M5.2. Run is a real model run, labelled `local` (Ollama, `llama3.1`, OpenAI-compatible

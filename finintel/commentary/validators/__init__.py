@@ -7,7 +7,7 @@ still fails. A topic left with no paragraph is `validation_failed`, and the UI s
 
 from finintel.commentary.validators.citations import QuoteError, build_citation
 from finintel.commentary.validators.lexicon import advice_terms, direction_violations
-from finintel.commentary.validators.numbers import naked_numbers
+from finintel.commentary.validators.numbers import naked_numbers, unit_beside_placeholder
 from finintel.commentary.validators.text import locate_quote, normalise
 from finintel.commentary.validators.validate import (
     ParagraphReport,
@@ -33,5 +33,6 @@ __all__ = [
     "naked_numbers",
     "normalise",
     "summary_evidence",
+    "unit_beside_placeholder",
     "validate_output",
 ]

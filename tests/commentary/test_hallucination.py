@@ -399,3 +399,17 @@ def test_every_rejection_is_recorded_for_the_quality_metrics() -> None:
     assert {v.code for v in r.violations} == {"V3", "V5", "V6"}
     assert json.dumps(feedback(r))
     assert isinstance(TRUTH["item:revenue:FY2024"], TruthEntry)
+
+
+def test_unit_text_beside_a_placeholder_is_a_violation() -> None:
+    for text in (
+        "Turnover was €{{item:revenue:FY2024}}.",
+        "Turnover was {{item:revenue:FY2024}}bn.",
+        "Margin was {{ratio:operating_margin:FY2024}}%.",
+        "Margin fell {{change:ratio:operating_margin:FY2023:FY2024}} pp.",
+        "Turnover was $ {{item:revenue:FY2024}} million.",
+    ):
+        r = run(raw([para(text, ("c_a", Q_RISK))]))
+        assert "V4" in codes(r), text
+    ok = run(raw([para("Turnover was {{item:revenue:FY2024}}, up on the year.", ("c_a", Q_RISK))]))
+    assert "V4" not in codes(ok)

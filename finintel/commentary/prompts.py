@@ -14,7 +14,7 @@ from typing import Any
 from finintel.commentary.render import TruthEntry
 from finintel.narrative.models import Chunk
 
-PROMPT_VERSION = "commentary-1"
+PROMPT_VERSION = "commentary-2"
 
 _RULES = """\
 You are a research aid for credit and equity analysts. UK English.
@@ -28,6 +28,8 @@ same paragraph. Never write a number as a word. Never calculate. If a change is 
 placeholder, do not describe it numerically. Use a direction word (rose, fell, improved...) only \
 next to a placeholder whose direction in GROUND_TRUTH_NUMBERS agrees with it; otherwise state no \
 direction. Do not mention a value whose status is null.
+A placeholder already prints its currency symbol, scale, sign and unit (for example the \
+"rendered" value). Never write a currency symbol, bn, m, %, x or pp beside a placeholder.
 """
 
 SYSTEM = (

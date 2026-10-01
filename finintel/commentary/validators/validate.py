@@ -12,7 +12,7 @@ from jsonschema import Draft202012Validator
 from finintel.commentary.render import TruthEntry, placeholders, render_template
 from finintel.commentary.validators.citations import QuoteError, build_citation
 from finintel.commentary.validators.lexicon import advice_terms, direction_violations
-from finintel.commentary.validators.numbers import naked_numbers
+from finintel.commentary.validators.numbers import naked_numbers, unit_beside_placeholder
 from finintel.contracts.commentary import (
     Citation,
     Paragraph,
@@ -173,6 +173,8 @@ def _check_paragraph(
     for key in placeholders(template):  # V4
         if key not in truth:
             para.violations.append(Violation("V4", f"unknown placeholder {{{{{key}}}}}", index))
+    for beside in unit_beside_placeholder(template):  # V4: the placeholder already says it
+        para.violations.append(Violation("V4", f"unit text beside a placeholder: {beside}", index))
     notes = {c.note_number for c in (evidence[x.chunk_id] for x in para.citations) if c.note_number}
     bad = naked_numbers(template, quotes, allowed_years=allowed_years, note_numbers=notes)
     if bad:  # V5
