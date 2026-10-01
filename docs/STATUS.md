@@ -7,6 +7,52 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M5.2 Gemini run — 2026-10-01 — GATE FAILED: qa 7/20, e8 0
+
+GATE FAILED at M5.2. Provider `gemini`, model `gemini-3.1-flash-lite`, mode generated, no fallback. Fixtures and
+ratings.json untouched. M5.2 unticked. Model choice: `gemini-2.0-flash` and `-2.5-flash` are closed to new users,
+and `gemini-3.5/3.6/3.7/3.8-flash` returned 503 "high demand" on the real prompts, so the working lite model is the
+default (override with GEMINI_MODEL). Adapter fixes: no `seed` (Gemini rejects it), 4 attempts with backoff on 5xx.
+
+| Gate condition | Result |
+|---|---|
+| generated; e4 unverified / naked / advice | PASS (0/0/0 over 12 displayed paragraphs) |
+| e8 risk recall (0/14), KAM recall (0/3), going concern | FAIL |
+| qa.passed >= 17 | FAIL: 7/20 (local llama3.1 was 3/20) |
+| ratings complete | FAIL (not rated) |
+
+Pre-validation (5 calls): naked numbers 7, direction 1, unknown placeholders 0, schema 0, fabricated quotes 0.
+Gemini follows the contract; the rejected paragraphs are mostly number discipline.
+
+Questions that missed (id | expected | top-8 PDF pages | answer):
+n1 [141] | 266,190,83,145,218,124,191,187 | validation_failed
+n4 [141] | 162,9,162,15,82,193,223,110 | insufficient_evidence
+n5 [43,49] | 15,9,43,15,16,165,49,44 | validation_failed
+n6 [149] | 15,35,9,11,15,27,47,190 | validation_failed
+v1 [55,59,60,62] | 55,55,240,63,57,239,265,257 | validation_failed
+v2 [7,8] | 38,229,9,73,220,104,38,96 | ok, cited 9,10,96,229 (Growth Action Plan; not pages 7-8)
+v3 [11,12] | 12,11,101,11,85,84,35,102 | ok, cited 11; failed a must_mention term
+v4 [63,64] | 63,129,63,64,128,123,128,227 | validation_failed
+v5 [123] | 128,123,128,145,76,129,91,140 | validation_failed
+v8 [131] | 131,131,189,134,188,189,90,146 | validation_failed
+a2 absent | 82,117,193,159,67,280,111,124 | validation_failed
+t2 [35,149] | 35,16,149,11,244,79,190,35 | validation_failed
+t3 [132] | 248,203,124,194,145,185,153,11 | validation_failed
+Passed: n2, n3 (placeholders), v6, v7, a1, a3, t1.
+
+Findings:
+- Commentary coverage cannot reach 0.8 as built: each topic yields 1-2 short paragraphs (<= 90 words), so it
+  cannot name 12 of 14 principal risks or 3 key audit matters. strategic_risks cited pages 54 and 290 and spoke
+  generally. This is a design gap between the E8 labels and the commentary shape, not a model fault. Options for the
+  tech lead: have strategic_risks and governance emit one bullet per risk or KAM (evidence-driven), or score E8 over
+  the QA answers, or lower the bar.
+- Most remaining validation_failed are naked numbers around figures the model restates from quotes outside quotation
+  marks; V5 is strict by design.
+- Retrieval: expected pages are missing from the top 8 for n1, n4, n6 (statement pages 141/149 are excluded from the
+  narrative index by design) and v2 (page 9, not 7-8).
+
+---
+
 ## M5.2 rerun — 2026-10-01 — GATE FAILED again: qa 3/20 (local llama3.1, prompt commentary-2)
 
 GATE FAILED at M5.2. Same conditions fail: e8 risk 0/14, kam 0/3, going concern, qa.passed 3/20, ratings not done.

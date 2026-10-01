@@ -7,6 +7,7 @@ or artefacts. Not exercised against a live endpoint in CI (no network in unit te
 
 from __future__ import annotations
 
+import time
 from collections.abc import Mapping
 from typing import Any
 
@@ -22,12 +23,16 @@ OLLAMA_MODEL = "llama3.1"
 #: Ollama serves the OpenAI-compatible endpoint with a fixed 4,096-token context (measured: a longer
 #: prompt loses its first lines, which are the rules). Prompts are sized to fit, and refused if not.
 ATTEMPTS = 2
+BACKOFF_S = 8.0
 LOCAL_TIMEOUT_S = 180.0
 LOCAL_MAX_TOKENS = 800
 LOCAL_EVIDENCE_TOKENS = 900
 LOCAL_MAX_PROMPT_CHARS = 10_500
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai"
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MAX_TOKENS = 4096  # room for a model that spends tokens thinking before it answers
+GEMINI_MODEL = (
+    "gemini-3.1-flash-lite"  # the 3.x flash models returned 503 under load; override: GEMINI_MODEL
+)
 
 
 class OpenAICompatProvider:
@@ -42,6 +47,8 @@ class OpenAICompatProvider:
         max_tokens: int = 2048,
         context_tokens: int | None = None,
         max_prompt_chars: int | None = None,
+        send_seed: bool = False,
+        attempts: int = ATTEMPTS,
         timeout_s: float = 900.0,
         client: httpx.Client | None = None,
     ) -> None:
@@ -51,6 +58,8 @@ class OpenAICompatProvider:
         self._key = api_key
         self._max_tokens = max_tokens
         self._max_prompt_chars = max_prompt_chars
+        self._send_seed = send_seed  # Gemini's compatible endpoint rejects `seed`
+        self._attempts = attempts
         if context_tokens is not None:
             self.context_tokens = context_tokens  # evidence tokens per call (small local contexts)
         self._timeout = timeout_s
@@ -64,7 +73,7 @@ class OpenAICompatProvider:
             # A prompt past the model's context is silently cut from the front (the rules go first).
             raise LLMError("prompt_too_long", f"{self.name}: {len(system) + len(user)} chars")
         last: LLMError | None = None
-        for attempt in range(ATTEMPTS):  # a stuck generation or a 5xx: one more try, new seed
+        for attempt in range(self._attempts):  # a stuck generation or a 5xx: one more try, new seed
             try:
                 return self._once(system, user, seed=attempt)
             except LLMError as exc:
@@ -74,6 +83,7 @@ class OpenAICompatProvider:
                     raise
                 last = exc
                 log.warning("llm.retry", provider=self.name, attempt=attempt + 1, code=exc.code)
+                time.sleep(BACKOFF_S * (attempt + 1))
         assert last is not None
         raise last
 
@@ -86,7 +96,7 @@ class OpenAICompatProvider:
                 json={
                     "model": self.model_id,
                     "temperature": 0,
-                    "seed": seed,
+                    **({"seed": seed} if self._send_seed else {}),
                     "max_tokens": self._max_tokens,
                     "response_format": {"type": "json_object"},
                     "messages": [
@@ -119,6 +129,7 @@ def local_ollama(env: Mapping[str, str]) -> OpenAICompatProvider:
         model_id=env.get("OLLAMA_MODEL", "").strip() or OLLAMA_MODEL,
         api_key="ollama",  # Ollama ignores it; the client wants one
         max_tokens=LOCAL_MAX_TOKENS,
+        send_seed=True,
         timeout_s=LOCAL_TIMEOUT_S,
         context_tokens=LOCAL_EVIDENCE_TOKENS,
         max_prompt_chars=LOCAL_MAX_PROMPT_CHARS,
@@ -135,4 +146,6 @@ def gemini(env: Mapping[str, str]) -> OpenAICompatProvider | None:
         path="/chat/completions",
         model_id=env.get("GEMINI_MODEL", "").strip() or GEMINI_MODEL,
         api_key=key,
+        max_tokens=GEMINI_MAX_TOKENS,
+        attempts=4,
     )

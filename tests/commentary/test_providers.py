@@ -87,3 +87,38 @@ def test_env_overrides_for_the_local_model() -> None:
     p = local_ollama({"OLLAMA_MODEL": "qwen2.5", "OLLAMA_BASE_URL": "http://box:1234"})
     assert p.model_id == "qwen2.5" and "box:1234" in p._url
     assert gemini({}) is None
+
+
+def test_seed_is_sent_to_local_only_and_gemini_retries_server_errors(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import time
+
+    import finintel.llm.openai_compat as oc
+
+    monkeypatch.setattr(time, "sleep", lambda s: None)
+    bodies: list[dict[str, object]] = []
+    replies = iter([503, 503, 200])
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        bodies.append(json.loads(request.content))
+        status = next(replies)
+        if status != 200:
+            return httpx.Response(status, text="busy")
+        return httpx.Response(200, json={"choices": [{"message": {"content": "{}"}}]})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    g = oc.OpenAICompatProvider(
+        "gemini", base_url="https://x.test", path="/c", model_id="m", api_key="k",
+        attempts=4, client=client,
+    )  # fmt: skip
+    assert g.complete("s", "u") == "{}" and len(bodies) == 3
+    assert all("seed" not in b for b in bodies)
+    loc = oc.OpenAICompatProvider(
+        "local", base_url="https://x.test", path="/c", model_id="m", api_key="k",
+        send_seed=True, client=client,
+    )  # fmt: skip
+    replies = iter([200])
+    loc.complete("s", "u")
+    assert bodies[-1]["seed"] == 0
+    assert gemini({"GEMINI_API_KEY": "k"}).model_id == "gemini-3.1-flash-lite"  # type: ignore[union-attr]
