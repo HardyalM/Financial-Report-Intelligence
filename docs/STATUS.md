@@ -7,23 +7,25 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
-## M4.2 (partial) — 2026-10-01 — NOT green, gate blocked
+## M4.2 (partial) — 2026-10-01 — NOT green: E3 gate blocked on labels
 
-M4.2 partial. Database-free retrieval core built and tested (758 passed). Gate NOT run: no Docker on this machine
-and no `fixtures/expected/company_a.retrieval.json`. M4.2 stays unticked; M5 does not start.
+M4.2 partial. Postgres 17 + pgvector index built and tested; migrate gate passes. `make eval-e3` and the
+`e3.hit_at_8` gate NOT run: `fixtures/expected/company_a.retrieval.json` is missing (format in docs/EVAL.md 3.3).
+M4.2 stays unticked; M5 does not start. Sign-off "top 8 for principal risks on-topic" also pending.
 
 | Command | Result |
 |---|---|
-| `make ci` | exit 0: **758 passed** |
+| `docker compose up -d db && make migrate` | exit 0: `applied: 001_narrative_index.sql`; second run `nothing (up to date)` |
+| `make test-db` | 5 passed against real Postgres (document-filtered dense/lexical, tables excluded, idempotent store, Postgres and in-memory backends agree) |
+| `make ci` | exit 0: **758 passed, 5 deselected** (the 5 are `network`-marked DB tests) |
 | `uv run python scripts/check_scope.py M4.2 --base m4.1` | exit 0 |
-| `docker compose up -d db && make migrate` | not run: `docker` not installed |
-| `make eval-e3 COMPANY=company_a` | not run: labels missing (format in docs/EVAL.md 3.3) |
 
-Built (finintel/retrieval): topic query sets with corporate/bank/NHS variants selected by `document_type`;
-RRF (k=60); rerank, +0.05 prior, 3-per-section, top 8; evidence floor tested on rerank alone (0.30, uncalibrated);
-`IndexBackend` protocol with an in-memory backend; fake embedder and overlap reranker (offline stand-ins).
-Not built: Postgres schema/migrations/FTS/HNSW, Voyage and local bge-m3 embedders, real reranker, eval-e3, context expansion.
-Gap: NHS priors cannot name `performance_report`/`accountability_report`: not in the section taxonomy (M8.1).
+Built: docker-compose.yml (pgvector/pgvector:pg17, loopback only); migrations/001 (documents, chunks with generated
+`tsv` + GIN, chunk_embeddings vector(1024), partial HNSW for the fake model); finintel/db (migrate, store,
+PostgresIndex); finintel/retrieval (query sets by document_type, RRF, rerank, prior, diversity, floor).
+pytest now runs `-m "not network"` by default; DB tests are `network`-marked and run via `make test-db`.
+Not built: Voyage and local bge-m3 embedders (each needs its own HNSW migration), real reranker, eval-e3,
+context expansion, floor calibration. NHS priors cannot name performance/accountability report (taxonomy gap, M8.1).
 
 ---
 

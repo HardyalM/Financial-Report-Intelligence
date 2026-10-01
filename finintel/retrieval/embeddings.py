@@ -30,7 +30,7 @@ class FakeEmbedder:
 
     model_id = "fake-hash-bow-v1"
 
-    def __init__(self, dim: int = 256) -> None:
+    def __init__(self, dim: int = 1024) -> None:
         self.dim = dim
 
     def embed(self, texts: list[str]) -> list[list[float]]:

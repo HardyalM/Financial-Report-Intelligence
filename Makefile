@@ -1,7 +1,7 @@
 # Every target runs inside the uv-managed environment. Override RUN= to use another runner.
 RUN ?= uv run
 
-.PHONY: help lint format typecheck test contracts contracts-check scope ci inspect eval-e1 eval-e2 eval eval-live
+.PHONY: help lint format typecheck test contracts contracts-check scope ci inspect eval-e1 eval-e2 eval eval-live migrate test-db
 
 help:
 	@echo "make ci              lint, typecheck, test, contracts-check, scope (the standard gate G1 plus G5)"
@@ -43,6 +43,12 @@ eval-e1:
 
 eval-e2:
 	$(RUN) finintel eval-e2 $(COMPANY)
+
+test-db:
+	$(RUN) pytest -m network tests/retrieval/test_postgres.py -q
+
+migrate:
+	$(RUN) python -m finintel.db migrate
 
 inspect:
 	$(RUN) finintel inspect --fixtures

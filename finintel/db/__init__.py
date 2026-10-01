@@ -1,1 +1,1 @@
-"""Postgres access and migrations (data model in ARCHITECTURE section 2.1). M4.2 and M6.1."""
+"""Postgres access (M4.2): migrations, narrative store, hybrid index."""

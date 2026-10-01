@@ -29,16 +29,27 @@ EVIDENCE_FLOOR = 0.30
 FLOOR_MIN_CHUNKS = 2
 
 
+class ChunkLike(Protocol):
+    """What retrieval reads from a chunk. `narrative.models.Chunk` and database rows satisfy it."""
+
+    @property
+    def chunk_id(self) -> str: ...
+    @property
+    def text(self) -> str: ...
+    @property
+    def section_id(self) -> str: ...
+
+
 class IndexBackend(Protocol):
     def dense(self, query: str, k: int) -> list[str]: ...
     def lexical(self, query: str, k: int) -> list[str]: ...
-    def chunk(self, chunk_id: str) -> Chunk: ...
+    def chunk(self, chunk_id: str) -> ChunkLike: ...
 
 
 class Reranker(Protocol):
     model_id: str
 
-    def score(self, query: str, chunks: Sequence[Chunk]) -> list[float]: ...
+    def score(self, query: str, chunks: Sequence[ChunkLike]) -> list[float]: ...
 
 
 @dataclass(frozen=True)
@@ -117,7 +128,7 @@ class OverlapReranker:
 
     model_id = "fake-overlap-v1"
 
-    def score(self, query: str, chunks: Sequence[Chunk]) -> list[float]:
+    def score(self, query: str, chunks: Sequence[ChunkLike]) -> list[float]:
         q = set(tokens(query))
         return [len(q & set(tokens(c.text))) / len(q) if q else 0.0 for c in chunks]
 
