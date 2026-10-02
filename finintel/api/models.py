@@ -49,6 +49,12 @@ class ReportOut(_Model):
     reduced_verification: bool
     stale: bool = Field(description="Existing commentary no longer matches the current pack.")
     jobs: list[JobOut]
+    extraction: dict[str, Any] | None = Field(
+        default=None,
+        description="Read-only view of the extraction report: per-value candidates with the engine "
+        "families that agreed, arithmetic checks, statement locations, and the labels searched for "
+        "items that stayed null (finintel/api/extraction_view.py).",
+    )
 
 
 class CommentaryOut(_Model):

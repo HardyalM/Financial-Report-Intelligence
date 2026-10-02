@@ -7,6 +7,35 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M7.1 — 2026-10-02 — report screen (read-only): gate PASSES
+
+Tag `m3-done` created at 916f120 (tech lead's instruction). `web/`: Next.js 16 App Router, React 19, TypeScript 5 strict,
+Tailwind 4 tokens (light and dark), vendored shadcn-style primitives, Radix tooltip, lucide icons, Playwright. Types are
+generated from `schemas/*.json` and `schemas/openapi.json` (`npm run types`; `types:check` fails on drift).
+
+| Command | Result |
+|---|---|
+| `make lint typecheck test contracts-check scope` | exit 0; 922 passed |
+| `make test-db` | 29 passed (+1: the report's read-only `extraction` view) |
+| `make web-check` (tsc, generated types current, `node scripts/check-deps.js`) | exit 0; no charting library |
+| `make e2e` (Playwright, Chromium, fixtures only, no backend) | 22 passed: company_a render, footer, no advice words, provenance; R1–R10; K1–K6 |
+| `make ui-fixtures` twice | byte-identical fixtures and PDFs |
+| `check_scope.py M7.1 --base c0f7c43` | only fixtures/expected/* and docs/ratings_draft.md (the tech lead's uncommitted files, G2/G3) |
+
+Fixtures (`tests/e2e/fixtures/api`, built by `build_fixtures.py`): every number from the real pipeline. company_a = the gated
+M5.2 pack (23728ccd…) and commentary; synthetic Example plc (fictional) with the test stand-ins for the second engine family
+and the model pointer, plus a person's decisions through `finintel.review`; bank, insurer and missing-unit specs.
+`tests/e2e/test_fixtures.py` re-validates them against the API models and recomputes every ratio pack.
+Scope amendment (MILESTONES M7.1): `GET /reports/{id}` gains `extraction` (engine families, checks, statement pages,
+labels searched); `persist.review_rows` split out of `store_review_items`.
+Found, not fixed (out of scope, flagged as a separate task): `review.check_value` refuses a liability printed in brackets
+("(3,300)" reads as −3,300; SCHEMA §2 stores 3,300), so a person cannot confirm or accept a bracketed liability via the API.
+Also seen: the code-built liquidity bullet renders negative equity as "£-350 million".
+Not built yet: banner 7 (stage fallback; the API does not expose the commentary's fallback reason), upload, review actions,
+PDF viewer (M7.2–M7.3).
+
+---
+
 ## M5.2 — 2026-10-01 — scripted gate PASSES (exit 0); two caveats for the tech lead
 
 M5.2 gate green. `python scripts/gate.py M5.2` exits 0: all 15 conditions PASS, including the human ratings. Provider gemini

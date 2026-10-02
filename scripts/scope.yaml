@@ -152,6 +152,11 @@ sessions:
   "M7.1":
     - "web/**"
     - "tests/e2e/**"
+    - "finintel/api/**"
+    - "finintel/db/persist.py"
+    - "schemas/openapi.json"
+    - "scripts/check-deps.js"
+    - "scripts/scope.yaml"
   "M7.2":
     - "web/**"
     - "tests/e2e/**"

@@ -1,0 +1,1086 @@
+{
+ "commentary": {
+  "id": 4,
+  "model_id": null,
+  "output": {
+   "disclaimer": "Research aid, not investment advice. Figures are extracted and computed by code from the filed accounts; narrative is quoted from the report with page references.",
+   "executive_summary": {
+    "bullets": [],
+    "status": "omitted"
+   },
+   "label": "Extractive summary: no generated text",
+   "mode": "extractive",
+   "model": null,
+   "prompt_version": null,
+   "query_set_version": "1",
+   "ratio_pack_sha": "9e2c3de127ebd2817c452a3878f98053ff19735ee2c75e42bf766c5d79c7885a",
+   "retrieval_set_id": "1f5dd4919b30717c505b9c65b2160598132b76e7421799d2431cda0fe61ef435",
+   "schema_version": "1.1.0",
+   "statement_pack_sha": "0ab94fc09f647aa8ccb711b283fb679fa10fd0aeea43b0a6915dad236d61dc25",
+   "topics": [
+    {
+     "paragraphs": [],
+     "reason": "The retrieved evidence did not clear the evidence floor for this topic.",
+     "status": "insufficient_evidence",
+     "topic": "revenue_drivers"
+    },
+    {
+     "paragraphs": [],
+     "reason": "The retrieved evidence did not clear the evidence floor for this topic.",
+     "status": "insufficient_evidence",
+     "topic": "strategic_risks"
+    },
+    {
+     "paragraphs": [],
+     "reason": "The retrieved evidence did not clear the evidence floor for this topic.",
+     "status": "insufficient_evidence",
+     "topic": "governance_and_directors"
+    },
+    {
+     "paragraphs": [],
+     "reason": "No balance-sheet figure was available.",
+     "status": "omitted",
+     "topic": "liquidity_and_capital"
+    }
+   ],
+   "trace_id": null
+  },
+  "prompt_version": null,
+  "stale": false,
+  "validation": {
+   "audit": {
+    "displayed_advice": 0,
+    "displayed_direction_violations": 0,
+    "displayed_figures_without_source": 0,
+    "displayed_mismatched_placeholders": 0,
+    "displayed_naked_numbers": 0,
+    "displayed_paragraphs": 0,
+    "displayed_unknown_placeholders": 0,
+    "displayed_unverified_citations": 0,
+    "displayed_unverified_quotes": 0,
+    "displayed_without_citation": 0
+   },
+   "pre_validation": {
+    "advice_violations": 0,
+    "calls": 0,
+    "direction_violations": 0,
+    "fabricated_or_out_of_set_quotes": 0,
+    "figure_violations": 0,
+    "naked_number_violations": 0,
+    "out_of_order_bullets": 0,
+    "paragraphs_without_citation": 0,
+    "placeholder_meaning_violations": 0,
+    "schema_violations": 0,
+    "unknown_placeholders": 0,
+    "unverified_quote_violations": 0
+   },
+   "snapshot": {
+    "period_id": "FY2025",
+    "rendered": "Revenue not available (missing input); operating profit not available (missing input); operating margin not available (missing input); current ratio not available (missing input); ROCE not available (missing input); debt-to-equity not available (missing input).",
+    "template": "Revenue {{item:revenue:FY2025}}; operating profit {{item:operating_profit:FY2025}}; operating margin {{ratio:operating_margin:FY2025}}; current ratio {{ratio:current_ratio:FY2025}}; ROCE {{ratio:roce:FY2025}}; debt-to-equity {{ratio:debt_to_equity:FY2025}}."
+   }
+  }
+ },
+ "fixture": {
+  "id": 4,
+  "name": "liquidity_ordered_bank",
+  "notes": [],
+  "states": [
+   "R9",
+   "K4"
+  ],
+  "title": "Example Bank plc"
+ },
+ "overrides": [],
+ "report": {
+  "document_type": "bank",
+  "extraction": {
+   "candidates": {
+    "total_debt:FY2024": {
+     "components_found": {
+      "borrowings": false,
+      "financial_liabilities": false,
+      "leases": false
+     },
+     "decision": "blocked"
+    },
+    "total_debt:FY2025": {
+     "components_found": {
+      "borrowings": false,
+      "financial_liabilities": false,
+      "leases": false
+     },
+     "decision": "blocked"
+    }
+   },
+   "checks": [],
+   "engine_skipped": {},
+   "engines": [
+    "pdfplumber",
+    "pymupdf_tables"
+   ],
+   "families": [],
+   "searched_for": {
+    "current_assets": {
+     "components": [],
+     "labels": [],
+     "pages": [
+      3
+     ],
+     "statement": "balance_sheet",
+     "warnings": [
+      {
+       "code": "missing_item",
+       "item": "current_assets",
+       "message": "current_assets not extracted: no alias map for document type bank yet",
+       "page": null
+      }
+     ]
+    },
+    "current_liabilities": {
+     "components": [],
+     "labels": [],
+     "pages": [
+      3
+     ],
+     "statement": "balance_sheet",
+     "warnings": [
+      {
+       "code": "missing_item",
+       "item": "current_liabilities",
+       "message": "current_liabilities not extracted: no alias map for document type bank yet",
+       "page": null
+      }
+     ]
+    },
+    "operating_profit": {
+     "components": [],
+     "labels": [],
+     "pages": [
+      2
+     ],
+     "statement": "income_statement",
+     "warnings": [
+      {
+       "code": "missing_item",
+       "item": "operating_profit",
+       "message": "operating_profit not extracted: no alias map for document type bank yet",
+       "page": null
+      }
+     ]
+    },
+    "revenue": {
+     "components": [],
+     "labels": [],
+     "pages": [
+      2
+     ],
+     "statement": "income_statement",
+     "warnings": [
+      {
+       "code": "missing_item",
+       "item": "revenue",
+       "message": "revenue not extracted: no alias map for document type bank yet",
+       "page": null
+      }
+     ]
+    },
+    "total_assets": {
+     "components": [],
+     "labels": [],
+     "pages": [
+      3
+     ],
+     "statement": "balance_sheet",
+     "warnings": [
+      {
+       "code": "missing_item",
+       "item": "total_assets",
+       "message": "total_assets not extracted: no alias map for document type bank yet",
+       "page": null
+      }
+     ]
+    },
+    "total_debt": {
+     "components": [
+      "borrowings_current",
+      "borrowings_non_current",
+      "lease_liabilities_current",
+      "lease_liabilities_non_current"
+     ],
+     "labels": [],
+     "pages": [
+      3
+     ],
+     "statement": "balance_sheet",
+     "warnings": [
+      {
+       "code": "missing_item",
+       "item": "total_debt",
+       "message": "total_debt is null: borrowings_current is absent and its section sum could not be verified; borrowings_non_current is absent and its section sum could not be verified; lease_liabilities_current is absent and its section sum could not be verified; lease_liabilities_non_current is absent and its section sum could not be verified",
+       "page": null
+      }
+     ]
+    },
+    "total_equity": {
+     "components": [],
+     "labels": [],
+     "pages": [
+      3
+     ],
+     "statement": "balance_sheet",
+     "warnings": [
+      {
+       "code": "missing_item",
+       "item": "total_equity",
+       "message": "total_equity not extracted: no alias map for document type bank yet",
+       "page": null
+      }
+     ]
+    }
+   },
+   "statement_names": {
+    "balance_sheet": "consolidated balance sheet",
+    "cash_flow": "cash flow statement",
+    "changes_in_equity": "statement of changes in equity",
+    "comprehensive_income": "statement of comprehensive income",
+    "income_statement": "consolidated income statement"
+   },
+   "statements": {
+    "balance_sheet": {
+     "continuations": [],
+     "page_labels": [
+      null
+     ],
+     "pages": [
+      3
+     ],
+     "scope": "group",
+     "score": 0.8,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "balance_sheet",
+     "status": "found",
+     "title": "Consolidated balance sheet"
+    },
+    "cash_flow": {
+     "continuations": [],
+     "page_labels": [],
+     "pages": [],
+     "scope": null,
+     "score": null,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "cash_flow",
+     "status": "not_found",
+     "title": null
+    },
+    "changes_in_equity": {
+     "continuations": [],
+     "page_labels": [],
+     "pages": [],
+     "scope": null,
+     "score": null,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "changes_in_equity",
+     "status": "not_found",
+     "title": null
+    },
+    "comprehensive_income": {
+     "continuations": [],
+     "page_labels": [],
+     "pages": [],
+     "scope": null,
+     "score": null,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "comprehensive_income",
+     "status": "not_found",
+     "title": null
+    },
+    "income_statement": {
+     "continuations": [],
+     "page_labels": [
+      null
+     ],
+     "pages": [
+      2
+     ],
+     "scope": "group",
+     "score": 0.8,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "income_statement",
+     "status": "found",
+     "title": "Consolidated income statement"
+    }
+   }
+  },
+  "filename": "liquidity_ordered_bank.pdf",
+  "id": 4,
+  "jobs": [
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "ingest",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "text_layer",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "extract",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "ratios",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "index",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "commentary",
+    "status": "done"
+   }
+  ],
+  "pack": {
+   "balance_sheet_classified": false,
+   "basis": "consolidated",
+   "company_name": null,
+   "currency": "GBP",
+   "document_type": "bank",
+   "items": {
+    "current_assets": {
+     "id": "current_assets",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "confidence": 0.0,
+       "period_id": "FY2025",
+       "value": null
+      },
+      {
+       "confidence": 0.0,
+       "period_id": "FY2024",
+       "value": null
+      }
+     ]
+    },
+    "current_liabilities": {
+     "id": "current_liabilities",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "confidence": 0.0,
+       "period_id": "FY2025",
+       "value": null
+      },
+      {
+       "confidence": 0.0,
+       "period_id": "FY2024",
+       "value": null
+      }
+     ]
+    },
+    "operating_profit": {
+     "id": "operating_profit",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "confidence": 0.0,
+       "period_id": "FY2025",
+       "value": null
+      },
+      {
+       "confidence": 0.0,
+       "period_id": "FY2024",
+       "value": null
+      }
+     ]
+    },
+    "revenue": {
+     "id": "revenue",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "confidence": 0.0,
+       "period_id": "FY2025",
+       "value": null
+      },
+      {
+       "confidence": 0.0,
+       "period_id": "FY2024",
+       "value": null
+      }
+     ]
+    },
+    "total_assets": {
+     "id": "total_assets",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "confidence": 0.0,
+       "period_id": "FY2025",
+       "value": null
+      },
+      {
+       "confidence": 0.0,
+       "period_id": "FY2024",
+       "value": null
+      }
+     ]
+    },
+    "total_debt": {
+     "id": "total_debt",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "confidence": 0.0,
+       "engine": null,
+       "period_id": "FY2025",
+       "value": null
+      },
+      {
+       "confidence": 0.0,
+       "engine": null,
+       "period_id": "FY2024",
+       "value": null
+      }
+     ]
+    },
+    "total_equity": {
+     "id": "total_equity",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "confidence": 0.0,
+       "period_id": "FY2025",
+       "value": null
+      },
+      {
+       "confidence": 0.0,
+       "period_id": "FY2024",
+       "value": null
+      }
+     ]
+    }
+   },
+   "periods": [
+    {
+     "end_date": "2025-12-31",
+     "id": "FY2025",
+     "is_restated": false,
+     "label": "2025"
+    },
+    {
+     "end_date": "2024-12-31",
+     "id": "FY2024",
+     "is_restated": false,
+     "label": "2024"
+    }
+   ],
+   "schema_version": "1.1.0",
+   "source": {
+    "filename": "liquidity_ordered_bank.pdf",
+    "page_count": 3,
+    "parser_engines": [
+     "pdfplumber",
+     "pymupdf_tables"
+    ],
+    "pipeline_version": "0.1.0",
+    "sha256": "151c2be78486ebf3e0c3135182d8555aaffcd5ef4e043320be5fd23a43aba2cf"
+   },
+   "unit_scale": 1000000,
+   "warnings": [
+    {
+     "code": "bank_layout",
+     "item": null,
+     "message": "Bank layout: loans and advances to customers, customer deposits, net interest income on the located statements; revenue, current assets and current liabilities are null by design",
+     "page": 3
+    },
+    {
+     "code": "unclassified_balance_sheet",
+     "item": null,
+     "message": "The balance sheet on p.3 has no current/non-current split; current assets and current liabilities are null by design and the current ratio does not apply",
+     "page": 3
+    },
+    {
+     "code": "reduced_verification",
+     "item": null,
+     "message": "one engine family ran (text layer); Azure DI: not requested (--engines local)",
+     "page": null
+    },
+    {
+     "code": "missing_item",
+     "item": "total_debt",
+     "message": "total_debt is null: borrowings_current is absent and its section sum could not be verified; borrowings_non_current is absent and its section sum could not be verified; lease_liabilities_current is absent and its section sum could not be verified; lease_liabilities_non_current is absent and its section sum could not be verified",
+     "page": null
+    },
+    {
+     "code": "missing_item",
+     "item": "revenue",
+     "message": "revenue not extracted: no alias map for document type bank yet",
+     "page": null
+    },
+    {
+     "code": "missing_item",
+     "item": "operating_profit",
+     "message": "operating_profit not extracted: no alias map for document type bank yet",
+     "page": null
+    },
+    {
+     "code": "missing_item",
+     "item": "current_assets",
+     "message": "current_assets not extracted: no alias map for document type bank yet",
+     "page": null
+    },
+    {
+     "code": "missing_item",
+     "item": "current_liabilities",
+     "message": "current_liabilities not extracted: no alias map for document type bank yet",
+     "page": null
+    },
+    {
+     "code": "missing_item",
+     "item": "total_assets",
+     "message": "total_assets not extracted: no alias map for document type bank yet",
+     "page": null
+    },
+    {
+     "code": "missing_item",
+     "item": "total_equity",
+     "message": "total_equity not extracted: no alias map for document type bank yet",
+     "page": null
+    }
+   ]
+  },
+  "pack_sha": "0ab94fc09f647aa8ccb711b283fb679fa10fd0aeea43b0a6915dad236d61dc25",
+  "pack_version": 1,
+  "page_count": 3,
+  "ratios": {
+   "changes": [
+    {
+     "from_period_id": "FY2024",
+     "items": {
+      "current_assets": {
+       "absolute": null,
+       "percent": null
+      },
+      "current_liabilities": {
+       "absolute": null,
+       "percent": null
+      },
+      "net_income": {
+       "absolute": null,
+       "percent": null
+      },
+      "operating_profit": {
+       "absolute": null,
+       "percent": null
+      },
+      "profit_before_tax": {
+       "absolute": null,
+       "percent": null
+      },
+      "revenue": {
+       "absolute": null,
+       "percent": null
+      },
+      "total_assets": {
+       "absolute": null,
+       "percent": null
+      },
+      "total_debt": {
+       "absolute": null,
+       "percent": null
+      },
+      "total_equity": {
+       "absolute": null,
+       "percent": null
+      }
+     },
+     "ratios": {
+      "current_ratio": {
+       "kind": "absolute",
+       "value": null
+      },
+      "debt_to_equity": {
+       "kind": "absolute",
+       "value": null
+      },
+      "operating_margin": {
+       "kind": "percentage_points",
+       "value": null
+      },
+      "roce": {
+       "kind": "percentage_points",
+       "value": null
+      }
+     },
+     "to_period_id": "FY2025"
+    }
+   ],
+   "currency": "GBP",
+   "document_type": "bank",
+   "formulas_locked": true,
+   "periods": [
+    {
+     "end_date": "2025-12-31",
+     "period_id": "FY2025",
+     "ratios": {
+      "current_ratio": {
+       "applicability": "not_applicable",
+       "explanation": "Not applicable to banks: the statements have no revenue line or current/non-current split, and deposits are not corporate debt",
+       "flags": [],
+       "formula": "current_assets / current_liabilities",
+       "formula_text": "Current assets ÷ Current liabilities",
+       "inputs": {
+        "current_assets": {
+         "badges": [],
+         "item": "current_assets",
+         "page": null,
+         "period_id": "FY2025",
+         "value": null
+        },
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": null,
+         "period_id": "FY2025",
+         "value": null
+        }
+       },
+       "label": "Current ratio",
+       "missing_inputs": [
+        "current_assets",
+        "current_liabilities"
+       ],
+       "name": "current_ratio",
+       "reason": "missing_input",
+       "status": "not_applicable",
+       "unit": "multiple",
+       "value": null
+      },
+      "debt_to_equity": {
+       "applicability": "not_applicable",
+       "explanation": "Not applicable to banks: the statements have no revenue line or current/non-current split, and deposits are not corporate debt",
+       "flags": [],
+       "formula": "total_debt / total_equity",
+       "formula_text": "Total debt ÷ Total equity",
+       "inputs": {
+        "total_debt": {
+         "badges": [],
+         "item": "total_debt",
+         "page": null,
+         "period_id": "FY2025",
+         "value": null
+        },
+        "total_equity": {
+         "badges": [],
+         "item": "total_equity",
+         "page": null,
+         "period_id": "FY2025",
+         "value": null
+        }
+       },
+       "label": "Debt-to-equity",
+       "missing_inputs": [
+        "total_debt",
+        "total_equity"
+       ],
+       "name": "debt_to_equity",
+       "reason": "missing_input",
+       "status": "not_applicable",
+       "unit": "multiple",
+       "value": null
+      },
+      "operating_margin": {
+       "applicability": "not_applicable",
+       "explanation": "Not applicable to banks: the statements have no revenue line or current/non-current split, and deposits are not corporate debt",
+       "flags": [],
+       "formula": "operating_profit / revenue",
+       "formula_text": "Operating profit ÷ Revenue",
+       "inputs": {
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": null,
+         "period_id": "FY2025",
+         "value": null
+        },
+        "revenue": {
+         "badges": [],
+         "item": "revenue",
+         "page": null,
+         "period_id": "FY2025",
+         "value": null
+        }
+       },
+       "label": "Operating margin",
+       "missing_inputs": [
+        "operating_profit",
+        "revenue"
+       ],
+       "name": "operating_margin",
+       "reason": "missing_input",
+       "status": "not_applicable",
+       "unit": "fraction",
+       "value": null
+      },
+      "roce": {
+       "applicability": "not_applicable",
+       "explanation": "Not applicable to banks: the statements have no revenue line or current/non-current split, and deposits are not corporate debt",
+       "flags": [],
+       "formula": "operating_profit / (total_assets - current_liabilities)",
+       "formula_text": "Operating profit ÷ (Total assets - Current liabilities)",
+       "inputs": {
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": null,
+         "period_id": "FY2025",
+         "value": null
+        },
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": null,
+         "period_id": "FY2025",
+         "value": null
+        },
+        "total_assets": {
+         "badges": [],
+         "item": "total_assets",
+         "page": null,
+         "period_id": "FY2025",
+         "value": null
+        }
+       },
+       "label": "ROCE",
+       "missing_inputs": [
+        "operating_profit",
+        "total_assets",
+        "current_liabilities"
+       ],
+       "name": "roce",
+       "reason": "missing_input",
+       "status": "not_applicable",
+       "unit": "fraction",
+       "value": null
+      }
+     }
+    },
+    {
+     "end_date": "2024-12-31",
+     "period_id": "FY2024",
+     "ratios": {
+      "current_ratio": {
+       "applicability": "not_applicable",
+       "explanation": "Not applicable to banks: the statements have no revenue line or current/non-current split, and deposits are not corporate debt",
+       "flags": [],
+       "formula": "current_assets / current_liabilities",
+       "formula_text": "Current assets ÷ Current liabilities",
+       "inputs": {
+        "current_assets": {
+         "badges": [],
+         "item": "current_assets",
+         "page": null,
+         "period_id": "FY2024",
+         "value": null
+        },
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": null,
+         "period_id": "FY2024",
+         "value": null
+        }
+       },
+       "label": "Current ratio",
+       "missing_inputs": [
+        "current_assets",
+        "current_liabilities"
+       ],
+       "name": "current_ratio",
+       "reason": "missing_input",
+       "status": "not_applicable",
+       "unit": "multiple",
+       "value": null
+      },
+      "debt_to_equity": {
+       "applicability": "not_applicable",
+       "explanation": "Not applicable to banks: the statements have no revenue line or current/non-current split, and deposits are not corporate debt",
+       "flags": [],
+       "formula": "total_debt / total_equity",
+       "formula_text": "Total debt ÷ Total equity",
+       "inputs": {
+        "total_debt": {
+         "badges": [],
+         "item": "total_debt",
+         "page": null,
+         "period_id": "FY2024",
+         "value": null
+        },
+        "total_equity": {
+         "badges": [],
+         "item": "total_equity",
+         "page": null,
+         "period_id": "FY2024",
+         "value": null
+        }
+       },
+       "label": "Debt-to-equity",
+       "missing_inputs": [
+        "total_debt",
+        "total_equity"
+       ],
+       "name": "debt_to_equity",
+       "reason": "missing_input",
+       "status": "not_applicable",
+       "unit": "multiple",
+       "value": null
+      },
+      "operating_margin": {
+       "applicability": "not_applicable",
+       "explanation": "Not applicable to banks: the statements have no revenue line or current/non-current split, and deposits are not corporate debt",
+       "flags": [],
+       "formula": "operating_profit / revenue",
+       "formula_text": "Operating profit ÷ Revenue",
+       "inputs": {
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": null,
+         "period_id": "FY2024",
+         "value": null
+        },
+        "revenue": {
+         "badges": [],
+         "item": "revenue",
+         "page": null,
+         "period_id": "FY2024",
+         "value": null
+        }
+       },
+       "label": "Operating margin",
+       "missing_inputs": [
+        "operating_profit",
+        "revenue"
+       ],
+       "name": "operating_margin",
+       "reason": "missing_input",
+       "status": "not_applicable",
+       "unit": "fraction",
+       "value": null
+      },
+      "roce": {
+       "applicability": "not_applicable",
+       "explanation": "Not applicable to banks: the statements have no revenue line or current/non-current split, and deposits are not corporate debt",
+       "flags": [],
+       "formula": "operating_profit / (total_assets - current_liabilities)",
+       "formula_text": "Operating profit ÷ (Total assets - Current liabilities)",
+       "inputs": {
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": null,
+         "period_id": "FY2024",
+         "value": null
+        },
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": null,
+         "period_id": "FY2024",
+         "value": null
+        },
+        "total_assets": {
+         "badges": [],
+         "item": "total_assets",
+         "page": null,
+         "period_id": "FY2024",
+         "value": null
+        }
+       },
+       "label": "ROCE",
+       "missing_inputs": [
+        "operating_profit",
+        "total_assets",
+        "current_liabilities"
+       ],
+       "name": "roce",
+       "reason": "missing_input",
+       "status": "not_applicable",
+       "unit": "fraction",
+       "value": null
+      }
+     }
+    }
+   ],
+   "schema_version": "1.0.0",
+   "statement_pack_sha": "0ab94fc09f647aa8ccb711b283fb679fa10fd0aeea43b0a6915dad236d61dc25",
+   "unit_scale": 1000000,
+   "warnings": []
+  },
+  "reduced_verification": true,
+  "sha256": "151c2be78486ebf3e0c3135182d8555aaffcd5ef4e043320be5fd23a43aba2cf",
+  "stale": false,
+  "status": "ready",
+  "warnings": [
+   {
+    "code": "bank_layout",
+    "item": null,
+    "message": "Bank layout: loans and advances to customers, customer deposits, net interest income on the located statements; revenue, current assets and current liabilities are null by design",
+    "page": 3
+   },
+   {
+    "code": "unclassified_balance_sheet",
+    "item": null,
+    "message": "The balance sheet on p.3 has no current/non-current split; current assets and current liabilities are null by design and the current ratio does not apply",
+    "page": 3
+   },
+   {
+    "code": "reduced_verification",
+    "item": null,
+    "message": "one engine family ran (text layer); Azure DI: not requested (--engines local)",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_debt",
+    "message": "total_debt is null: borrowings_current is absent and its section sum could not be verified; borrowings_non_current is absent and its section sum could not be verified; lease_liabilities_current is absent and its section sum could not be verified; lease_liabilities_non_current is absent and its section sum could not be verified",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "revenue",
+    "message": "revenue not extracted: no alias map for document type bank yet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "operating_profit",
+    "message": "operating_profit not extracted: no alias map for document type bank yet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "current_assets",
+    "message": "current_assets not extracted: no alias map for document type bank yet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "current_liabilities",
+    "message": "current_liabilities not extracted: no alias map for document type bank yet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_assets",
+    "message": "total_assets not extracted: no alias map for document type bank yet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_equity",
+    "message": "total_equity not extracted: no alias map for document type bank yet",
+    "page": null
+   }
+  ]
+ },
+ "review": {
+  "items": [],
+  "status": "ready",
+  "warnings": [
+   {
+    "code": "bank_layout",
+    "item": null,
+    "message": "Bank layout: loans and advances to customers, customer deposits, net interest income on the located statements; revenue, current assets and current liabilities are null by design",
+    "page": 3
+   },
+   {
+    "code": "unclassified_balance_sheet",
+    "item": null,
+    "message": "The balance sheet on p.3 has no current/non-current split; current assets and current liabilities are null by design and the current ratio does not apply",
+    "page": 3
+   },
+   {
+    "code": "reduced_verification",
+    "item": null,
+    "message": "one engine family ran (text layer); Azure DI: not requested (--engines local)",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_debt",
+    "message": "total_debt is null: borrowings_current is absent and its section sum could not be verified; borrowings_non_current is absent and its section sum could not be verified; lease_liabilities_current is absent and its section sum could not be verified; lease_liabilities_non_current is absent and its section sum could not be verified",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "revenue",
+    "message": "revenue not extracted: no alias map for document type bank yet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "operating_profit",
+    "message": "operating_profit not extracted: no alias map for document type bank yet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "current_assets",
+    "message": "current_assets not extracted: no alias map for document type bank yet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "current_liabilities",
+    "message": "current_liabilities not extracted: no alias map for document type bank yet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_assets",
+    "message": "total_assets not extracted: no alias map for document type bank yet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_equity",
+    "message": "total_equity not extracted: no alias map for document type bank yet",
+    "page": null
+   }
+  ]
+ }
+}

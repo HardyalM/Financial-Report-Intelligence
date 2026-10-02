@@ -1,0 +1,72 @@
+{
+ "commentary": null,
+ "fixture": {
+  "id": 6,
+  "name": "missing_unit",
+  "notes": [],
+  "states": [
+   "R10"
+  ],
+  "title": "Example Unit plc"
+ },
+ "overrides": [],
+ "report": {
+  "document_type": "corporate",
+  "extraction": null,
+  "filename": "missing_unit.pdf",
+  "id": 6,
+  "jobs": [
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "ingest",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "text_layer",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "extract",
+    "status": "done"
+   },
+   {
+    "attempts": 0,
+    "error_code": null,
+    "stage": "ratios",
+    "status": "queued"
+   },
+   {
+    "attempts": 0,
+    "error_code": null,
+    "stage": "index",
+    "status": "queued"
+   },
+   {
+    "attempts": 0,
+    "error_code": null,
+    "stage": "commentary",
+    "status": "queued"
+   }
+  ],
+  "pack": null,
+  "pack_sha": null,
+  "pack_version": null,
+  "page_count": 3,
+  "ratios": null,
+  "reduced_verification": false,
+  "sha256": "98eebdf46e4a8e143df8f92bb4d7caff1c2ae3c36403d2daff098066c10f2a6f",
+  "stale": false,
+  "status": "needs_unit_confirmation",
+  "warnings": []
+ },
+ "review": {
+  "items": [],
+  "status": "needs_unit_confirmation",
+  "warnings": []
+ }
+}

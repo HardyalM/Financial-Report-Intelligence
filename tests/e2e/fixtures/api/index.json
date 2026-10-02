@@ -1,0 +1,85 @@
+[
+ {
+  "id": 1,
+  "name": "company_a",
+  "notes": [
+   "The golden report: local engines (one family), M5.2 gated commentary."
+  ],
+  "states": [
+   "R2",
+   "R8",
+   "K1",
+   "K3"
+  ],
+  "title": "company_a (golden report)"
+ },
+ {
+  "id": 2,
+  "name": "example_states",
+  "notes": [
+   "Fictional figures. The second engine family and the model pointer are the test stand-ins.",
+   "A person set the document type (no revenue line was recognised, so it was unclear).",
+   "operating_profit FY2025, withheld by the misprinted subtotal below it, was confirmed by a person (anchored on p.3): R4.",
+   "profit_before_tax FY2025 was forced to a value not printed on p.3: R5."
+  ],
+  "states": [
+   "R1",
+   "R3",
+   "R4",
+   "R5",
+   "R6",
+   "R7",
+   "R8",
+   "K2",
+   "K3"
+  ],
+  "title": "Example plc (state fixture)"
+ },
+ {
+  "id": 3,
+  "name": "example_not_found",
+  "notes": [
+   "No total-assets line and no non-current subtotal: total assets is not found.",
+   "current_assets FY2025 confirmed by a person (anchored on p.4): the current ratio inherits the manual badge (K6)."
+  ],
+  "states": [
+   "R2",
+   "R3",
+   "R4",
+   "R8",
+   "K2",
+   "K3",
+   "K6"
+  ],
+  "title": "Example plc (not found)"
+ },
+ {
+  "id": 4,
+  "name": "liquidity_ordered_bank",
+  "notes": [],
+  "states": [
+   "R9",
+   "K4"
+  ],
+  "title": "Example Bank plc"
+ },
+ {
+  "id": 5,
+  "name": "liquidity_ordered_insurer",
+  "notes": [],
+  "states": [
+   "R9",
+   "K5"
+  ],
+  "title": "Example Insurance plc"
+ },
+ {
+  "id": 6,
+  "name": "missing_unit",
+  "notes": [],
+  "states": [
+   "R10"
+  ],
+  "title": "Example Unit plc"
+ }
+]

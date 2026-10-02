@@ -446,6 +446,19 @@
             "title": "Document Type",
             "type": "string"
           },
+          "extraction": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Read-only view of the extraction report: per-value candidates with the engine families that agreed, arithmetic checks, statement locations, and the labels searched for items that stayed null (finintel/api/extraction_view.py).",
+            "title": "Extraction"
+          },
           "filename": {
             "title": "Filename",
             "type": "string"

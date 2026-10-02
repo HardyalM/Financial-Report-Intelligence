@@ -45,35 +45,39 @@ def store_report(
     )
 
 
+def review_rows(
+    suggestions: Sequence[Mapping[str, Any]], warnings: Sequence[Mapping[str, Any]]
+) -> list[tuple[Any, Any, str, list[dict[str, Any]]]]:
+    """`(item, period_id, kind, candidates)` for each review row: LLM pointers (never published)
+    and the warnings that need a person."""
+    rows: list[tuple[Any, Any, str, list[dict[str, Any]]]] = [
+        (s.get("item"), s.get("period_id"), "llm_suggestion", [dict(s)]) for s in suggestions
+    ]
+    for w in warnings:
+        kind = _WARNING_KIND.get(str(w.get("code")))
+        if kind is not None:
+            rows.append((w.get("item"), w.get("period_id"), kind, [dict(w)]))
+    return rows
+
+
 def store_review_items(
     conn: psycopg.Connection,
     document_id: int,
     suggestions: Sequence[Mapping[str, Any]],
     warnings: Sequence[Mapping[str, Any]],
 ) -> int:
-    """Review queue rows: LLM pointers (never published) and warnings that need a person."""
+    """Review queue rows (`review_rows`); open rows from an earlier extraction are replaced."""
     conn.execute(
         "DELETE FROM review_items WHERE document_id = %s AND status = 'open'", (document_id,)
     )
-    count = 0
-    for s in suggestions:
-        conn.execute(
-            "INSERT INTO review_items (document_id, item, period_id, kind, candidates) "
-            "VALUES (%s, %s, %s, 'llm_suggestion', %s::jsonb)",
-            (document_id, s.get("item"), s.get("period_id"), _j([dict(s)])),
-        )
-        count += 1
-    for w in warnings:
-        kind = _WARNING_KIND.get(str(w.get("code")))
-        if kind is None:
-            continue
+    rows = review_rows(suggestions, warnings)
+    for item, period_id, kind, candidates in rows:
         conn.execute(
             "INSERT INTO review_items (document_id, item, period_id, kind, candidates) "
             "VALUES (%s, %s, %s, %s, %s::jsonb)",
-            (document_id, w.get("item"), w.get("period_id"), kind, _j([dict(w)])),
+            (document_id, item, period_id, kind, _j(candidates)),
         )
-        count += 1
-    return count
+    return len(rows)
 
 
 def store_ratio_pack(

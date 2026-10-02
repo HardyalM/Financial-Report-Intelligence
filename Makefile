@@ -37,6 +37,22 @@ scope:
 
 ci: lint typecheck test contracts-check scope
 
+# ---- web (M7): Node 20.9+; the e2e suite serves tests/e2e/fixtures/api, no backend needed
+web-install:
+	cd web && npm ci && npx playwright install chromium
+
+web-check:
+	cd web && npm run typecheck && npm run types:check
+	node scripts/check-deps.js
+
+e2e:
+	cd web && npx playwright test
+
+ui-fixtures:
+	$(RUN) python -m tests.e2e.fixtures.build_fixtures
+
+ci-web: web-check e2e
+
 COMPANY ?= company_a
 ENGINES ?= local
 

@@ -1,0 +1,97 @@
+# UI state fixture (M7.1): one fictional report whose real extraction, with the test stand-ins for
+# the second engine family and the model (tests/extract/fake_azure.py, finintel.llm.FakeProvider),
+# produces every key-figure row state a corporate report can show. Figures are fictional and exist
+# only because this spec prints them. "Sales of goods" is a revenue label the alias map lacks (R7);
+# no "Total assets" line is printed, so it is derived (R3) or, when the builder drops the
+# non-current subtotal, not found (R8); equity is negative (debt-to-equity K2).
+name: example_states
+hazard: UI states
+description: Example plc; every corporate row state through the real pipeline.
+chrome: [Strategic report, Governance, Financial statements]
+folio_offset: -2
+pages:
+  - kind: narrative
+    header: Strategic report
+    title: Chief Executive's review
+    paragraphs: 3
+
+  - kind: narrative
+    header: Governance
+    title: Directors' report
+    paragraphs: 2
+
+  - kind: statement
+    statement: income_statement
+    header: Consolidated financial statements
+    title: Consolidated income statement
+    subtitle: For the year ended 31 December 2025
+    rows:
+      - {label: Sales of goods, note: "3", values: ["12,345", "11,890"]}
+      - {label: Cost of sales, values: ["(8,645)", "(8,390)"]}
+      - {label: Gross profit, style: subtotal, values: ["3,700", "3,500"], sum_of: [Sales of goods, Cost of sales]}
+      - {label: Administrative expenses, note: "4", values: ["(2,220)", "(2,150)"]}
+      - {label: Operating profit, note: "4", style: subtotal, values: ["1,480", "1,350"],
+         sum_of: [Gross profit, Administrative expenses]}
+      - {label: Finance income, note: "6", values: ["30", "20"]}
+      - {label: Finance costs, note: "6", values: ["(410)", "(380)"]}
+      # FY2025 profit before taxation is misprinted (1,110; the lines above add to 1,100), so the
+      # arithmetic checks withhold it and the profit below it (row state R6).
+      - {label: Profit before taxation, style: subtotal, values: ["1,110", "990"]}
+      - {label: Taxation, note: "7", values: ["(275)", "(248)"]}
+      - {label: Profit for the year, style: total, values: ["825", "742"]}
+
+  - kind: statement
+    statement: balance_sheet
+    header: Consolidated financial statements
+    title: Consolidated balance sheet
+    subtitle: As at 31 December 2025
+    rows:
+      - {label: Non-current assets, style: section}
+      - {label: "Property, plant and equipment", note: "10", values: ["4,100", "4,000"]}
+      - {label: Right-of-use assets, note: "11", values: ["2,300", "2,250"]}
+      - {label: Intangible assets, note: "12", values: ["600", "620"]}
+      - {id: non_current_assets, style: subtotal, values: ["7,000", "6,870"],
+         sum_of: ["Property, plant and equipment", Right-of-use assets, Intangible assets]}
+      - {label: Current assets, style: section}
+      - {label: Inventories, note: "14", values: ["1,300", "1,250"]}
+      - {label: Trade and other receivables, note: "15", values: ["900", "860"]}
+      - {label: Cash and cash equivalents, note: "16", values: ["750", "640"]}
+      - {id: current_assets, style: subtotal, values: ["2,950", "2,750"],
+         sum_of: [Inventories, Trade and other receivables, Cash and cash equivalents]}
+      - {label: Current liabilities, style: section}
+      - {label: Trade and other payables, note: "17", values: ["(2,600)", "(2,480)"]}
+      - {id: borrowings_current, label: Borrowings, note: "18", values: ["(400)", "(350)"]}
+      - {id: leases_current, label: Lease liabilities, note: "19", values: ["(300)", "(290)"]}
+      - {id: current_liabilities, style: subtotal, values: ["(3,300)", "(3,120)"],
+         sum_of: [Trade and other payables, borrowings_current, leases_current]}
+      - {label: Non-current liabilities, style: section}
+      - {id: borrowings_non_current, label: Borrowings, note: "18", values: ["(4,200)", "(4,300)"]}
+      - {id: leases_non_current, label: Lease liabilities, note: "19", values: ["(2,150)", "(2,120)"]}
+      - {label: Provisions, note: "20", values: ["(650)", "(600)"]}
+      - {id: non_current_liabilities, style: subtotal, values: ["(7,000)", "(7,020)"],
+         sum_of: [borrowings_non_current, leases_non_current, Provisions]}
+      - {label: Net liabilities, style: total, values: ["(350)", "(520)"],
+         sum_of: [non_current_assets, current_assets, current_liabilities, non_current_liabilities]}
+      - {label: Equity, style: section}
+      - {label: Share capital, note: "21", values: ["500", "500"]}
+      - {label: Retained deficit, values: ["(1,050)", "(1,210)"]}
+      - {label: Non-controlling interests, values: ["200", "190"]}
+      - {label: Total equity, style: total, values: ["(350)", "(520)"],
+         sum_of: [Share capital, Retained deficit, Non-controlling interests]}
+
+  - kind: narrative
+    header: Consolidated financial statements
+    title: Notes to the consolidated financial statements
+
+expect:
+  statements:
+    income_statement: {pages: [3], scope: group}
+    balance_sheet: {pages: [4], scope: group}
+  document_type: corporate
+  balance_sheet_classified: true
+  folio_offset: -2
+  currency: GBP
+  unit_scale: 1000000
+  periods:
+    - {id: FY2025, end_date: "2025-12-31"}
+    - {id: FY2024, end_date: "2024-12-31"}

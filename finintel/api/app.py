@@ -20,6 +20,7 @@ from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile
 from fastapi.responses import FileResponse
 
 from finintel.api import models as m
+from finintel.api.extraction_view import extraction_view
 from finintel.cache import StageCache
 from finintel.contracts import validate_pack
 from finintel.db import jobs, persist
@@ -227,6 +228,7 @@ def create_app(
             reduced_verification=bool(report.get("reduced_verification", False)),
             stale=bool(stale_row[0]) if stale_row else False,
             jobs=[m.JobOut(stage=s, status=st, attempts=a, error_code=e) for s, st, a, e in job_rows],
+            extraction=extraction_view(report, pack),
         )  # fmt: skip
 
     @app.get("/reports/{report_id}/commentary", response_model=m.CommentaryOut)

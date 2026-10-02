@@ -101,6 +101,7 @@ module = [
     "tests.narrative.builders",
     "tests.facts.builders",
     "scripts.gate",
+    "tests.e2e.fixtures.build_fixtures",
 ]
 disallow_untyped_calls = false
 

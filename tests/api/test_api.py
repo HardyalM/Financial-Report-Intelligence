@@ -329,3 +329,22 @@ def test_the_openapi_document_names_every_endpoint() -> None:
                  "/reports/{report_id}/review", "/reports/{report_id}/overrides", "/reports/{report_id}/unit-confirmation",
                  "/reports/{report_id}/statement-location", "/reports/{report_id}/document-type"):  # fmt: skip
         assert path in paths
+
+
+def test_the_report_carries_a_read_only_extraction_view_for_the_report_screen(
+    client: TestClient,
+) -> None:
+    rid = ready_report(client)
+    report = client.get(f"/reports/{rid}").json()
+    view = report["extraction"]
+    assert view["families"] and set(view["families"]) <= {"text_layer", "table_ml", "ocr"}
+    revenue = view["candidates"]["revenue:FY2024"]
+    assert revenue["page"] == 141 and revenue["families"] and revenue["decision"]
+    assert view["statements"]["income_statement"] and view["checks"]
+    pack_nulls = {
+        k for k, item in report["pack"]["items"].items()
+        if all(v["value"] is None for v in item["values"])
+    }  # fmt: skip
+    assert set(view["searched_for"]) == pack_nulls
+    for where in view["searched_for"].values():
+        assert where["statement"] and isinstance(where["labels"], list)

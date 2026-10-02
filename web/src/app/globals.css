@@ -1,0 +1,201 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+
+/*
+ * Design tokens. Every colour is a token so dark mode and contrast are decided in one place.
+ * Status colours are paired with an icon and text everywhere (UI.md section 10): colour is never
+ * the only signal. Foreground/background pairs meet WCAG AA at the sizes used.
+ */
+:root {
+  --bg: oklch(0.985 0.002 95);
+  --surface: oklch(1 0 0);
+  --surface-sunk: oklch(0.97 0.003 95);
+  --surface-raised: oklch(1 0 0);
+  --line: oklch(0.91 0.004 95);
+  --line-strong: oklch(0.84 0.006 95);
+  --ink: oklch(0.2 0.01 260);
+  --ink-2: oklch(0.38 0.012 260);
+  --ink-3: oklch(0.52 0.012 260);
+  --ink-inverse: oklch(0.99 0 0);
+  --accent: oklch(0.42 0.13 262);
+  --accent-soft: oklch(0.95 0.025 262);
+  --focus: oklch(0.55 0.17 262);
+  --highlight: oklch(0.95 0.08 95);
+
+  /* row and card states: text, soft background, border */
+  --ok: oklch(0.45 0.11 160);
+  --ok-soft: oklch(0.96 0.03 160);
+  --ok-line: oklch(0.86 0.06 160);
+  --single: oklch(0.42 0.02 260);
+  --single-soft: oklch(0.96 0.005 260);
+  --single-line: oklch(0.87 0.01 260);
+  --derived: oklch(0.45 0.14 285);
+  --derived-soft: oklch(0.96 0.025 285);
+  --derived-line: oklch(0.87 0.05 285);
+  --confirmed: oklch(0.45 0.14 245);
+  --confirmed-soft: oklch(0.96 0.025 245);
+  --confirmed-line: oklch(0.86 0.06 245);
+  --amber: oklch(0.5 0.12 65);
+  --amber-soft: oklch(0.96 0.05 85);
+  --amber-line: oklch(0.85 0.1 80);
+  --review: oklch(0.5 0.15 45);
+  --review-soft: oklch(0.96 0.035 50);
+  --review-line: oklch(0.86 0.08 50);
+  --suggested: oklch(0.47 0.17 305);
+  --suggested-soft: oklch(0.96 0.03 305);
+  --suggested-line: oklch(0.87 0.06 305);
+  --missing: oklch(0.48 0.15 20);
+  --missing-soft: oklch(0.965 0.02 20);
+  --missing-line: oklch(0.87 0.05 20);
+  --muted: oklch(0.5 0.01 260);
+  --muted-soft: oklch(0.965 0.003 260);
+  --muted-line: oklch(0.89 0.005 260);
+
+  --shadow-card: 0 1px 0 oklch(0 0 0 / 0.03), 0 1px 3px oklch(0 0 0 / 0.04);
+  --shadow-pop: 0 10px 30px -12px oklch(0 0 0 / 0.25), 0 2px 6px oklch(0 0 0 / 0.06);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: oklch(0.16 0.006 260);
+    --surface: oklch(0.2 0.007 260);
+    --surface-sunk: oklch(0.18 0.006 260);
+    --surface-raised: oklch(0.23 0.008 260);
+    --line: oklch(0.29 0.008 260);
+    --line-strong: oklch(0.36 0.01 260);
+    --ink: oklch(0.95 0.004 95);
+    --ink-2: oklch(0.8 0.008 260);
+    --ink-3: oklch(0.66 0.01 260);
+    --ink-inverse: oklch(0.18 0.01 260);
+    --accent: oklch(0.78 0.1 262);
+    --accent-soft: oklch(0.28 0.04 262);
+    --focus: oklch(0.72 0.14 262);
+    --highlight: oklch(0.38 0.08 95);
+    --ok: oklch(0.8 0.12 160);
+    --ok-soft: oklch(0.26 0.04 160);
+    --ok-line: oklch(0.4 0.06 160);
+    --single: oklch(0.8 0.02 260);
+    --single-soft: oklch(0.25 0.008 260);
+    --single-line: oklch(0.38 0.01 260);
+    --derived: oklch(0.8 0.1 285);
+    --derived-soft: oklch(0.27 0.04 285);
+    --derived-line: oklch(0.4 0.06 285);
+    --confirmed: oklch(0.8 0.1 245);
+    --confirmed-soft: oklch(0.27 0.04 245);
+    --confirmed-line: oklch(0.4 0.06 245);
+    --amber: oklch(0.84 0.12 80);
+    --amber-soft: oklch(0.29 0.05 75);
+    --amber-line: oklch(0.45 0.08 75);
+    --review: oklch(0.82 0.12 55);
+    --review-soft: oklch(0.28 0.05 50);
+    --review-line: oklch(0.44 0.08 50);
+    --suggested: oklch(0.82 0.12 305);
+    --suggested-soft: oklch(0.28 0.05 305);
+    --suggested-line: oklch(0.42 0.08 305);
+    --missing: oklch(0.8 0.11 20);
+    --missing-soft: oklch(0.27 0.04 20);
+    --missing-line: oklch(0.42 0.06 20);
+    --muted: oklch(0.72 0.01 260);
+    --muted-soft: oklch(0.24 0.006 260);
+    --muted-line: oklch(0.36 0.008 260);
+    --shadow-card: 0 0 0 1px oklch(1 0 0 / 0.02);
+    --shadow-pop: 0 12px 32px -12px oklch(0 0 0 / 0.6);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-sunk: var(--surface-sunk);
+  --color-surface-raised: var(--surface-raised);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-inverse: var(--ink-inverse);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-focus: var(--focus);
+  --color-highlight: var(--highlight);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-ok-line: var(--ok-line);
+  --color-single: var(--single);
+  --color-single-soft: var(--single-soft);
+  --color-single-line: var(--single-line);
+  --color-derived: var(--derived);
+  --color-derived-soft: var(--derived-soft);
+  --color-derived-line: var(--derived-line);
+  --color-confirmed: var(--confirmed);
+  --color-confirmed-soft: var(--confirmed-soft);
+  --color-confirmed-line: var(--confirmed-line);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-amber-line: var(--amber-line);
+  --color-review: var(--review);
+  --color-review-soft: var(--review-soft);
+  --color-review-line: var(--review-line);
+  --color-suggested: var(--suggested);
+  --color-suggested-soft: var(--suggested-soft);
+  --color-suggested-line: var(--suggested-line);
+  --color-missing: var(--missing);
+  --color-missing-soft: var(--missing-soft);
+  --color-missing-line: var(--missing-line);
+  --color-muted: var(--muted);
+  --color-muted-soft: var(--muted-soft);
+  --color-muted-line: var(--muted-line);
+  --shadow-card: var(--shadow-card);
+  --shadow-pop: var(--shadow-pop);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background: var(--accent-soft);
+  }
+}
+
+@utility num {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum", "lnum", "cv11";
+}
+
+@utility placeholder-figure {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+
+/* A row the user was sent to from a ratio card: a short highlight that fades. */
+@keyframes row-flash {
+  0%, 30% { background-color: var(--highlight); }
+  100% { background-color: transparent; }
+}
+.row-flash > * {
+  animation: row-flash 2.2s ease-out 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .row-flash > * { animation: none; background-color: var(--highlight); }
+}

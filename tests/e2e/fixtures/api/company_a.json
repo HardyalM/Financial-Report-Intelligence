@@ -1,0 +1,4051 @@
+{
+ "commentary": {
+  "id": 1,
+  "model_id": "gemini-3.5-flash-lite",
+  "output": {
+   "disclaimer": "Research aid, not investment advice. Figures are extracted and computed by code from the filed accounts; narrative is quoted from the report with page references.",
+   "executive_summary": {
+    "bullets": [
+     {
+      "citations": [
+       {
+        "bbox": [
+         [
+          9.0,
+          303.76,
+          460.35,
+          552.26,
+          481.11
+         ]
+        ],
+        "char_end": 5283,
+        "char_start": 5161,
+        "chunk_id": "382247e170fede8b",
+        "citation_id": "cit_01",
+        "heading_path": [
+         "STRATEGIC REPORT - Front cover",
+         "Chair's statement",
+         "RESULTS AND PERFORMANCE"
+        ],
+        "is_footnote": false,
+        "match": "exact",
+        "note_number": null,
+        "page": 9,
+        "page_end": 9,
+        "page_label": "6",
+        "quote": "In 2024, turnover was up 1.9%, to €60.8 billion, despite adverse impacts from currency and some portfolio rationalisation.",
+        "section": "chair_statement"
+       }
+      ],
+      "figures": [
+       {
+        "pages": [
+         141
+        ],
+        "placeholder": "change:item:revenue:FY2023:FY2024",
+        "rendered": "+1.9%"
+       },
+       {
+        "pages": [
+         141
+        ],
+        "placeholder": "item:revenue:FY2024",
+        "rendered": "€60.8bn"
+       }
+      ],
+      "rendered": "In the annual report, turnover rose by 1.9% to reach €60.8bn, as stated in the report, \"In 2024, turnover was up 1.9%, to €60.8 billion, despite adverse impacts from currency and some portfolio rationalisation.\"",
+      "template": "In the annual report, turnover rose by {{change:item:revenue:FY2023:FY2024}} to reach {{item:revenue:FY2024}}, as stated in the report, \"In 2024, turnover was up 1.9%, to €60.8 billion, despite adverse impacts from currency and some portfolio rationalisation.\"",
+      "validation": {
+       "removed_citations": [],
+       "retried": false
+      }
+     },
+     {
+      "citations": [
+       {
+        "bbox": [
+         [
+          131.0,
+          45.15,
+          248.61,
+          286.01,
+          266.77
+         ]
+        ],
+        "char_end": 409459,
+        "char_start": 409343,
+        "chunk_id": "14fedac688b1c97b",
+        "citation_id": "cit_02",
+        "heading_path": [
+         "KPMG’s Independent Auditor’s Report",
+         "KPMG LLP’s Independent Auditor’s Report",
+         "4.2 Indirect tax contingent liabilities in Brazil (Group)"
+        ],
+        "is_footnote": false,
+        "match": "exact",
+        "note_number": null,
+        "page": 131,
+        "page_end": 131,
+        "page_label": "128",
+        "quote": "The total amount of the tax assessments received in respect of this matter is €3,230 million as of 31 December 2024.",
+        "section": "auditors_report"
+       }
+      ],
+      "figures": [],
+      "rendered": "The audit report noted that \"The total amount of the tax assessments received in respect of this matter is €3,230 million as of 31 December 2024.\"",
+      "template": "The audit report noted that \"The total amount of the tax assessments received in respect of this matter is €3,230 million as of 31 December 2024.\"",
+      "validation": {
+       "removed_citations": [],
+       "retried": false
+      }
+     },
+     {
+      "citations": [
+       {
+        "bbox": [
+         [
+          145.0,
+          42.52,
+          417.03,
+          286.5,
+          426.79
+         ]
+        ],
+        "char_end": 447957,
+        "char_start": 447886,
+        "chunk_id": "baf45b211799b502",
+        "citation_id": "cit_03",
+        "heading_path": [
+         "Notes to the Fin Statements UL Group",
+         "1. Accounting information and policies",
+         "GOING CONCERN"
+        ],
+        "is_footnote": false,
+        "match": "exact",
+        "note_number": "1",
+        "page": 145,
+        "page_end": 145,
+        "page_label": "142",
+        "quote": "These financial statements have been prepared on a going concern basis.",
+        "section": "going_concern"
+       }
+      ],
+      "figures": [],
+      "rendered": "Regarding going concern, the financial statements confirm that “These financial statements have been prepared on a going concern basis.”",
+      "template": "Regarding going concern, the financial statements confirm that “These financial statements have been prepared on a going concern basis.”",
+      "validation": {
+       "removed_citations": [],
+       "retried": false
+      }
+     },
+     {
+      "citations": [
+       {
+        "bbox": [
+         [
+          130.0,
+          45.15,
+          233.76,
+          280.6,
+          260.32
+         ]
+        ],
+        "char_end": 405172,
+        "char_start": 405004,
+        "chunk_id": "b744e93589d88e69",
+        "citation_id": "cit_04",
+        "heading_path": [
+         "KPMG’s Independent Auditor’s Report",
+         "KPMG LLP’s Independent Auditor’s Report",
+         "4.1 Revenue recognition – Rebates (Group)"
+        ],
+        "is_footnote": false,
+        "match": "exact",
+        "note_number": null,
+        "page": 130,
+        "page_end": 130,
+        "page_label": "127",
+        "quote": "Certain discounts for goods sold in the year are only finalised when the precise amounts are known and revenue therefore includes an estimate of variable consideration.",
+        "section": "auditors_report"
+       }
+      ],
+      "figures": [],
+      "rendered": "Concerning revenue recognition and rebates, the report notes that “Certain discounts for goods sold in the year are only finalised when the precise amounts are known and revenue therefore includes an estimate of variable consideration.”",
+      "template": "Concerning revenue recognition and rebates, the report notes that “Certain discounts for goods sold in the year are only finalised when the precise amounts are known and revenue therefore includes an estimate of variable consideration.”",
+      "validation": {
+       "removed_citations": [],
+       "retried": false
+      }
+     }
+    ],
+    "status": "ok"
+   },
+   "label": null,
+   "mode": "generated",
+   "model": {
+    "model_id": "gemini-3.5-flash-lite",
+    "provider": "gemini"
+   },
+   "prompt_version": "commentary-4",
+   "query_set_version": "1",
+   "ratio_pack_sha": "cd91fa560e6a734a9a33a39f9fa290ad5a9a4ead0ae96537ee4052c4f6a4b85f",
+   "retrieval_set_id": "ada754b80b43438bf74a685ba62c0dbd18f8fed57776960c551c1f43dc8016fc",
+   "schema_version": "1.1.0",
+   "statement_pack_sha": "23728ccdaad8e91b1932074e00d44580fe12295e03a1cfdc6aa80182a8021bd0",
+   "topics": [
+    {
+     "paragraphs": [
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           9.0,
+           303.76,
+           460.35,
+           552.26,
+           481.11
+          ]
+         ],
+         "char_end": 5283,
+         "char_start": 5161,
+         "chunk_id": "382247e170fede8b",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Chair's statement",
+          "RESULTS AND PERFORMANCE"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 9,
+         "page_end": 9,
+         "page_label": "6",
+         "quote": "In 2024, turnover was up 1.9%, to €60.8 billion, despite adverse impacts from currency and some portfolio rationalisation.",
+         "section": "chair_statement"
+        }
+       ],
+       "figures": [
+        {
+         "pages": [
+          141
+         ],
+         "placeholder": "change:item:revenue:FY2023:FY2024",
+         "rendered": "+1.9%"
+        },
+        {
+         "pages": [
+          141
+         ],
+         "placeholder": "item:revenue:FY2024",
+         "rendered": "€60.8bn"
+        }
+       ],
+       "rendered": "In 2024, turnover rose by 1.9% to reach €60.8bn, which management attributed to volume growth and gross margin expansion. As stated in the report, \"In 2024, turnover was up 1.9%, to €60.8 billion, despite adverse impacts from currency and some portfolio rationalisation.\"",
+       "template": "In 2024, turnover rose by {{change:item:revenue:FY2023:FY2024}} to reach {{item:revenue:FY2024}}, which management attributed to volume growth and gross margin expansion. As stated in the report, \"In 2024, turnover was up 1.9%, to €60.8 billion, despite adverse impacts from currency and some portfolio rationalisation.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      }
+     ],
+     "reason": null,
+     "status": "ok",
+     "topic": "revenue_drivers"
+    },
+    {
+     "paragraphs": [
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           55.0,
+           117.15,
+           495.12,
+           283.17,
+           525.48
+          ]
+         ],
+         "char_end": 146629,
+         "char_start": 146542,
+         "chunk_id": "8b1d69ce7c5a6de0",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 55,
+         "page_end": 55,
+         "page_label": "52",
+         "quote": "Consumer tastes, preferences and behaviours are changing more rapidly than ever before.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Consumer preference: The report notes that consumer tastes, preferences and behaviours are changing rapidly, requiring the business to innovate and remain competitive. \"Consumer tastes, preferences and behaviours are changing more rapidly than ever before.\"",
+       "template": "Consumer preference: The report notes that consumer tastes, preferences and behaviours are changing rapidly, requiring the business to innovate and remain competitive. \"Consumer tastes, preferences and behaviours are changing more rapidly than ever before.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           56.0,
+           117.15,
+           164.47,
+           292.2,
+           204.43
+          ]
+         ],
+         "char_end": 148825,
+         "char_start": 148681,
+         "chunk_id": "738c870548634ae5",
+         "citation_id": "cit_02",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 56,
+         "page_end": 56,
+         "page_label": "53",
+         "quote": "Unilever’s growth and profitability are determined by our portfolio of Business Groups, geographies and channels and how these evolve over time.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Portfolio management: Strategic investment choices regarding Business Groups, geographies and channels affect the long-term growth and profits of the business. \"Unilever’s growth and profitability are determined by our portfolio of Business Groups, geographies and channels and how these evolve over time.\"",
+       "template": "Portfolio management: Strategic investment choices regarding Business Groups, geographies and channels affect the long-term growth and profits of the business. \"Unilever’s growth and profitability are determined by our portfolio of Business Groups, geographies and channels and how these evolve over time.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           56.0,
+           117.15,
+           241.92,
+           289.06,
+           281.88
+          ]
+         ],
+         "char_end": 149460,
+         "char_start": 149307,
+         "chunk_id": "738c870548634ae5",
+         "citation_id": "cit_03",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 56,
+         "page_end": 56,
+         "page_label": "53",
+         "quote": "Tackling climate change-related physical and transitional risks and loss of nature is important to increase our resilience and future-proof our business.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Climate and nature: Tackling climate change physical and transitional risks alongside the loss of nature is described as important for resilience and future-proofing. \"Tackling climate change-related physical and transitional risks and loss of nature is important to increase our resilience and future-proof our business.\"",
+       "template": "Climate and nature: Tackling climate change physical and transitional risks alongside the loss of nature is described as important for resilience and future-proofing. \"Tackling climate change-related physical and transitional risks and loss of nature is important to increase our resilience and future-proof our business.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           57.0,
+           117.15,
+           194.02,
+           289.84,
+           262.78
+          ]
+         ],
+         "char_end": 152885,
+         "char_start": 152595,
+         "chunk_id": "116c8f3048eb4d6f",
+         "citation_id": "cit_04",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 57,
+         "page_end": 57,
+         "page_label": "54",
+         "quote": "Both consumer and customer responses to the environmental impact of plastic waste and emerging regulations by governments to tax or ban the use of certain plastics requires us to find solutions to reduce the amount of plastic we use and increase the amount of packaging which is recyclable.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Plastic packaging: The significant use of plastic requires solutions to reduce virgin material and increase recyclability in response to environmental impacts and emerging regulations. \"Both consumer and customer responses to the environmental impact of plastic waste and emerging regulations by governments to tax or ban the use of certain plastics requires us to find solutions to reduce the amount of plastic we use and increase the amount of packaging which is recyclable.\"",
+       "template": "Plastic packaging: The significant use of plastic requires solutions to reduce virgin material and increase recyclability in response to environmental impacts and emerging regulations. \"Both consumer and customer responses to the environmental impact of plastic waste and emerging regulations by governments to tax or ban the use of certain plastics requires us to find solutions to reduce the amount of plastic we use and increase the amount of packaging which is recyclable.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           58.0,
+           117.15,
+           165.22,
+           288.41,
+           205.18
+          ]
+         ],
+         "char_end": 156967,
+         "char_start": 156814,
+         "chunk_id": "c4533dea66ec376f",
+         "citation_id": "cit_05",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 58,
+         "page_end": 58,
+         "page_label": "55",
+         "quote": "With the rapidly changing nature of work and skills, there is a risk that our workforce is not equipped with the skills required for the new environment.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Talent: A skilled workforce and agile ways of working are highlighted as essential due to the rapidly changing nature of work and skills. \"With the rapidly changing nature of work and skills, there is a risk that our workforce is not equipped with the skills required for the new environment.\"",
+       "template": "Talent: A skilled workforce and agile ways of working are highlighted as essential due to the rapidly changing nature of work and skills. \"With the rapidly changing nature of work and skills, there is a risk that our workforce is not equipped with the skills required for the new environment.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           58.0,
+           117.15,
+           384.82,
+           293.87,
+           443.98
+          ]
+         ],
+         "char_end": 158481,
+         "char_start": 158230,
+         "chunk_id": "2def94c63ec749e6",
+         "citation_id": "cit_06",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 58,
+         "page_end": 58,
+         "page_label": "55",
+         "quote": "Our supply chain network is exposed to potentially adverse events such as geopolitical sanctions, physical disruptions, trade restrictions and tariffs or disruptions at a key supplier, which could impact our ability to deliver orders to our customers.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Business operations: The supply chain network is exposed to potentially adverse events such as geopolitical sanctions, physical disruptions, trade restrictions and tariffs. \"Our supply chain network is exposed to potentially adverse events such as geopolitical sanctions, physical disruptions, trade restrictions and tariffs or disruptions at a key supplier, which could impact our ability to deliver orders to our customers.\"",
+       "template": "Business operations: The supply chain network is exposed to potentially adverse events such as geopolitical sanctions, physical disruptions, trade restrictions and tariffs. \"Our supply chain network is exposed to potentially adverse events such as geopolitical sanctions, physical disruptions, trade restrictions and tariffs or disruptions at a key supplier, which could impact our ability to deliver orders to our customers.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           59.0,
+           117.15,
+           130.92,
+           288.83,
+           161.28
+          ]
+         ],
+         "char_end": 160268,
+         "char_start": 160167,
+         "chunk_id": "162eb2464fc6f0f2",
+         "citation_id": "cit_07",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 59,
+         "page_end": 59,
+         "page_label": "56",
+         "quote": "The quality and safety of our products are of paramount importance for our brands and our reputation.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Safe and high-quality products: Product quality and safety are of paramount importance, where increasing laws and regulations can lead to litigation and impact financial performance and reputation. \"The quality and safety of our products are of paramount importance for our brands and our reputation.\"",
+       "template": "Safe and high-quality products: Product quality and safety are of paramount importance, where increasing laws and regulations can lead to litigation and impact financial performance and reputation. \"The quality and safety of our products are of paramount importance for our brands and our reputation.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           59.0,
+           117.15,
+           528.82,
+           289.57,
+           568.78
+          ]
+         ],
+         "char_end": 162684,
+         "char_start": 162551,
+         "chunk_id": "d9e3e12e77802179",
+         "citation_id": "cit_08",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 59,
+         "page_end": 59,
+         "page_label": "56",
+         "quote": "The cyber-attack threat of unauthorised access and misuse of sensitive information or disruption to operations continues to increase.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Systems and information: Operations are increasingly dependent on IT systems alongside the need to safeguard data confidentiality and integrity against rising cyber threats. \"The cyber-attack threat of unauthorised access and misuse of sensitive information or disruption to operations continues to increase.\"",
+       "template": "Systems and information: Operations are increasingly dependent on IT systems alongside the need to safeguard data confidentiality and integrity against rising cyber threats. \"The cyber-attack threat of unauthorised access and misuse of sensitive information or disruption to operations continues to increase.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           60.0,
+           117.15,
+           184.42,
+           281.82,
+           224.38
+          ]
+         ],
+         "char_end": 164873,
+         "char_start": 164718,
+         "chunk_id": "bc62bcd105436ab9",
+         "citation_id": "cit_09",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 60,
+         "page_end": 60,
+         "page_label": "57",
+         "quote": "In 2024, we announced the separation of our Ice Cream business and the launch of a major productivity programme to accelerate our Growth Action Plan (GAP).",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Business transformation: Successful execution of transformation projects is key to delivering business benefits and avoiding operational disruption, particularly following the announced separation of the Ice Cream business. \"In 2024, we announced the separation of our Ice Cream business and the launch of a major productivity programme to accelerate our Growth Action Plan (GAP).\"",
+       "template": "Business transformation: Successful execution of transformation projects is key to delivering business benefits and avoiding operational disruption, particularly following the announced separation of the Ice Cream business. \"In 2024, we announced the separation of our Ice Cream business and the launch of a major productivity programme to accelerate our Growth Action Plan (GAP).\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           60.0,
+           117.15,
+           552.87,
+           286.42,
+           602.43
+          ]
+         ],
+         "char_end": 167773,
+         "char_start": 167619,
+         "chunk_id": "163ced738ac2bbf8",
+         "citation_id": "cit_10",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 60,
+         "page_end": 60,
+         "page_label": "57",
+         "quote": "Economic and political instability impacts consumer demand for our products, disrupts sales operations and/or impacts the profitability of our operations.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Economic and political instability: Adverse economic conditions and political instability can impact consumer demand, disrupt sales operations and affect profitability. \"Economic and political instability impacts consumer demand for our products, disrupts sales operations and/or impacts the profitability of our operations.\"",
+       "template": "Economic and political instability: Adverse economic conditions and political instability can impact consumer demand, disrupt sales operations and affect profitability. \"Economic and political instability impacts consumer demand for our products, disrupts sales operations and/or impacts the profitability of our operations.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           61.0,
+           117.15,
+           130.92,
+           291.65,
+           161.28
+          ]
+         ],
+         "char_end": 169291,
+         "char_start": 169198,
+         "chunk_id": "905b6c4118f6e1ae",
+         "citation_id": "cit_11",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 61,
+         "page_end": 61,
+         "page_label": "58",
+         "quote": "Unilever is exposed to a variety of external financial risks in relation to Treasury and Tax.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Treasury and tax: The business is exposed to external financial risks regarding exchange rate fluctuations, cash flow shortfalls, counter-parties and evolving tax laws. \"Unilever is exposed to a variety of external financial risks in relation to Treasury and Tax.\"",
+       "template": "Treasury and tax: The business is exposed to external financial risks regarding exchange rate fluctuations, cash flow shortfalls, counter-parties and evolving tax laws. \"Unilever is exposed to a variety of external financial risks in relation to Treasury and Tax.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           61.0,
+           117.15,
+           534.67,
+           293.37,
+           584.23
+          ]
+         ],
+         "char_end": 172056,
+         "char_start": 171869,
+         "chunk_id": "d4fc78cb3b41b6a4",
+         "citation_id": "cit_12",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 61,
+         "page_end": 61,
+         "page_label": "58",
+         "quote": "Acting in an ethical manner, consistent with the expectations of customers, consumers and other stakeholders, is essential for the protection of the reputation of Unilever and its brands.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Ethical: Operating in an ethical manner consistent with stakeholder expectations is essential to protect the reputation of the business and its brands. \"Acting in an ethical manner, consistent with the expectations of customers, consumers and other stakeholders, is essential for the protection of the reputation of Unilever and its brands.\"",
+       "template": "Ethical: Operating in an ethical manner consistent with stakeholder expectations is essential to protect the reputation of the business and its brands. \"Acting in an ethical manner, consistent with the expectations of customers, consumers and other stakeholders, is essential for the protection of the reputation of Unilever and its brands.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           62.0,
+           117.15,
+           130.92,
+           283.7,
+           161.28
+          ]
+         ],
+         "char_end": 173523,
+         "char_start": 173431,
+         "chunk_id": "f1c3d4dbbfcaddc5",
+         "citation_id": "cit_13",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Principal Risks"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 62,
+         "page_end": 62,
+         "page_label": "59",
+         "quote": "Compliance with laws and regulations is an essential part of Unilever’s business operations.",
+         "section": "principal_risks"
+        }
+       ],
+       "figures": [],
+       "rendered": "Legal and regulatory: Compliance with diverse national and regional laws and regulations forms an essential part of business operations. \"Compliance with laws and regulations is an essential part of Unilever’s business operations.\"",
+       "template": "Legal and regulatory: Compliance with diverse national and regional laws and regulations forms an essential part of business operations. \"Compliance with laws and regulations is an essential part of Unilever’s business operations.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": true
+       }
+      }
+     ],
+     "reason": null,
+     "status": "ok",
+     "topic": "strategic_risks"
+    },
+    {
+     "paragraphs": [
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           123.0,
+           303.74,
+           389.08,
+           556.17,
+           424.04
+          ]
+         ],
+         "char_end": 386040,
+         "char_start": 385803,
+         "chunk_id": "a1c2b84753af1bd9",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "Statement of directors' responsibilities",
+          "GOING CONCERN"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 123,
+         "page_end": 123,
+         "page_label": "120",
+         "quote": "The activities of the Group, together with the factors likely to affect its future development, performance, the financial position of the Group, its cash flows, liquidity position and borrowing facilities are described on pages 1 to 47.",
+         "section": "going_concern"
+        }
+       ],
+       "figures": [],
+       "rendered": "Going concern: “The activities of the Group, together with the factors likely to affect its future development, performance, the financial position of the Group, its cash flows, liquidity position and borrowing facilities are described on pages 1 to 47.”",
+       "template": "Going concern: “The activities of the Group, together with the factors likely to affect its future development, performance, the financial position of the Group, its cash flows, liquidity position and borrowing facilities are described on pages 1 to 47.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           145.0,
+           42.52,
+           417.03,
+           286.5,
+           426.79
+          ]
+         ],
+         "char_end": 447957,
+         "char_start": 447886,
+         "chunk_id": "baf45b211799b502",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "Notes to the Fin Statements UL Group",
+          "1. Accounting information and policies",
+          "GOING CONCERN"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": "1",
+         "page": 145,
+         "page_end": 145,
+         "page_label": "142",
+         "quote": "These financial statements have been prepared on a going concern basis.",
+         "section": "going_concern"
+        }
+       ],
+       "figures": [],
+       "rendered": "Going concern: “These financial statements have been prepared on a going concern basis.”",
+       "template": "Going concern: “These financial statements have been prepared on a going concern basis.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           90.0,
+           303.76,
+           742.79,
+           556.99,
+           764.35
+          ]
+         ],
+         "char_end": 283950,
+         "char_start": 283839,
+         "chunk_id": "fd95d6a83157f337",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "GOVERNANCE REPORT divider page 1",
+          "Report of the AC",
+          "Report of the Audit Committee",
+          "REPORTING AND FINANCIAL STATEMENTS"
+         ],
+         "is_footnote": false,
+         "match": "normalised",
+         "note_number": null,
+         "page": 90,
+         "page_end": 90,
+         "page_label": "87",
+         "quote": "The new UK Corporate Governance Code was published on 22 January 2024 and introduced a limited set of changes.",
+         "section": "audit_committee_report"
+        }
+       ],
+       "figures": [],
+       "rendered": "The Audit Committee focused on significant matters such as environmental, social and governance reporting, and the presentation of non-underlying items, while noting that \"The new UK Corporate Governance Code was published on 22 January 2024 and introduced a limited set of changes.\"",
+       "template": "The Audit Committee focused on significant matters such as environmental, social and governance reporting, and the presentation of non-underlying items, while noting that \"The new UK Corporate Governance Code was published on 22 January 2024 and introduced a limited set of changes.\"",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           63.0,
+           303.74,
+           196.79,
+           464.41,
+           207.95
+          ]
+         ],
+         "char_end": 177447,
+         "char_start": 177406,
+         "chunk_id": "3913b75cab10b14f",
+         "citation_id": "cit_02",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Our Principal Risks",
+          "Viability statement",
+          "ASSESSMENT"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 63,
+         "page_end": 63,
+         "page_label": "60",
+         "quote": "The viability assessment has three parts:",
+         "section": "viability_statement"
+        }
+       ],
+       "figures": [],
+       "rendered": "The Directors reviewed the overall funding capacity and headroom available, noting that \"The viability assessment has three parts:\" in order to report on the long-term viability of the Group.",
+       "template": "The Directors reviewed the overall funding capacity and headroom available, noting that \"The viability assessment has three parts:\" in order to report on the long-term viability of the Group.",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           130.0,
+           45.15,
+           233.76,
+           280.6,
+           260.32
+          ]
+         ],
+         "char_end": 405172,
+         "char_start": 405004,
+         "chunk_id": "b744e93589d88e69",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "KPMG’s Independent Auditor’s Report",
+          "KPMG LLP’s Independent Auditor’s Report",
+          "4.1 Revenue recognition – Rebates (Group)"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 130,
+         "page_end": 130,
+         "page_label": "127",
+         "quote": "Certain discounts for goods sold in the year are only finalised when the precise amounts are known and revenue therefore includes an estimate of variable consideration.",
+         "section": "auditors_report"
+        }
+       ],
+       "figures": [],
+       "rendered": "Key audit matter: Revenue recognition – Rebates (Group). “Certain discounts for goods sold in the year are only finalised when the precise amounts are known and revenue therefore includes an estimate of variable consideration.”",
+       "template": "Key audit matter: Revenue recognition – Rebates (Group). “Certain discounts for goods sold in the year are only finalised when the precise amounts are known and revenue therefore includes an estimate of variable consideration.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           131.0,
+           45.15,
+           248.61,
+           286.01,
+           266.77
+          ]
+         ],
+         "char_end": 409459,
+         "char_start": 409343,
+         "chunk_id": "14fedac688b1c97b",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "KPMG’s Independent Auditor’s Report",
+          "KPMG LLP’s Independent Auditor’s Report",
+          "4.2 Indirect tax contingent liabilities in Brazil (Group)"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 131,
+         "page_end": 131,
+         "page_label": "128",
+         "quote": "The total amount of the tax assessments received in respect of this matter is €3,230 million as of 31 December 2024.",
+         "section": "auditors_report"
+        }
+       ],
+       "figures": [],
+       "rendered": "Key audit matter: Indirect tax contingent liabilities in Brazil (Group). “The total amount of the tax assessments received in respect of this matter is €3,230 million as of 31 December 2024.”",
+       "template": "Key audit matter: Indirect tax contingent liabilities in Brazil (Group). “The total amount of the tax assessments received in respect of this matter is €3,230 million as of 31 December 2024.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           132.0,
+           45.15,
+           239.16,
+           287.95,
+           265.72
+          ]
+         ],
+         "char_end": 413740,
+         "char_start": 413578,
+         "chunk_id": "0be2f5220f530f0d",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "KPMG’s Independent Auditor’s Report",
+          "KPMG LLP’s Independent Auditor’s Report",
+          "4.3 Investments and subsidiaries (Parent company)"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 132,
+         "page_end": 132,
+         "page_label": "129",
+         "quote": "We do not consider the recoverability of these investments to be at a high risk of significant misstatement, or to be subject to a significant level of judgement.",
+         "section": "auditors_report"
+        }
+       ],
+       "figures": [],
+       "rendered": "Key audit matter: Investments and subsidiaries (Parent company). “We do not consider the recoverability of these investments to be at a high risk of significant misstatement, or to be subject to a significant level of judgement.”",
+       "template": "Key audit matter: Investments and subsidiaries (Parent company). “We do not consider the recoverability of these investments to be at a high risk of significant misstatement, or to be subject to a significant level of judgement.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      }
+     ],
+     "reason": null,
+     "status": "ok",
+     "topic": "governance_and_directors"
+    },
+    {
+     "paragraphs": [
+      {
+       "citations": [],
+       "figures": [
+        {
+         "pages": [
+          143
+         ],
+         "placeholder": "exact:current_assets:FY2024",
+         "rendered": "€19,194 million"
+        },
+        {
+         "pages": [
+          143
+         ],
+         "placeholder": "exact:current_liabilities:FY2024",
+         "rendered": "€25,234 million"
+        }
+       ],
+       "rendered": "Current assets were €19,194 million and current liabilities were €25,234 million on the consolidated balance sheet.",
+       "template": "Current assets were {{exact:current_assets:FY2024}} and current liabilities were {{exact:current_liabilities:FY2024}} on the consolidated balance sheet.",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [],
+       "figures": [
+        {
+         "pages": [
+          143
+         ],
+         "placeholder": "exact:current_assets:FY2024",
+         "rendered": "€19,194 million"
+        },
+        {
+         "pages": [
+          143
+         ],
+         "placeholder": "exact:current_liabilities:FY2024",
+         "rendered": "€25,234 million"
+        },
+        {
+         "pages": [
+          143
+         ],
+         "placeholder": "ratio:current_ratio:FY2024",
+         "rendered": "0.76x"
+        }
+       ],
+       "rendered": "Current ratio, computed in code from current assets and current liabilities (the ratio is not printed in the report): €19,194 million / €25,234 million = 0.76x.",
+       "template": "Current ratio, computed in code from current assets and current liabilities (the ratio is not printed in the report): {{exact:current_assets:FY2024}} / {{exact:current_liabilities:FY2024}} = {{ratio:current_ratio:FY2024}}.",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [],
+       "figures": [
+        {
+         "pages": [
+          143
+         ],
+         "placeholder": "exact:total_equity:FY2024",
+         "rendered": "€22,555 million"
+        }
+       ],
+       "rendered": "Total equity, including non-controlling interests, was €22,555 million on the consolidated balance sheet.",
+       "template": "Total equity, including non-controlling interests, was {{exact:total_equity:FY2024}} on the consolidated balance sheet.",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           16.0,
+           42.52,
+           217.29,
+           290.89,
+           238.05
+          ]
+         ],
+         "char_end": 30022,
+         "char_start": 29945,
+         "chunk_id": "c9886efe49b46206",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "Group Financial Review divider page 1",
+          "Group Financial Review",
+          "HIGHLIGHTS"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 16,
+         "page_end": 16,
+         "page_label": "13",
+         "quote": "Underlying return on invested capital improved 190bps to 18.1% (2023: 16.2%).",
+         "section": "financial_review"
+        },
+        {
+         "bbox": [
+          [
+           49.0,
+           303.76,
+           172.79,
+           556.01,
+           222.35
+          ]
+         ],
+         "char_end": 122578,
+         "char_start": 122288,
+         "chunk_id": "c4acfb19c01b5c48",
+         "citation_id": "cit_02",
+         "heading_path": [
+          "STRATEGIC REPORT - Front cover",
+          "OUR PERFORMANCE - Financial Performance",
+          "Additional Financial Disclosures",
+          "UNDERLYING RETURN ON INVESTED CAPITAL"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 49,
+         "page_end": 49,
+         "page_label": "46",
+         "quote": "Underlying ROIC is calculated as underlying operating profit after tax divided by the annual average of: goodwill, intangible assets, property, plant and equipment, net assets held for sale, inventories, trade and other current receivables, and trade payables and other current liabilities.",
+         "section": "narrative_other"
+        }
+       ],
+       "figures": [],
+       "rendered": "Underlying return on invested capital, as the report states it (quoted, not computed): “Underlying return on invested capital improved 190bps to 18.1% (2023: 16.2%).” The report defines it: “Underlying ROIC is calculated as underlying operating profit after tax divided by the annual average of: goodwill, intangible assets, property, plant and equipment, net assets held for sale, inventories, trade and other current receivables, and trade payables and other current liabilities.”",
+       "template": "Underlying return on invested capital, as the report states it (quoted, not computed): “Underlying return on invested capital improved 190bps to 18.1% (2023: 16.2%).” The report defines it: “Underlying ROIC is calculated as underlying operating profit after tax divided by the annual average of: goodwill, intangible assets, property, plant and equipment, net assets held for sale, inventories, trade and other current receivables, and trade payables and other current liabilities.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      }
+     ],
+     "reason": null,
+     "status": "ok",
+     "topic": "liquidity_and_capital"
+    }
+   ],
+   "trace_id": null
+  },
+  "prompt_version": "commentary-4",
+  "stale": false,
+  "validation": {
+   "audit": {
+    "displayed_advice": 0,
+    "displayed_direction_violations": 0,
+    "displayed_figures_without_source": 0,
+    "displayed_mismatched_placeholders": 0,
+    "displayed_naked_numbers": 0,
+    "displayed_paragraphs": 29,
+    "displayed_unknown_placeholders": 0,
+    "displayed_unverified_citations": 0,
+    "displayed_unverified_quotes": 0,
+    "displayed_without_citation": 0
+   },
+   "pre_validation": {
+    "advice_violations": 0,
+    "calls": 4,
+    "direction_violations": 0,
+    "fabricated_or_out_of_set_quotes": 1,
+    "figure_violations": 0,
+    "naked_number_violations": 2,
+    "out_of_order_bullets": 0,
+    "paragraphs_without_citation": 1,
+    "placeholder_meaning_violations": 0,
+    "schema_violations": 0,
+    "unknown_placeholders": 0,
+    "unverified_quote_violations": 1
+   },
+   "snapshot": {
+    "period_id": "FY2024",
+    "rendered": "Revenue €60.8bn (+1.9%); operating profit €9.4bn (-3.7%); operating margin 15.5% (-0.9 pp); current ratio 0.76x (0.00x); ROCE 17.2% (-1.6 pp); debt-to-equity not available (missing input).",
+    "template": "Revenue {{item:revenue:FY2024}} ({{change:item:revenue:FY2023:FY2024}}); operating profit {{item:operating_profit:FY2024}} ({{change:item:operating_profit:FY2023:FY2024}}); operating margin {{ratio:operating_margin:FY2024}} ({{change:ratio:operating_margin:FY2023:FY2024}}); current ratio {{ratio:current_ratio:FY2024}} ({{change:ratio:current_ratio:FY2023:FY2024}}); ROCE {{ratio:roce:FY2024}} ({{change:ratio:roce:FY2023:FY2024}}); debt-to-equity {{ratio:debt_to_equity:FY2024}}."
+   }
+  }
+ },
+ "fixture": {
+  "id": 1,
+  "name": "company_a",
+  "notes": [
+   "The golden report: local engines (one family), M5.2 gated commentary."
+  ],
+  "states": [
+   "R2",
+   "R8",
+   "K1",
+   "K3"
+  ],
+  "title": "company_a (golden report)"
+ },
+ "overrides": [],
+ "report": {
+  "document_type": "corporate",
+  "extraction": {
+   "candidates": {
+    "borrowings_current:FY2023": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "borrowings_current:FY2024": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "borrowings_non_current:FY2023": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "borrowings_non_current:FY2024": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "cash:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Cash and cash equivalents",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "4,159",
+     "row": "143:15",
+     "row_source": "text_layer"
+    },
+    "cash:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Cash and cash equivalents",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "6,136",
+     "row": "143:15",
+     "row_source": "text_layer"
+    },
+    "current_assets:FY2023": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "current_assets_section_sum",
+      "total_assets_sum",
+      "current_assets_section_sum",
+      "total_assets_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 143,
+     "raw_text": "17,902",
+     "row": "143:18",
+     "row_source": "text_layer"
+    },
+    "current_assets:FY2024": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "current_assets_section_sum",
+      "total_assets_sum",
+      "current_assets_section_sum",
+      "total_assets_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 143,
+     "raw_text": "19,194",
+     "row": "143:18",
+     "row_source": "text_layer"
+    },
+    "current_liabilities:FY2023": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "current_liabilities_section_sum",
+      "total_liabilities_sum",
+      "current_liabilities_section_sum",
+      "total_liabilities_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 143,
+     "raw_text": "23,507",
+     "row": "143:27",
+     "row_source": "text_layer"
+    },
+    "current_liabilities:FY2024": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "current_liabilities_section_sum",
+      "total_liabilities_sum",
+      "current_liabilities_section_sum",
+      "total_liabilities_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 143,
+     "raw_text": "25,234",
+     "row": "143:27",
+     "row_source": "text_layer"
+    },
+    "equity_attributable_to_owners:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Shareholders’ equity",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "18,102",
+     "row": "143:40",
+     "row_source": "text_layer"
+    },
+    "equity_attributable_to_owners:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Shareholders’ equity",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "19,990",
+     "row": "143:40",
+     "row_source": "text_layer"
+    },
+    "financial_liabilities_current:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Financial liabilities",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "5,087",
+     "row": "143:22",
+     "row_source": "text_layer"
+    },
+    "financial_liabilities_current:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Financial liabilities",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "6,987",
+     "row": "143:22",
+     "row_source": "text_layer"
+    },
+    "financial_liabilities_non_current:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Financial liabilities",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "24,535",
+     "row": "143:29",
+     "row_source": "text_layer"
+    },
+    "financial_liabilities_non_current:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Financial liabilities",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "25,066",
+     "row": "143:29",
+     "row_source": "text_layer"
+    },
+    "lease_liabilities_current:FY2023": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "lease_liabilities_current:FY2024": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "lease_liabilities_non_current:FY2023": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "lease_liabilities_non_current:FY2024": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "net_income:FY2022": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "net_income_chain",
+      "net_income_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Net profit",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "8,269",
+     "row": "141:13",
+     "row_source": "text_layer"
+    },
+    "net_income:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "net_income_chain",
+      "net_income_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Net profit",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "7,140",
+     "row": "141:13",
+     "row_source": "text_layer"
+    },
+    "net_income:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "net_income_chain",
+      "net_income_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Net profit",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "6,369",
+     "row": "141:13",
+     "row_source": "text_layer"
+    },
+    "non_controlling_interests:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Non-controlling interests",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "2,662",
+     "row": "143:41",
+     "row_source": "text_layer"
+    },
+    "non_controlling_interests:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Non-controlling interests",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "2,565",
+     "row": "143:41",
+     "row_source": "text_layer"
+    },
+    "non_current_assets:FY2023": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "non_current_assets_section_sum",
+      "total_assets_sum",
+      "non_current_assets_section_sum",
+      "total_assets_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 143,
+     "raw_text": "57,364",
+     "row": "143:10",
+     "row_source": "text_layer"
+    },
+    "non_current_assets:FY2024": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "non_current_assets_section_sum",
+      "total_assets_sum",
+      "non_current_assets_section_sum",
+      "total_assets_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 143,
+     "raw_text": "60,556",
+     "row": "143:10",
+     "row_source": "text_layer"
+    },
+    "non_current_liabilities:FY2023": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "non_current_liabilities_section_sum",
+      "non_current_liabilities_section_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 143,
+     "raw_text": "30,995",
+     "row": "143:37",
+     "row_source": "text_layer"
+    },
+    "non_current_liabilities:FY2024": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "non_current_liabilities_section_sum",
+      "non_current_liabilities_section_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 143,
+     "raw_text": "31,961",
+     "row": "143:37",
+     "row_source": "text_layer"
+    },
+    "operating_profit:FY2022": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "profit_before_tax_chain",
+      "profit_before_tax_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Operating profit",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "10,755",
+     "row": "141:2",
+     "row_source": "text_layer"
+    },
+    "operating_profit:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "profit_before_tax_chain",
+      "profit_before_tax_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Operating profit",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "9,758",
+     "row": "141:2",
+     "row_source": "text_layer"
+    },
+    "operating_profit:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "profit_before_tax_chain",
+      "profit_before_tax_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Operating profit",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "9,400",
+     "row": "141:2",
+     "row_source": "text_layer"
+    },
+    "profit_before_tax:FY2022": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "profit_before_tax_chain",
+      "net_income_chain",
+      "profit_before_tax_chain",
+      "net_income_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Profit before taxation",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "10,337",
+     "row": "141:11",
+     "row_source": "text_layer"
+    },
+    "profit_before_tax:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "profit_before_tax_chain",
+      "net_income_chain",
+      "profit_before_tax_chain",
+      "net_income_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Profit before taxation",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "9,339",
+     "row": "141:11",
+     "row_source": "text_layer"
+    },
+    "profit_before_tax:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "profit_before_tax_chain",
+      "net_income_chain",
+      "profit_before_tax_chain",
+      "net_income_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Profit before taxation",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "8,869",
+     "row": "141:11",
+     "row_source": "text_layer"
+    },
+    "revenue:FY2022": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Turnover",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "60,073",
+     "row": "141:1",
+     "row_source": "text_layer"
+    },
+    "revenue:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Turnover",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "59,604",
+     "row": "141:1",
+     "row_source": "text_layer"
+    },
+    "revenue:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Turnover",
+     "method": "exact_alias",
+     "page": 141,
+     "raw_text": "60,761",
+     "row": "141:1",
+     "row_source": "text_layer"
+    },
+    "total_assets:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "total_assets_sum",
+      "net_assets_identity",
+      "total_assets_sum",
+      "net_assets_identity"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Total assets",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "75,266",
+     "row": "143:19",
+     "row_source": "text_layer"
+    },
+    "total_assets:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "total_assets_sum",
+      "net_assets_identity",
+      "total_assets_sum",
+      "net_assets_identity"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Total assets",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "79,750",
+     "row": "143:19",
+     "row_source": "text_layer"
+    },
+    "total_debt:FY2023": {
+     "components_found": {
+      "borrowings": false,
+      "financial_liabilities": true,
+      "leases": false
+     },
+     "decision": "financial_liabilities_not_isolable"
+    },
+    "total_debt:FY2024": {
+     "components_found": {
+      "borrowings": false,
+      "financial_liabilities": true,
+      "leases": false
+     },
+     "decision": "financial_liabilities_not_isolable"
+    },
+    "total_equity:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "net_assets_identity",
+      "total_equity_components",
+      "net_assets_identity",
+      "total_equity_components"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Total equity",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "20,764",
+     "row": "143:42",
+     "row_source": "text_layer"
+    },
+    "total_equity:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "net_assets_identity",
+      "total_equity_components",
+      "net_assets_identity",
+      "total_equity_components"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Total equity",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "22,555",
+     "row": "143:42",
+     "row_source": "text_layer"
+    },
+    "total_liabilities:FY2023": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "total_liabilities_sum",
+      "net_assets_identity",
+      "total_liabilities_sum",
+      "net_assets_identity"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Total liabilities",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "54,502",
+     "row": "143:38",
+     "row_source": "text_layer"
+    },
+    "total_liabilities:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "total_liabilities_sum",
+      "net_assets_identity",
+      "total_liabilities_sum",
+      "net_assets_identity"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Total liabilities",
+     "method": "exact_alias",
+     "page": 143,
+     "raw_text": "57,195",
+     "row": "143:38",
+     "row_source": "text_layer"
+    }
+   },
+   "checks": [
+    {
+     "detail": "operating_profit plus 4 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "profit_before_tax_chain",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "3.0"
+    },
+    {
+     "detail": "profit_before_tax plus 1 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "net_income_chain",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "operating_profit plus 4 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "profit_before_tax_chain",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "3.0"
+    },
+    {
+     "detail": "profit_before_tax plus 1 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "net_income_chain",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "operating_profit plus 4 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "profit_before_tax_chain",
+     "passed": true,
+     "period": "FY2022",
+     "tolerance": "3.0"
+    },
+    {
+     "detail": "profit_before_tax plus 1 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "net_income_chain",
+     "passed": true,
+     "period": "FY2022",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "6 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "current_assets_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "3.5"
+    },
+    {
+     "detail": "5 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "3.0"
+    },
+    {
+     "detail": "7 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "non_current_assets_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "4.0"
+    },
+    {
+     "detail": "7 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "non_current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "4.0"
+    },
+    {
+     "detail": "non-current + current assets",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "total_assets_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "current + non-current liabilities",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "total_liabilities_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "total assets - total liabilities",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "net_assets_identity",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.0"
+    },
+    {
+     "detail": "2 equity rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "total_equity_components",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "6 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "current_assets_section_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "3.5"
+    },
+    {
+     "detail": "5 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "3.0"
+    },
+    {
+     "detail": "7 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "non_current_assets_section_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "4.0"
+    },
+    {
+     "detail": "7 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "non_current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "4.0"
+    },
+    {
+     "detail": "non-current + current assets",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "total_assets_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "current + non-current liabilities",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "total_liabilities_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "total assets - total liabilities",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "net_assets_identity",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "1.0"
+    },
+    {
+     "detail": "2 equity rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "total_equity_components",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "operating_profit plus 4 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "profit_before_tax_chain",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "3.0"
+    },
+    {
+     "detail": "profit_before_tax plus 1 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "net_income_chain",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "operating_profit plus 4 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "profit_before_tax_chain",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "3.0"
+    },
+    {
+     "detail": "profit_before_tax plus 1 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "net_income_chain",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "operating_profit plus 4 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "profit_before_tax_chain",
+     "passed": true,
+     "period": "FY2022",
+     "tolerance": "3.0"
+    },
+    {
+     "detail": "profit_before_tax plus 1 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "net_income_chain",
+     "passed": true,
+     "period": "FY2022",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "6 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "current_assets_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "3.5"
+    },
+    {
+     "detail": "5 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "3.0"
+    },
+    {
+     "detail": "7 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "non_current_assets_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "4.0"
+    },
+    {
+     "detail": "7 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "non_current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "4.0"
+    },
+    {
+     "detail": "non-current + current assets",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "total_assets_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "current + non-current liabilities",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "total_liabilities_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "total assets - total liabilities",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "net_assets_identity",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.0"
+    },
+    {
+     "detail": "2 equity rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "total_equity_components",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "6 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "current_assets_section_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "3.5"
+    },
+    {
+     "detail": "5 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "3.0"
+    },
+    {
+     "detail": "7 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "non_current_assets_section_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "4.0"
+    },
+    {
+     "detail": "7 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "non_current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "4.0"
+    },
+    {
+     "detail": "non-current + current assets",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "total_assets_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "current + non-current liabilities",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "total_liabilities_sum",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "total assets - total liabilities",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "net_assets_identity",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "1.0"
+    },
+    {
+     "detail": "2 equity rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "total_equity_components",
+     "passed": true,
+     "period": "FY2023",
+     "tolerance": "1.5"
+    }
+   ],
+   "engine_skipped": {},
+   "engines": [
+    "pdfplumber",
+    "pymupdf_tables"
+   ],
+   "families": [
+    "text_layer"
+   ],
+   "searched_for": {
+    "total_debt": {
+     "components": [
+      "borrowings_current",
+      "borrowings_non_current",
+      "lease_liabilities_current",
+      "lease_liabilities_non_current"
+     ],
+     "labels": [
+      "bank loans and overdrafts",
+      "bank overdrafts",
+      "borrowings",
+      "borrowings and overdrafts",
+      "current borrowings",
+      "interest-bearing borrowings",
+      "interest-bearing loans and borrowings",
+      "loans and borrowings"
+     ],
+     "pages": [
+      143
+     ],
+     "statement": "balance_sheet",
+     "warnings": [
+      {
+       "code": "missing_item",
+       "item": "total_debt",
+       "message": "total_debt is null: the balance sheet face shows only 'Financial liabilities', which includes derivatives and other financial liabilities, so interest-bearing borrowings cannot be isolated from the face (CLAUDE.md: borrowings + leases). Debt-to-equity is therefore null.",
+       "page": 143
+      }
+     ]
+    }
+   },
+   "statement_names": {
+    "balance_sheet": "consolidated balance sheet",
+    "cash_flow": "cash flow statement",
+    "changes_in_equity": "statement of changes in equity",
+    "comprehensive_income": "statement of comprehensive income",
+    "income_statement": "consolidated income statement"
+   },
+   "statements": {
+    "balance_sheet": {
+     "continuations": [],
+     "page_labels": [
+      "140"
+     ],
+     "pages": [
+      143
+     ],
+     "scope": "group",
+     "score": 0.8,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "balance_sheet",
+     "status": "found",
+     "title": "Consolidated balance sheet"
+    },
+    "cash_flow": {
+     "continuations": [],
+     "page_labels": [
+      "141"
+     ],
+     "pages": [
+      144
+     ],
+     "scope": "group",
+     "score": 1.0,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "cash_flow",
+     "status": "found",
+     "title": "Consolidated cash flow statement"
+    },
+    "changes_in_equity": {
+     "continuations": [],
+     "page_labels": [
+      "139"
+     ],
+     "pages": [
+      142
+     ],
+     "scope": "group",
+     "score": 0.7,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "changes_in_equity",
+     "status": "found",
+     "title": "Consolidated statement of changes in equity"
+    },
+    "comprehensive_income": {
+     "continuations": [],
+     "page_labels": [],
+     "pages": [],
+     "scope": null,
+     "score": null,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "comprehensive_income",
+     "status": "not_found",
+     "title": null
+    },
+    "income_statement": {
+     "continuations": [],
+     "page_labels": [
+      "138"
+     ],
+     "pages": [
+      141
+     ],
+     "scope": "group",
+     "score": 0.8,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "income_statement",
+     "status": "found",
+     "title": "Consolidated income statement"
+    }
+   }
+  },
+  "filename": "company_a.pdf",
+  "id": 1,
+  "jobs": [
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "ingest",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "text_layer",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "extract",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "ratios",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "index",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "commentary",
+    "status": "done"
+   }
+  ],
+  "pack": {
+   "balance_sheet_classified": true,
+   "basis": "consolidated",
+   "company_name": null,
+   "currency": "EUR",
+   "document_type": "corporate",
+   "items": {
+    "cash": {
+     "id": "cash",
+     "label_found": "Cash and cash equivalents",
+     "note_ref": "17A",
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        471.84,
+        283.48,
+        491.0,
+        293.24
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2024",
+       "raw_text": "6,136",
+       "value": 6136.0
+      },
+      {
+       "bbox": [
+        532.57,
+        283.48,
+        551.23,
+        293.24
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2023",
+       "raw_text": "4,159",
+       "value": 4159.0
+      }
+     ]
+    },
+    "current_assets": {
+     "id": "current_assets",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        467.59,
+        317.23,
+        491.01,
+        326.99
+       ],
+       "confidence": 0.815,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2024",
+       "raw_text": "19,194",
+       "value": 19194.0
+      },
+      {
+       "bbox": [
+        528.47,
+        317.23,
+        551.24,
+        326.99
+       ],
+       "confidence": 0.815,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2023",
+       "raw_text": "17,902",
+       "value": 17902.0
+      }
+     ]
+    },
+    "current_liabilities": {
+     "id": "current_liabilities",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        467.59,
+        418.48,
+        491.01,
+        428.24
+       ],
+       "confidence": 0.815,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2024",
+       "raw_text": "25,234",
+       "value": 25234.0
+      },
+      {
+       "bbox": [
+        528.47,
+        418.48,
+        551.25,
+        428.24
+       ],
+       "confidence": 0.815,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2023",
+       "raw_text": "23,507",
+       "value": 23507.0
+      }
+     ]
+    },
+    "equity_attributable_to_owners": {
+     "id": "equity_attributable_to_owners",
+     "label_found": "Shareholders’ equity",
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        467.59,
+        575.98,
+        491.01,
+        585.74
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2024",
+       "raw_text": "19,990",
+       "value": 19990.0
+      },
+      {
+       "bbox": [
+        528.41,
+        575.98,
+        551.23,
+        585.74
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2023",
+       "raw_text": "18,102",
+       "value": 18102.0
+      }
+     ]
+    },
+    "financial_liabilities_current": {
+     "id": "financial_liabilities_current",
+     "label_found": "Financial liabilities",
+     "note_ref": "15C",
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        471.91,
+        362.23,
+        491.0,
+        371.99
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2024",
+       "raw_text": "6,987",
+       "value": 6987.0
+      },
+      {
+       "bbox": [
+        532.61,
+        362.23,
+        551.24,
+        371.99
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2023",
+       "raw_text": "5,087",
+       "value": 5087.0
+      }
+     ]
+    },
+    "financial_liabilities_non_current": {
+     "id": "financial_liabilities_non_current",
+     "label_found": "Financial liabilities",
+     "note_ref": "15C",
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        467.59,
+        440.98,
+        491.01,
+        450.74
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2024",
+       "raw_text": "25,066",
+       "value": 25066.0
+      },
+      {
+       "bbox": [
+        528.41,
+        440.98,
+        551.23,
+        450.74
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2023",
+       "raw_text": "24,535",
+       "value": 24535.0
+      }
+     ]
+    },
+    "net_income": {
+     "id": "net_income",
+     "label_found": "Net profit",
+     "note_ref": null,
+     "statement": "income_statement",
+     "values": [
+      {
+       "bbox": [
+        412.06,
+        302.98,
+        431.22,
+        312.74
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2024",
+       "raw_text": "6,369",
+       "value": 6369.0
+      },
+      {
+       "bbox": [
+        472.83,
+        302.98,
+        491.45,
+        312.74
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2023",
+       "raw_text": "7,140",
+       "value": 7140.0
+      },
+      {
+       "bbox": [
+        532.79,
+        302.98,
+        551.45,
+        312.74
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2022",
+       "raw_text": "8,269",
+       "value": 8269.0
+      }
+     ]
+    },
+    "non_controlling_interests": {
+     "id": "non_controlling_interests",
+     "label_found": "Non-controlling interests",
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        471.84,
+        587.23,
+        491.0,
+        596.99
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2024",
+       "raw_text": "2,565",
+       "value": 2565.0
+      },
+      {
+       "bbox": [
+        532.57,
+        587.23,
+        551.23,
+        596.99
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2023",
+       "raw_text": "2,662",
+       "value": 2662.0
+      }
+     ]
+    },
+    "non_current_assets": {
+     "id": "non_current_assets",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        467.59,
+        227.23,
+        491.01,
+        236.99
+       ],
+       "confidence": 0.815,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2024",
+       "raw_text": "60,556",
+       "value": 60556.0
+      },
+      {
+       "bbox": [
+        528.47,
+        227.23,
+        551.24,
+        236.99
+       ],
+       "confidence": 0.815,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2023",
+       "raw_text": "57,364",
+       "value": 57364.0
+      }
+     ]
+    },
+    "operating_profit": {
+     "id": "operating_profit",
+     "label_found": "Operating profit",
+     "note_ref": "2",
+     "statement": "income_statement",
+     "values": [
+      {
+       "bbox": [
+        412.06,
+        171.73,
+        431.22,
+        181.49
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2024",
+       "raw_text": "9,400",
+       "value": 9400.0
+      },
+      {
+       "bbox": [
+        472.83,
+        171.73,
+        491.46,
+        181.49
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2023",
+       "raw_text": "9,758",
+       "value": 9758.0
+      },
+      {
+       "bbox": [
+        528.69,
+        171.73,
+        551.46,
+        181.49
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2022",
+       "raw_text": "10,755",
+       "value": 10755.0
+      }
+     ]
+    },
+    "profit_before_tax": {
+     "id": "profit_before_tax",
+     "label_found": "Profit before taxation",
+     "note_ref": null,
+     "statement": "income_statement",
+     "values": [
+      {
+       "bbox": [
+        412.03,
+        278.98,
+        431.22,
+        288.74
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2024",
+       "raw_text": "8,869",
+       "value": 8869.0
+      },
+      {
+       "bbox": [
+        472.79,
+        278.98,
+        491.45,
+        288.74
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2023",
+       "raw_text": "9,339",
+       "value": 9339.0
+      },
+      {
+       "bbox": [
+        528.69,
+        278.98,
+        551.47,
+        288.74
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2022",
+       "raw_text": "10,337",
+       "value": 10337.0
+      }
+     ]
+    },
+    "revenue": {
+     "id": "revenue",
+     "label_found": "Turnover",
+     "note_ref": "2",
+     "statement": "income_statement",
+     "values": [
+      {
+       "bbox": [
+        407.9,
+        159.73,
+        431.23,
+        169.49
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2024",
+       "raw_text": "60,761",
+       "value": 60761.0
+      },
+      {
+       "bbox": [
+        468.63,
+        159.73,
+        491.45,
+        169.49
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2023",
+       "raw_text": "59,604",
+       "value": 59604.0
+      },
+      {
+       "bbox": [
+        528.69,
+        159.73,
+        551.46,
+        169.49
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 141,
+       "page_label": "138",
+       "period_id": "FY2022",
+       "raw_text": "60,073",
+       "value": 60073.0
+      }
+     ]
+    },
+    "total_assets": {
+     "id": "total_assets",
+     "label_found": "Total assets",
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        467.76,
+        328.48,
+        491.0,
+        338.24
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2024",
+       "raw_text": "79,750",
+       "value": 79750.0
+      },
+      {
+       "bbox": [
+        528.47,
+        328.48,
+        551.24,
+        338.24
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2023",
+       "raw_text": "75,266",
+       "value": 75266.0
+      }
+     ]
+    },
+    "total_debt": {
+     "id": "total_debt",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "confidence": 0.0,
+       "engine": null,
+       "period_id": "FY2024",
+       "value": null
+      },
+      {
+       "confidence": 0.0,
+       "engine": null,
+       "period_id": "FY2023",
+       "value": null
+      }
+     ]
+    },
+    "total_equity": {
+     "id": "total_equity",
+     "label_found": "Total equity",
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        467.59,
+        598.48,
+        491.01,
+        608.24
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2024",
+       "raw_text": "22,555",
+       "value": 22555.0
+      },
+      {
+       "bbox": [
+        528.47,
+        598.48,
+        551.24,
+        608.24
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2023",
+       "raw_text": "20,764",
+       "value": 20764.0
+      }
+     ]
+    },
+    "total_liabilities": {
+     "id": "total_liabilities",
+     "label_found": "Total liabilities",
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        467.68,
+        542.23,
+        491.01,
+        551.99
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2024",
+       "raw_text": "57,195",
+       "value": 57195.0
+      },
+      {
+       "bbox": [
+        528.41,
+        542.23,
+        551.23,
+        551.99
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 143,
+       "page_label": "140",
+       "period_id": "FY2023",
+       "raw_text": "54,502",
+       "value": 54502.0
+      }
+     ]
+    }
+   },
+   "periods": [
+    {
+     "end_date": "2024-12-31",
+     "id": "FY2024",
+     "is_restated": false,
+     "label": "2024"
+    },
+    {
+     "end_date": "2023-12-31",
+     "id": "FY2023",
+     "is_restated": false,
+     "label": "2023"
+    },
+    {
+     "end_date": "2022-12-31",
+     "id": "FY2022",
+     "is_restated": false,
+     "label": "2022"
+    }
+   ],
+   "schema_version": "1.1.0",
+   "source": {
+    "filename": "company_a.pdf",
+    "page_count": 305,
+    "parser_engines": [
+     "pdfplumber",
+     "pymupdf_tables"
+    ],
+    "pipeline_version": "0.1.0",
+    "sha256": "c15d7a38b41d7baef49e78a9db9bbb1deaeec685ec160d1b7478c062eef8d6f2"
+   },
+   "unit_scale": 1000000,
+   "warnings": [
+    {
+     "code": "reduced_verification",
+     "item": null,
+     "message": "one engine family ran (text layer); Azure DI: not requested (--engines local)",
+     "page": null
+    },
+    {
+     "code": "missing_item",
+     "item": "total_debt",
+     "message": "total_debt is null: the balance sheet face shows only 'Financial liabilities', which includes derivatives and other financial liabilities, so interest-bearing borrowings cannot be isolated from the face (CLAUDE.md: borrowings + leases). Debt-to-equity is therefore null.",
+     "page": 143
+    }
+   ]
+  },
+  "pack_sha": "23728ccdaad8e91b1932074e00d44580fe12295e03a1cfdc6aa80182a8021bd0",
+  "pack_version": 1,
+  "page_count": 305,
+  "ratios": {
+   "changes": [
+    {
+     "from_period_id": "FY2023",
+     "items": {
+      "current_assets": {
+       "absolute": 1292.0,
+       "percent": 7.217070718355491
+      },
+      "current_liabilities": {
+       "absolute": 1727.0,
+       "percent": 7.346747777257838
+      },
+      "net_income": {
+       "absolute": -771.0,
+       "percent": -10.798319327731093
+      },
+      "operating_profit": {
+       "absolute": -358.0,
+       "percent": -3.668784587005534
+      },
+      "profit_before_tax": {
+       "absolute": -470.0,
+       "percent": -5.032658742906093
+      },
+      "revenue": {
+       "absolute": 1157.0,
+       "percent": 1.9411448896047245
+      },
+      "total_assets": {
+       "absolute": 4484.0,
+       "percent": 5.957537267823453
+      },
+      "total_debt": {
+       "absolute": null,
+       "percent": null
+      },
+      "total_equity": {
+       "absolute": 1791.0,
+       "percent": 8.625505682912733
+      }
+     },
+     "ratios": {
+      "current_ratio": {
+       "kind": "absolute",
+       "value": -0.0009199804662241
+      },
+      "debt_to_equity": {
+       "kind": "absolute",
+       "value": null
+      },
+      "operating_margin": {
+       "kind": "percentage_points",
+       "value": -0.900934675742053
+      },
+      "roce": {
+       "kind": "percentage_points",
+       "value": -1.610115545201266
+      }
+     },
+     "to_period_id": "FY2024"
+    },
+    {
+     "from_period_id": "FY2022",
+     "items": {
+      "current_assets": {
+       "absolute": null,
+       "percent": null
+      },
+      "current_liabilities": {
+       "absolute": null,
+       "percent": null
+      },
+      "net_income": {
+       "absolute": -1129.0,
+       "percent": -13.653404281049704
+      },
+      "operating_profit": {
+       "absolute": -997.0,
+       "percent": -9.270106927010692
+      },
+      "profit_before_tax": {
+       "absolute": -998.0,
+       "percent": -9.654638676598626
+      },
+      "revenue": {
+       "absolute": -469.0,
+       "percent": -0.7807167945666106
+      },
+      "total_assets": {
+       "absolute": null,
+       "percent": null
+      },
+      "total_debt": {
+       "absolute": null,
+       "percent": null
+      },
+      "total_equity": {
+       "absolute": null,
+       "percent": null
+      }
+     },
+     "ratios": {
+      "current_ratio": {
+       "kind": "absolute",
+       "value": null
+      },
+      "debt_to_equity": {
+       "kind": "absolute",
+       "value": null
+      },
+      "operating_margin": {
+       "kind": "percentage_points",
+       "value": -1.531833280894507
+      },
+      "roce": {
+       "kind": "percentage_points",
+       "value": null
+      }
+     },
+     "to_period_id": "FY2023"
+    }
+   ],
+   "currency": "EUR",
+   "document_type": "corporate",
+   "formulas_locked": true,
+   "periods": [
+    {
+     "end_date": "2024-12-31",
+     "period_id": "FY2024",
+     "ratios": {
+      "current_ratio": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "current_assets / current_liabilities",
+       "formula_text": "Current assets ÷ Current liabilities",
+       "inputs": {
+        "current_assets": {
+         "badges": [],
+         "item": "current_assets",
+         "page": 143,
+         "period_id": "FY2024",
+         "value": 19194.0
+        },
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": 143,
+         "period_id": "FY2024",
+         "value": 25234.0
+        }
+       },
+       "label": "Current ratio",
+       "missing_inputs": [],
+       "name": "current_ratio",
+       "reason": null,
+       "status": "ok",
+       "unit": "multiple",
+       "value": 0.7606404058016961
+      },
+      "debt_to_equity": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "total_debt / total_equity",
+       "formula_text": "Total debt ÷ Total equity",
+       "inputs": {
+        "total_debt": {
+         "badges": [],
+         "item": "total_debt",
+         "page": null,
+         "period_id": "FY2024",
+         "value": null
+        },
+        "total_equity": {
+         "badges": [],
+         "item": "total_equity",
+         "page": 143,
+         "period_id": "FY2024",
+         "value": 22555.0
+        }
+       },
+       "label": "Debt-to-equity",
+       "missing_inputs": [
+        "total_debt"
+       ],
+       "name": "debt_to_equity",
+       "reason": "missing_input",
+       "status": "null",
+       "unit": "multiple",
+       "value": null
+      },
+      "operating_margin": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "operating_profit / revenue",
+       "formula_text": "Operating profit ÷ Revenue",
+       "inputs": {
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": 141,
+         "period_id": "FY2024",
+         "value": 9400.0
+        },
+        "revenue": {
+         "badges": [],
+         "item": "revenue",
+         "page": 141,
+         "period_id": "FY2024",
+         "value": 60761.0
+        }
+       },
+       "label": "Operating margin",
+       "missing_inputs": [],
+       "name": "operating_margin",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.1547044979509883
+      },
+      "roce": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "operating_profit / (total_assets - current_liabilities)",
+       "formula_text": "Operating profit ÷ (Total assets - Current liabilities)",
+       "inputs": {
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": 143,
+         "period_id": "FY2024",
+         "value": 25234.0
+        },
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": 141,
+         "period_id": "FY2024",
+         "value": 9400.0
+        },
+        "total_assets": {
+         "badges": [],
+         "item": "total_assets",
+         "page": 143,
+         "period_id": "FY2024",
+         "value": 79750.0
+        }
+       },
+       "label": "ROCE",
+       "missing_inputs": [],
+       "name": "roce",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.17242644361288428
+      }
+     }
+    },
+    {
+     "end_date": "2023-12-31",
+     "period_id": "FY2023",
+     "ratios": {
+      "current_ratio": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "current_assets / current_liabilities",
+       "formula_text": "Current assets ÷ Current liabilities",
+       "inputs": {
+        "current_assets": {
+         "badges": [],
+         "item": "current_assets",
+         "page": 143,
+         "period_id": "FY2023",
+         "value": 17902.0
+        },
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": 143,
+         "period_id": "FY2023",
+         "value": 23507.0
+        }
+       },
+       "label": "Current ratio",
+       "missing_inputs": [],
+       "name": "current_ratio",
+       "reason": null,
+       "status": "ok",
+       "unit": "multiple",
+       "value": 0.7615603862679202
+      },
+      "debt_to_equity": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "total_debt / total_equity",
+       "formula_text": "Total debt ÷ Total equity",
+       "inputs": {
+        "total_debt": {
+         "badges": [],
+         "item": "total_debt",
+         "page": null,
+         "period_id": "FY2023",
+         "value": null
+        },
+        "total_equity": {
+         "badges": [],
+         "item": "total_equity",
+         "page": 143,
+         "period_id": "FY2023",
+         "value": 20764.0
+        }
+       },
+       "label": "Debt-to-equity",
+       "missing_inputs": [
+        "total_debt"
+       ],
+       "name": "debt_to_equity",
+       "reason": "missing_input",
+       "status": "null",
+       "unit": "multiple",
+       "value": null
+      },
+      "operating_margin": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "operating_profit / revenue",
+       "formula_text": "Operating profit ÷ Revenue",
+       "inputs": {
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": 141,
+         "period_id": "FY2023",
+         "value": 9758.0
+        },
+        "revenue": {
+         "badges": [],
+         "item": "revenue",
+         "page": 141,
+         "period_id": "FY2023",
+         "value": 59604.0
+        }
+       },
+       "label": "Operating margin",
+       "missing_inputs": [],
+       "name": "operating_margin",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.16371384470840883
+      },
+      "roce": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "operating_profit / (total_assets - current_liabilities)",
+       "formula_text": "Operating profit ÷ (Total assets - Current liabilities)",
+       "inputs": {
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": 143,
+         "period_id": "FY2023",
+         "value": 23507.0
+        },
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": 141,
+         "period_id": "FY2023",
+         "value": 9758.0
+        },
+        "total_assets": {
+         "badges": [],
+         "item": "total_assets",
+         "page": 143,
+         "period_id": "FY2023",
+         "value": 75266.0
+        }
+       },
+       "label": "ROCE",
+       "missing_inputs": [],
+       "name": "roce",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.18852759906489694
+      }
+     }
+    },
+    {
+     "end_date": "2022-12-31",
+     "period_id": "FY2022",
+     "ratios": {
+      "current_ratio": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "current_assets / current_liabilities",
+       "formula_text": "Current assets ÷ Current liabilities",
+       "inputs": {
+        "current_assets": {
+         "badges": [],
+         "item": "current_assets",
+         "page": null,
+         "period_id": "FY2022",
+         "value": null
+        },
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": null,
+         "period_id": "FY2022",
+         "value": null
+        }
+       },
+       "label": "Current ratio",
+       "missing_inputs": [
+        "current_assets",
+        "current_liabilities"
+       ],
+       "name": "current_ratio",
+       "reason": "missing_input",
+       "status": "null",
+       "unit": "multiple",
+       "value": null
+      },
+      "debt_to_equity": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "total_debt / total_equity",
+       "formula_text": "Total debt ÷ Total equity",
+       "inputs": {
+        "total_debt": {
+         "badges": [],
+         "item": "total_debt",
+         "page": null,
+         "period_id": "FY2022",
+         "value": null
+        },
+        "total_equity": {
+         "badges": [],
+         "item": "total_equity",
+         "page": null,
+         "period_id": "FY2022",
+         "value": null
+        }
+       },
+       "label": "Debt-to-equity",
+       "missing_inputs": [
+        "total_debt",
+        "total_equity"
+       ],
+       "name": "debt_to_equity",
+       "reason": "missing_input",
+       "status": "null",
+       "unit": "multiple",
+       "value": null
+      },
+      "operating_margin": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "operating_profit / revenue",
+       "formula_text": "Operating profit ÷ Revenue",
+       "inputs": {
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": 141,
+         "period_id": "FY2022",
+         "value": 10755.0
+        },
+        "revenue": {
+         "badges": [],
+         "item": "revenue",
+         "page": 141,
+         "period_id": "FY2022",
+         "value": 60073.0
+        }
+       },
+       "label": "Operating margin",
+       "missing_inputs": [],
+       "name": "operating_margin",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.1790321775173539
+      },
+      "roce": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "operating_profit / (total_assets - current_liabilities)",
+       "formula_text": "Operating profit ÷ (Total assets - Current liabilities)",
+       "inputs": {
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": null,
+         "period_id": "FY2022",
+         "value": null
+        },
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": 141,
+         "period_id": "FY2022",
+         "value": 10755.0
+        },
+        "total_assets": {
+         "badges": [],
+         "item": "total_assets",
+         "page": null,
+         "period_id": "FY2022",
+         "value": null
+        }
+       },
+       "label": "ROCE",
+       "missing_inputs": [
+        "total_assets",
+        "current_liabilities"
+       ],
+       "name": "roce",
+       "reason": "missing_input",
+       "status": "null",
+       "unit": "fraction",
+       "value": null
+      }
+     }
+    }
+   ],
+   "schema_version": "1.0.0",
+   "statement_pack_sha": "23728ccdaad8e91b1932074e00d44580fe12295e03a1cfdc6aa80182a8021bd0",
+   "unit_scale": 1000000,
+   "warnings": []
+  },
+  "reduced_verification": true,
+  "sha256": "c15d7a38b41d7baef49e78a9db9bbb1deaeec685ec160d1b7478c062eef8d6f2",
+  "stale": false,
+  "status": "ready",
+  "warnings": [
+   {
+    "code": "reduced_verification",
+    "item": null,
+    "message": "one engine family ran (text layer); Azure DI: not requested (--engines local)",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_debt",
+    "message": "total_debt is null: the balance sheet face shows only 'Financial liabilities', which includes derivatives and other financial liabilities, so interest-bearing borrowings cannot be isolated from the face (CLAUDE.md: borrowings + leases). Debt-to-equity is therefore null.",
+    "page": 143
+   }
+  ]
+ },
+ "review": {
+  "items": [],
+  "status": "ready",
+  "warnings": [
+   {
+    "code": "reduced_verification",
+    "item": null,
+    "message": "one engine family ran (text layer); Azure DI: not requested (--engines local)",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_debt",
+    "message": "total_debt is null: the balance sheet face shows only 'Financial liabilities', which includes derivatives and other financial liabilities, so interest-bearing borrowings cannot be isolated from the face (CLAUDE.md: borrowings + leases). Debt-to-equity is therefore null.",
+    "page": 143
+   }
+  ]
+ }
+}

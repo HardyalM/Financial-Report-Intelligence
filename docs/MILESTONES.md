@@ -346,14 +346,15 @@ These checks are created in M0 and run in CI.
 ## M7.1 — Report screen (read-only)
 
 **Read first:** [UI.md](UI.md) §1–5; RAG §4.3.
-**Allowed paths:** `web/**`, `tests/e2e/**`.
+**Allowed paths:** `web/**`, `tests/e2e/**`, `finintel/api/**`, `finintel/db/persist.py`, `schemas/openapi.json`, `scripts/check-deps.js`, `scripts/scope.yaml`.
+*Amended 2026-10-02 in the M7.1 session: row states R1/R2/R8 need what extraction recorded (engine families per value, checks, statement pages, labels searched), so `GET /reports/{id}` gains a read-only `extraction` view (finintel/api/extraction_view.py; OpenAPI re-exported). `persist.review_rows` is the pure half of `store_review_items`, shared with the fixture builder. The gate's `scripts/check-deps.js` lives at the repository root as the gate command names it.*
 
 **Gate:**
-- [ ] G1–G6 pass (tag `m3-done` exists, so `web/` is allowed).
-- [ ] Playwright: the report screen renders `company_a` from a precomputed API fixture.
-- [ ] Playwright: **every row state in UI.md §4** and **every ratio-card state in UI.md §5** renders from the fixture packs (one test per state).
-- [ ] `node scripts/check-deps.js` exits 0: no charting library in `web/package.json`.
-- [ ] Playwright: the footer text "Research aid. Not investment advice." is present.
+- [x] G1–G6 pass (tag `m3-done` exists, so `web/` is allowed). *2026-10-02: see docs/STATUS.md.*
+- [x] Playwright: the report screen renders `company_a` from a precomputed API fixture. *`tests/e2e/report.spec.ts`; fixtures built by `make ui-fixtures` from the real pipeline (tests/e2e/fixtures/build_fixtures.py).*
+- [x] Playwright: **every row state in UI.md §4** and **every ratio-card state in UI.md §5** renders from the fixture packs (one test per state). *`row-states.spec.ts` R1–R10, `ratio-states.spec.ts` K1–K6.*
+- [x] `node scripts/check-deps.js` exits 0: no charting library in `web/package.json`.
+- [x] Playwright: the footer text "Research aid. Not investment advice." is present.
 
 ## M7.2 — Evidence panel and commentary
 

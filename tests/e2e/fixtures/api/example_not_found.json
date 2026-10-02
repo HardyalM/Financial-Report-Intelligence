@@ -1,0 +1,2683 @@
+{
+ "commentary": {
+  "id": 3,
+  "model_id": null,
+  "output": {
+   "disclaimer": "Research aid, not investment advice. Figures are extracted and computed by code from the filed accounts; narrative is quoted from the report with page references.",
+   "executive_summary": {
+    "bullets": [],
+    "status": "omitted"
+   },
+   "label": "Extractive summary: no generated text",
+   "mode": "extractive",
+   "model": null,
+   "prompt_version": null,
+   "query_set_version": "1",
+   "ratio_pack_sha": "8f8580f7026f4749cddaafd470207868215ee227a129876782d388534c6c43a1",
+   "retrieval_set_id": "69d01a674bef959f29190a32ac9008bd76b534fb844160f3475d8ac9afbdbc1d",
+   "schema_version": "1.1.0",
+   "statement_pack_sha": "cf072479f5b5fc7c0c6fab5e7c861b80523c4593bc84de57616ef8d48cfc18fd",
+   "topics": [
+    {
+     "paragraphs": [
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           1.0,
+           50.0,
+           153.17,
+           527.71,
+           178.83
+          ]
+         ],
+         "char_end": 162,
+         "char_start": 22,
+         "chunk_id": "38359be28bf13142",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "Chief Executive's review"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 1,
+         "page_end": 1,
+         "page_label": "3",
+         "quote": "The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.",
+         "section": "ceo_review"
+        }
+       ],
+       "figures": [],
+       "rendered": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "template": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           5.0,
+           50.0,
+           153.17,
+           527.71,
+           178.83
+          ]
+         ],
+         "char_end": 440,
+         "char_start": 300,
+         "chunk_id": "9e0bdd8b81178c02",
+         "citation_id": "cit_02",
+         "heading_path": [
+          "Notes to the consolidated financial statements"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 5,
+         "page_end": 5,
+         "page_label": "7",
+         "quote": "The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.",
+         "section": "notes_other"
+        }
+       ],
+       "figures": [],
+       "rendered": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "template": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      }
+     ],
+     "reason": null,
+     "status": "ok",
+     "topic": "revenue_drivers"
+    },
+    {
+     "paragraphs": [
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           1.0,
+           50.0,
+           153.17,
+           527.71,
+           178.83
+          ]
+         ],
+         "char_end": 162,
+         "char_start": 22,
+         "chunk_id": "38359be28bf13142",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "Chief Executive's review"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 1,
+         "page_end": 1,
+         "page_label": "3",
+         "quote": "The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.",
+         "section": "ceo_review"
+        }
+       ],
+       "figures": [],
+       "rendered": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "template": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           5.0,
+           50.0,
+           153.17,
+           527.71,
+           178.83
+          ]
+         ],
+         "char_end": 440,
+         "char_start": 300,
+         "chunk_id": "9e0bdd8b81178c02",
+         "citation_id": "cit_02",
+         "heading_path": [
+          "Notes to the consolidated financial statements"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 5,
+         "page_end": 5,
+         "page_label": "7",
+         "quote": "The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.",
+         "section": "notes_other"
+        }
+       ],
+       "figures": [],
+       "rendered": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "template": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      }
+     ],
+     "reason": null,
+     "status": "ok",
+     "topic": "strategic_risks"
+    },
+    {
+     "paragraphs": [
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           5.0,
+           50.0,
+           153.17,
+           527.71,
+           178.83
+          ]
+         ],
+         "char_end": 440,
+         "char_start": 300,
+         "chunk_id": "9e0bdd8b81178c02",
+         "citation_id": "cit_01",
+         "heading_path": [
+          "Notes to the consolidated financial statements"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 5,
+         "page_end": 5,
+         "page_label": "7",
+         "quote": "The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.",
+         "section": "notes_other"
+        }
+       ],
+       "figures": [],
+       "rendered": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "template": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [
+        {
+         "bbox": [
+          [
+           1.0,
+           50.0,
+           153.17,
+           527.71,
+           178.83
+          ]
+         ],
+         "char_end": 162,
+         "char_start": 22,
+         "chunk_id": "38359be28bf13142",
+         "citation_id": "cit_02",
+         "heading_path": [
+          "Chief Executive's review"
+         ],
+         "is_footnote": false,
+         "match": "exact",
+         "note_number": null,
+         "page": 1,
+         "page_end": 1,
+         "page_label": "3",
+         "quote": "The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.",
+         "section": "ceo_review"
+        }
+       ],
+       "figures": [],
+       "rendered": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "template": "“The group delivered a resilient performance in a challenging market, supported by a strong balance sheet and disciplined capital allocation.”",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      }
+     ],
+     "reason": null,
+     "status": "ok",
+     "topic": "governance_and_directors"
+    },
+    {
+     "paragraphs": [
+      {
+       "citations": [],
+       "figures": [
+        {
+         "pages": [
+          4
+         ],
+         "placeholder": "exact:current_assets:FY2025",
+         "rendered": "£2,950 million"
+        },
+        {
+         "pages": [
+          4
+         ],
+         "placeholder": "exact:current_liabilities:FY2025",
+         "rendered": "£3,300 million"
+        }
+       ],
+       "rendered": "Current assets were £2,950 million and current liabilities were £3,300 million on the consolidated balance sheet.",
+       "template": "Current assets were {{exact:current_assets:FY2025}} and current liabilities were {{exact:current_liabilities:FY2025}} on the consolidated balance sheet.",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [],
+       "figures": [
+        {
+         "pages": [
+          4
+         ],
+         "placeholder": "exact:current_assets:FY2025",
+         "rendered": "£2,950 million"
+        },
+        {
+         "pages": [
+          4
+         ],
+         "placeholder": "exact:current_liabilities:FY2025",
+         "rendered": "£3,300 million"
+        },
+        {
+         "pages": [
+          4
+         ],
+         "placeholder": "ratio:current_ratio:FY2025",
+         "rendered": "0.89x"
+        }
+       ],
+       "rendered": "Current ratio, computed in code from current assets and current liabilities (the ratio is not printed in the report): £2,950 million / £3,300 million = 0.89x.",
+       "template": "Current ratio, computed in code from current assets and current liabilities (the ratio is not printed in the report): {{exact:current_assets:FY2025}} / {{exact:current_liabilities:FY2025}} = {{ratio:current_ratio:FY2025}}.",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      },
+      {
+       "citations": [],
+       "figures": [
+        {
+         "pages": [
+          4
+         ],
+         "placeholder": "exact:total_equity:FY2025",
+         "rendered": "£-350 million"
+        }
+       ],
+       "rendered": "Total equity, including non-controlling interests, was £-350 million on the consolidated balance sheet.",
+       "template": "Total equity, including non-controlling interests, was {{exact:total_equity:FY2025}} on the consolidated balance sheet.",
+       "validation": {
+        "removed_citations": [],
+        "retried": false
+       }
+      }
+     ],
+     "reason": null,
+     "status": "ok",
+     "topic": "liquidity_and_capital"
+    }
+   ],
+   "trace_id": null
+  },
+  "prompt_version": null,
+  "stale": false,
+  "validation": {
+   "audit": {
+    "displayed_advice": 0,
+    "displayed_direction_violations": 0,
+    "displayed_figures_without_source": 0,
+    "displayed_mismatched_placeholders": 0,
+    "displayed_naked_numbers": 0,
+    "displayed_paragraphs": 9,
+    "displayed_unknown_placeholders": 0,
+    "displayed_unverified_citations": 0,
+    "displayed_unverified_quotes": 0,
+    "displayed_without_citation": 0
+   },
+   "pre_validation": {
+    "advice_violations": 0,
+    "calls": 0,
+    "direction_violations": 0,
+    "fabricated_or_out_of_set_quotes": 0,
+    "figure_violations": 0,
+    "naked_number_violations": 0,
+    "out_of_order_bullets": 0,
+    "paragraphs_without_citation": 0,
+    "placeholder_meaning_violations": 0,
+    "schema_violations": 0,
+    "unknown_placeholders": 0,
+    "unverified_quote_violations": 0
+   },
+   "snapshot": {
+    "period_id": "FY2025",
+    "rendered": "Revenue £12.3bn (+3.8%); operating profit £1.5bn (+9.6%); operating margin 12.0% (+0.6 pp); current ratio 0.89x (+0.01x); ROCE not available (missing input); debt-to-equity -20.14x (not meaningful: negative denominator) (-6.57x).",
+    "template": "Revenue {{item:revenue:FY2025}} ({{change:item:revenue:FY2024:FY2025}}); operating profit {{item:operating_profit:FY2025}} ({{change:item:operating_profit:FY2024:FY2025}}); operating margin {{ratio:operating_margin:FY2025}} ({{change:ratio:operating_margin:FY2024:FY2025}}); current ratio {{ratio:current_ratio:FY2025}} ({{change:ratio:current_ratio:FY2024:FY2025}}); ROCE {{ratio:roce:FY2025}}; debt-to-equity {{ratio:debt_to_equity:FY2025}} ({{change:ratio:debt_to_equity:FY2024:FY2025}})."
+   }
+  }
+ },
+ "fixture": {
+  "id": 3,
+  "name": "example_not_found",
+  "notes": [
+   "No total-assets line and no non-current subtotal: total assets is not found.",
+   "current_assets FY2025 confirmed by a person (anchored on p.4): the current ratio inherits the manual badge (K6)."
+  ],
+  "states": [
+   "R2",
+   "R3",
+   "R4",
+   "R8",
+   "K2",
+   "K3",
+   "K6"
+  ],
+  "title": "Example plc (not found)"
+ },
+ "overrides": [
+  {
+   "action": "set_value",
+   "anchored": true,
+   "created_at": "2026-10-02T09:00:00+00:00",
+   "id": 1,
+   "payload": {
+    "item": "current_assets",
+    "page": 4,
+    "period_id": "FY2025",
+    "raw_text": "2,950",
+    "value": 2950.0
+   },
+   "reason": null
+  }
+ ],
+ "report": {
+  "document_type": "corporate",
+  "extraction": {
+   "candidates": {
+    "borrowings_current:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Borrowings",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "(350)",
+     "row": "4:12",
+     "row_source": "text_layer"
+    },
+    "borrowings_current:FY2025": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Borrowings",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "(400)",
+     "row": "4:12",
+     "row_source": "text_layer"
+    },
+    "borrowings_non_current:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Borrowings",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "(4,300)",
+     "row": "4:16",
+     "row_source": "text_layer"
+    },
+    "borrowings_non_current:FY2025": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Borrowings",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "(4,200)",
+     "row": "4:16",
+     "row_source": "text_layer"
+    },
+    "cash:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Cash and cash equivalents",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "640",
+     "row": "4:8",
+     "row_source": "text_layer"
+    },
+    "cash:FY2025": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Cash and cash equivalents",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "750",
+     "row": "4:8",
+     "row_source": "text_layer"
+    },
+    "current_assets:FY2024": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "current_assets_section_sum",
+      "current_assets_section_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 4,
+     "raw_text": "2,750",
+     "row": "4:9",
+     "row_source": "text_layer"
+    },
+    "current_assets:FY2025": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "current_assets_section_sum",
+      "current_assets_section_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 4,
+     "raw_text": "2,950",
+     "row": "4:9",
+     "row_source": "text_layer"
+    },
+    "current_liabilities:FY2024": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "current_liabilities_section_sum",
+      "current_liabilities_section_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 4,
+     "raw_text": "(3,120)",
+     "row": "4:14",
+     "row_source": "text_layer"
+    },
+    "current_liabilities:FY2025": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "current_liabilities_section_sum",
+      "current_liabilities_section_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 4,
+     "raw_text": "(3,300)",
+     "row": "4:14",
+     "row_source": "text_layer"
+    },
+    "equity_attributable_to_owners:FY2024": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "equity_attributable_to_owners:FY2025": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "financial_liabilities_current:FY2024": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "financial_liabilities_current:FY2025": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "financial_liabilities_non_current:FY2024": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "financial_liabilities_non_current:FY2025": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "lease_liabilities_current:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Lease liabilities",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "(290)",
+     "row": "4:13",
+     "row_source": "text_layer"
+    },
+    "lease_liabilities_current:FY2025": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Lease liabilities",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "(300)",
+     "row": "4:13",
+     "row_source": "text_layer"
+    },
+    "lease_liabilities_non_current:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Lease liabilities",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "(2,120)",
+     "row": "4:17",
+     "row_source": "text_layer"
+    },
+    "lease_liabilities_non_current:FY2025": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Lease liabilities",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "(2,150)",
+     "row": "4:17",
+     "row_source": "text_layer"
+    },
+    "net_income:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "net_income_chain",
+      "net_income_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Profit for the year",
+     "method": "exact_alias",
+     "page": 3,
+     "raw_text": "742",
+     "row": "3:10",
+     "row_source": "text_layer"
+    },
+    "net_income:FY2025": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "net_income_chain",
+      "net_income_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Profit for the year",
+     "method": "exact_alias",
+     "page": 3,
+     "raw_text": "825",
+     "row": "3:10",
+     "row_source": "text_layer"
+    },
+    "non_controlling_interests:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Non-controlling interests",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "190",
+     "row": "4:24",
+     "row_source": "text_layer"
+    },
+    "non_controlling_interests:FY2025": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [],
+     "confidence": 0.855,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Non-controlling interests",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "200",
+     "row": "4:24",
+     "row_source": "text_layer"
+    },
+    "non_current_assets:FY2024": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "non_current_assets:FY2025": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "non_current_liabilities:FY2024": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "non_current_liabilities_section_sum",
+      "non_current_liabilities_section_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 4,
+     "raw_text": "(7,020)",
+     "row": "4:19",
+     "row_source": "text_layer"
+    },
+    "non_current_liabilities:FY2025": {
+     "agreement": 0.9,
+     "base": 0.85,
+     "checks_failed": [],
+     "checks_passed": [
+      "non_current_liabilities_section_sum",
+      "non_current_liabilities_section_sum"
+     ],
+     "confidence": 0.815,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "",
+     "method": "structural",
+     "page": 4,
+     "raw_text": "(7,000)",
+     "row": "4:19",
+     "row_source": "text_layer"
+    },
+    "operating_profit:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "operating_profit_chain",
+      "profit_before_tax_chain",
+      "operating_profit_chain",
+      "profit_before_tax_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Operating profit",
+     "method": "exact_alias",
+     "page": 3,
+     "raw_text": "1,350",
+     "row": "3:5",
+     "row_source": "text_layer"
+    },
+    "operating_profit:FY2025": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "operating_profit_chain",
+      "profit_before_tax_chain",
+      "operating_profit_chain",
+      "profit_before_tax_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Operating profit",
+     "method": "exact_alias",
+     "page": 3,
+     "raw_text": "1,480",
+     "row": "3:5",
+     "row_source": "text_layer"
+    },
+    "profit_before_tax:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "profit_before_tax_chain",
+      "net_income_chain",
+      "profit_before_tax_chain",
+      "net_income_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Profit before taxation",
+     "method": "exact_alias",
+     "page": 3,
+     "raw_text": "990",
+     "row": "3:8",
+     "row_source": "text_layer"
+    },
+    "profit_before_tax:FY2025": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "profit_before_tax_chain",
+      "net_income_chain",
+      "profit_before_tax_chain",
+      "net_income_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Profit before taxation",
+     "method": "exact_alias",
+     "page": 3,
+     "raw_text": "1,100",
+     "row": "3:8",
+     "row_source": "text_layer"
+    },
+    "revenue:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "operating_profit_chain",
+      "operating_profit_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Revenue",
+     "method": "exact_alias",
+     "page": 3,
+     "raw_text": "11,890",
+     "row": "3:1",
+     "row_source": "text_layer"
+    },
+    "revenue:FY2025": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "operating_profit_chain",
+      "operating_profit_chain"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Revenue",
+     "method": "exact_alias",
+     "page": 3,
+     "raw_text": "12,345",
+     "row": "3:1",
+     "row_source": "text_layer"
+    },
+    "total_assets:FY2024": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "total_assets:FY2025": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "total_debt:FY2024": {
+     "components_found": {
+      "borrowings": true,
+      "financial_liabilities": false,
+      "leases": true
+     },
+     "decision": "published_derived"
+    },
+    "total_debt:FY2025": {
+     "components_found": {
+      "borrowings": true,
+      "financial_liabilities": false,
+      "leases": true
+     },
+     "decision": "published_derived"
+    },
+    "total_equity:FY2024": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "total_equity_components",
+      "total_equity_components"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Total equity",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "(520)",
+     "row": "4:25",
+     "row_source": "text_layer"
+    },
+    "total_equity:FY2025": {
+     "agreement": 0.9,
+     "base": 0.95,
+     "checks_failed": [],
+     "checks_passed": [
+      "total_equity_components",
+      "total_equity_components"
+     ],
+     "confidence": 0.905,
+     "decision": "published",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "families": [
+      "text_layer"
+     ],
+     "label": "Total equity",
+     "method": "exact_alias",
+     "page": 4,
+     "raw_text": "(350)",
+     "row": "4:25",
+     "row_source": "text_layer"
+    },
+    "total_liabilities:FY2024": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    },
+    "total_liabilities:FY2025": {
+     "decision": "no_candidate",
+     "engines": [
+      "pdfplumber",
+      "pymupdf_tables"
+     ],
+     "row_source": "text_layer"
+    }
+   },
+   "checks": [
+    {
+     "detail": "revenue plus 2 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "operating_profit_chain",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "operating_profit plus 2 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "profit_before_tax_chain",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "profit_before_tax plus 1 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "net_income_chain",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "revenue plus 2 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "operating_profit_chain",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "operating_profit plus 2 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "profit_before_tax_chain",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "profit_before_tax plus 1 rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "net_income_chain",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "current_assets_section_sum",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "non_current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 equity rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "total_equity_components",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "current_assets_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "non_current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 equity rows",
+     "difference": "0",
+     "engine": "pdfplumber",
+     "name": "total_equity_components",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "revenue plus 2 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "operating_profit_chain",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "operating_profit plus 2 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "profit_before_tax_chain",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "profit_before_tax plus 1 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "net_income_chain",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "revenue plus 2 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "operating_profit_chain",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "operating_profit plus 2 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "profit_before_tax_chain",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "profit_before_tax plus 1 rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "net_income_chain",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "1.5"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "current_assets_section_sum",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "non_current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 equity rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "total_equity_components",
+     "passed": true,
+     "period": "FY2025",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "current_assets_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 rows above",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "non_current_liabilities_section_sum",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    },
+    {
+     "detail": "3 equity rows",
+     "difference": "0",
+     "engine": "pymupdf_tables",
+     "name": "total_equity_components",
+     "passed": true,
+     "period": "FY2024",
+     "tolerance": "2.0"
+    }
+   ],
+   "engine_skipped": {},
+   "engines": [
+    "pdfplumber",
+    "pymupdf_tables"
+   ],
+   "families": [
+    "text_layer"
+   ],
+   "searched_for": {
+    "total_assets": {
+     "components": [],
+     "labels": [
+      "total assets"
+     ],
+     "pages": [
+      4
+     ],
+     "statement": "balance_sheet",
+     "warnings": [
+      {
+       "code": "missing_item",
+       "item": "total_assets",
+       "message": "total_assets not found for FY2025 on the balance sheet",
+       "page": null
+      },
+      {
+       "code": "missing_item",
+       "item": "total_assets",
+       "message": "total_assets not found for FY2024 on the balance sheet",
+       "page": null
+      }
+     ]
+    }
+   },
+   "statement_names": {
+    "balance_sheet": "consolidated balance sheet",
+    "cash_flow": "cash flow statement",
+    "changes_in_equity": "statement of changes in equity",
+    "comprehensive_income": "statement of comprehensive income",
+    "income_statement": "consolidated income statement"
+   },
+   "statements": {
+    "balance_sheet": {
+     "continuations": [],
+     "page_labels": [
+      "6"
+     ],
+     "pages": [
+      4
+     ],
+     "scope": "group",
+     "score": 0.8,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "balance_sheet",
+     "status": "found",
+     "title": "Consolidated balance sheet"
+    },
+    "cash_flow": {
+     "continuations": [],
+     "page_labels": [],
+     "pages": [],
+     "scope": null,
+     "score": null,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "cash_flow",
+     "status": "not_found",
+     "title": null
+    },
+    "changes_in_equity": {
+     "continuations": [],
+     "page_labels": [],
+     "pages": [],
+     "scope": null,
+     "score": null,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "changes_in_equity",
+     "status": "not_found",
+     "title": null
+    },
+    "comprehensive_income": {
+     "continuations": [],
+     "page_labels": [],
+     "pages": [],
+     "scope": null,
+     "score": null,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "comprehensive_income",
+     "status": "not_found",
+     "title": null
+    },
+    "income_statement": {
+     "continuations": [],
+     "page_labels": [
+      "5"
+     ],
+     "pages": [
+      3
+     ],
+     "scope": "group",
+     "score": 0.8,
+     "source_type": null,
+     "spread": false,
+     "statement_type": "income_statement",
+     "status": "found",
+     "title": "Consolidated income statement"
+    }
+   }
+  },
+  "filename": "example_not_found.pdf",
+  "id": 3,
+  "jobs": [
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "ingest",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "text_layer",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "extract",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "ratios",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "index",
+    "status": "done"
+   },
+   {
+    "attempts": 1,
+    "error_code": null,
+    "stage": "commentary",
+    "status": "done"
+   }
+  ],
+  "pack": {
+   "balance_sheet_classified": true,
+   "basis": "consolidated",
+   "company_name": null,
+   "currency": "GBP",
+   "document_type": "corporate",
+   "items": {
+    "borrowings_current": {
+     "id": "borrowings_current",
+     "label_found": "Borrowings",
+     "note_ref": "18",
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        421.33,
+        314.4,
+        440.0,
+        325.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2025",
+       "raw_text": "(400)",
+       "value": 400.0
+      },
+      {
+       "bbox": [
+        501.33,
+        314.4,
+        520.0,
+        325.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2024",
+       "raw_text": "(350)",
+       "value": 350.0
+      }
+     ]
+    },
+    "borrowings_non_current": {
+     "id": "borrowings_non_current",
+     "label_found": "Borrowings",
+     "note_ref": "18",
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        414.66,
+        374.4,
+        440.0,
+        385.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2025",
+       "raw_text": "(4,200)",
+       "value": 4200.0
+      },
+      {
+       "bbox": [
+        494.66,
+        374.4,
+        520.0,
+        385.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2024",
+       "raw_text": "(4,300)",
+       "value": 4300.0
+      }
+     ]
+    },
+    "cash": {
+     "id": "cash",
+     "label_found": "Cash and cash equivalents",
+     "note_ref": "16",
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        426.66,
+        254.4,
+        440.0,
+        265.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2025",
+       "raw_text": "750",
+       "value": 750.0
+      },
+      {
+       "bbox": [
+        506.66,
+        254.4,
+        520.0,
+        265.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2024",
+       "raw_text": "640",
+       "value": 640.0
+      }
+     ]
+    },
+    "current_assets": {
+     "id": "current_assets",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "confidence": 1.0,
+       "engine": "human_override",
+       "page": 4,
+       "page_label": null,
+       "period_id": "FY2025",
+       "raw_text": "2,950",
+       "value": 2950.0
+      },
+      {
+       "bbox": [
+        499.98,
+        269.4,
+        520.0,
+        280.39
+       ],
+       "confidence": 0.815,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2024",
+       "raw_text": "2,750",
+       "value": 2750.0
+      }
+     ]
+    },
+    "current_liabilities": {
+     "id": "current_liabilities",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        414.66,
+        344.4,
+        440.0,
+        355.39
+       ],
+       "confidence": 0.815,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2025",
+       "raw_text": "(3,300)",
+       "value": 3300.0
+      },
+      {
+       "bbox": [
+        494.66,
+        344.4,
+        520.0,
+        355.39
+       ],
+       "confidence": 0.815,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2024",
+       "raw_text": "(3,120)",
+       "value": 3120.0
+      }
+     ]
+    },
+    "lease_liabilities_current": {
+     "id": "lease_liabilities_current",
+     "label_found": "Lease liabilities",
+     "note_ref": "19",
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        421.33,
+        329.4,
+        440.0,
+        340.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2025",
+       "raw_text": "(300)",
+       "value": 300.0
+      },
+      {
+       "bbox": [
+        501.33,
+        329.4,
+        520.0,
+        340.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2024",
+       "raw_text": "(290)",
+       "value": 290.0
+      }
+     ]
+    },
+    "lease_liabilities_non_current": {
+     "id": "lease_liabilities_non_current",
+     "label_found": "Lease liabilities",
+     "note_ref": "19",
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        414.66,
+        389.4,
+        440.0,
+        400.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2025",
+       "raw_text": "(2,150)",
+       "value": 2150.0
+      },
+      {
+       "bbox": [
+        494.66,
+        389.4,
+        520.0,
+        400.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2024",
+       "raw_text": "(2,120)",
+       "value": 2120.0
+      }
+     ]
+    },
+    "net_income": {
+     "id": "net_income",
+     "label_found": "Profit for the year",
+     "note_ref": null,
+     "statement": "income_statement",
+     "values": [
+      {
+       "bbox": [
+        426.66,
+        284.44,
+        440.0,
+        295.46
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 3,
+       "page_label": "5",
+       "period_id": "FY2025",
+       "raw_text": "825",
+       "value": 825.0
+      },
+      {
+       "bbox": [
+        506.66,
+        284.44,
+        520.0,
+        295.46
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 3,
+       "page_label": "5",
+       "period_id": "FY2024",
+       "raw_text": "742",
+       "value": 742.0
+      }
+     ]
+    },
+    "non_controlling_interests": {
+     "id": "non_controlling_interests",
+     "label_found": "Non-controlling interests",
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        426.66,
+        494.4,
+        440.0,
+        505.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2025",
+       "raw_text": "200",
+       "value": 200.0
+      },
+      {
+       "bbox": [
+        506.66,
+        494.4,
+        520.0,
+        505.39
+       ],
+       "confidence": 0.855,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2024",
+       "raw_text": "190",
+       "value": 190.0
+      }
+     ]
+    },
+    "operating_profit": {
+     "id": "operating_profit",
+     "label_found": "Operating profit",
+     "note_ref": "4",
+     "statement": "income_statement",
+     "values": [
+      {
+       "bbox": [
+        419.98,
+        209.4,
+        440.0,
+        220.39
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 3,
+       "page_label": "5",
+       "period_id": "FY2025",
+       "raw_text": "1,480",
+       "value": 1480.0
+      },
+      {
+       "bbox": [
+        499.98,
+        209.4,
+        520.0,
+        220.39
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 3,
+       "page_label": "5",
+       "period_id": "FY2024",
+       "raw_text": "1,350",
+       "value": 1350.0
+      }
+     ]
+    },
+    "profit_before_tax": {
+     "id": "profit_before_tax",
+     "label_found": "Profit before taxation",
+     "note_ref": null,
+     "statement": "income_statement",
+     "values": [
+      {
+       "bbox": [
+        419.98,
+        254.4,
+        440.0,
+        265.39
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 3,
+       "page_label": "5",
+       "period_id": "FY2025",
+       "raw_text": "1,100",
+       "value": 1100.0
+      },
+      {
+       "bbox": [
+        506.66,
+        254.4,
+        520.0,
+        265.39
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 3,
+       "page_label": "5",
+       "period_id": "FY2024",
+       "raw_text": "990",
+       "value": 990.0
+      }
+     ]
+    },
+    "revenue": {
+     "id": "revenue",
+     "label_found": "Revenue",
+     "note_ref": "3",
+     "statement": "income_statement",
+     "values": [
+      {
+       "bbox": [
+        415.54,
+        149.4,
+        440.0,
+        160.39
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 3,
+       "page_label": "5",
+       "period_id": "FY2025",
+       "raw_text": "12,345",
+       "value": 12345.0
+      },
+      {
+       "bbox": [
+        495.54,
+        149.4,
+        520.0,
+        160.39
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 3,
+       "page_label": "5",
+       "period_id": "FY2024",
+       "raw_text": "11,890",
+       "value": 11890.0
+      }
+     ]
+    },
+    "total_assets": {
+     "id": "total_assets",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "confidence": 0.0,
+       "engine": null,
+       "period_id": "FY2025",
+       "value": null
+      },
+      {
+       "confidence": 0.0,
+       "engine": null,
+       "period_id": "FY2024",
+       "value": null
+      }
+     ]
+    },
+    "total_debt": {
+     "id": "total_debt",
+     "label_found": null,
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "confidence": 0.855,
+       "derivation": "sum",
+       "derived_from": [
+        {
+         "item": "borrowings_current",
+         "period_id": "FY2025"
+        },
+        {
+         "item": "borrowings_non_current",
+         "period_id": "FY2025"
+        },
+        {
+         "item": "lease_liabilities_current",
+         "period_id": "FY2025"
+        },
+        {
+         "item": "lease_liabilities_non_current",
+         "period_id": "FY2025"
+        }
+       ],
+       "engine": "derived",
+       "page": null,
+       "period_id": "FY2025",
+       "raw_text": null,
+       "value": 7050.0
+      },
+      {
+       "confidence": 0.855,
+       "derivation": "sum",
+       "derived_from": [
+        {
+         "item": "borrowings_current",
+         "period_id": "FY2024"
+        },
+        {
+         "item": "borrowings_non_current",
+         "period_id": "FY2024"
+        },
+        {
+         "item": "lease_liabilities_current",
+         "period_id": "FY2024"
+        },
+        {
+         "item": "lease_liabilities_non_current",
+         "period_id": "FY2024"
+        }
+       ],
+       "engine": "derived",
+       "page": null,
+       "period_id": "FY2024",
+       "raw_text": null,
+       "value": 7060.0
+      }
+     ]
+    },
+    "total_equity": {
+     "id": "total_equity",
+     "label_found": "Total equity",
+     "note_ref": null,
+     "statement": "balance_sheet",
+     "values": [
+      {
+       "bbox": [
+        421.33,
+        509.44,
+        440.0,
+        520.46
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2025",
+       "raw_text": "(350)",
+       "value": -350.0
+      },
+      {
+       "bbox": [
+        501.33,
+        509.44,
+        520.0,
+        520.46
+       ],
+       "confidence": 0.905,
+       "engine": "pdfplumber",
+       "page": 4,
+       "page_label": "6",
+       "period_id": "FY2024",
+       "raw_text": "(520)",
+       "value": -520.0
+      }
+     ]
+    }
+   },
+   "periods": [
+    {
+     "end_date": "2025-12-31",
+     "id": "FY2025",
+     "is_restated": false,
+     "label": "2025"
+    },
+    {
+     "end_date": "2024-12-31",
+     "id": "FY2024",
+     "is_restated": false,
+     "label": "2024"
+    }
+   ],
+   "schema_version": "1.1.0",
+   "source": {
+    "filename": "example_not_found.pdf",
+    "page_count": 5,
+    "parser_engines": [
+     "pdfplumber",
+     "pymupdf_tables"
+    ],
+    "pipeline_version": "0.1.0",
+    "sha256": "d643eeb43cc0d5e911e2c39fdc74cd0c066226d8babcf2b4b5dd8934bceba5fe"
+   },
+   "unit_scale": 1000000,
+   "warnings": [
+    {
+     "code": "reduced_verification",
+     "item": null,
+     "message": "one engine family ran (text layer); Azure DI: not requested (--engines local)",
+     "page": null
+    },
+    {
+     "code": "missing_item",
+     "item": "total_assets",
+     "message": "total_assets not found for FY2025 on the balance sheet",
+     "page": null
+    },
+    {
+     "code": "missing_item",
+     "item": "total_assets",
+     "message": "total_assets not found for FY2024 on the balance sheet",
+     "page": null
+    },
+    {
+     "code": "derived_value",
+     "item": "total_debt",
+     "message": "total_debt is the sum of ['borrowings_current', 'borrowings_non_current', 'lease_liabilities_current', 'lease_liabilities_non_current'] (FY2025)",
+     "page": null
+    },
+    {
+     "code": "derived_value",
+     "item": "total_debt",
+     "message": "total_debt is the sum of ['borrowings_current', 'borrowings_non_current', 'lease_liabilities_current', 'lease_liabilities_non_current'] (FY2024)",
+     "page": null
+    },
+    {
+     "code": "human_override",
+     "item": "current_assets",
+     "message": "current_assets FY2025 set from p.4 by a person",
+     "page": 4
+    }
+   ]
+  },
+  "pack_sha": "cf072479f5b5fc7c0c6fab5e7c861b80523c4593bc84de57616ef8d48cfc18fd",
+  "pack_version": 2,
+  "page_count": 5,
+  "ratios": {
+   "changes": [
+    {
+     "from_period_id": "FY2024",
+     "items": {
+      "current_assets": {
+       "absolute": 200.0,
+       "percent": 7.2727272727272725
+      },
+      "current_liabilities": {
+       "absolute": 180.0,
+       "percent": 5.769230769230769
+      },
+      "net_income": {
+       "absolute": 83.0,
+       "percent": 11.185983827493262
+      },
+      "operating_profit": {
+       "absolute": 130.0,
+       "percent": 9.62962962962963
+      },
+      "profit_before_tax": {
+       "absolute": 110.0,
+       "percent": 11.11111111111111
+      },
+      "revenue": {
+       "absolute": 455.0,
+       "percent": 3.826745164003364
+      },
+      "total_assets": {
+       "absolute": null,
+       "percent": null
+      },
+      "total_debt": {
+       "absolute": -10.0,
+       "percent": -0.141643059490085
+      },
+      "total_equity": {
+       "absolute": 170.0,
+       "percent": 32.69230769230769
+      }
+     },
+     "ratios": {
+      "current_ratio": {
+       "kind": "absolute",
+       "value": 0.0125291375291375
+      },
+      "debt_to_equity": {
+       "kind": "absolute",
+       "value": -6.565934065934065
+      },
+      "operating_margin": {
+       "kind": "percentage_points",
+       "value": 0.634580318233735
+      },
+      "roce": {
+       "kind": "percentage_points",
+       "value": null
+      }
+     },
+     "to_period_id": "FY2025"
+    }
+   ],
+   "currency": "GBP",
+   "document_type": "corporate",
+   "formulas_locked": true,
+   "periods": [
+    {
+     "end_date": "2025-12-31",
+     "period_id": "FY2025",
+     "ratios": {
+      "current_ratio": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "current_assets / current_liabilities",
+       "formula_text": "Current assets ÷ Current liabilities",
+       "inputs": {
+        "current_assets": {
+         "badges": [
+          "manual"
+         ],
+         "item": "current_assets",
+         "page": 4,
+         "period_id": "FY2025",
+         "value": 2950.0
+        },
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": 4,
+         "period_id": "FY2025",
+         "value": 3300.0
+        }
+       },
+       "label": "Current ratio",
+       "missing_inputs": [],
+       "name": "current_ratio",
+       "reason": null,
+       "status": "ok",
+       "unit": "multiple",
+       "value": 0.8939393939393939
+      },
+      "debt_to_equity": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [
+        "negative_denominator"
+       ],
+       "formula": "total_debt / total_equity",
+       "formula_text": "Total debt ÷ Total equity",
+       "inputs": {
+        "total_debt": {
+         "badges": [
+          "derived"
+         ],
+         "item": "total_debt",
+         "page": null,
+         "period_id": "FY2025",
+         "value": 7050.0
+        },
+        "total_equity": {
+         "badges": [],
+         "item": "total_equity",
+         "page": 4,
+         "period_id": "FY2025",
+         "value": -350.0
+        }
+       },
+       "label": "Debt-to-equity",
+       "missing_inputs": [],
+       "name": "debt_to_equity",
+       "reason": null,
+       "status": "ok",
+       "unit": "multiple",
+       "value": -20.142857142857142
+      },
+      "operating_margin": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "operating_profit / revenue",
+       "formula_text": "Operating profit ÷ Revenue",
+       "inputs": {
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": 3,
+         "period_id": "FY2025",
+         "value": 1480.0
+        },
+        "revenue": {
+         "badges": [],
+         "item": "revenue",
+         "page": 3,
+         "period_id": "FY2025",
+         "value": 12345.0
+        }
+       },
+       "label": "Operating margin",
+       "missing_inputs": [],
+       "name": "operating_margin",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.11988659376265695
+      },
+      "roce": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "operating_profit / (total_assets - current_liabilities)",
+       "formula_text": "Operating profit ÷ (Total assets - Current liabilities)",
+       "inputs": {
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": 4,
+         "period_id": "FY2025",
+         "value": 3300.0
+        },
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": 3,
+         "period_id": "FY2025",
+         "value": 1480.0
+        },
+        "total_assets": {
+         "badges": [],
+         "item": "total_assets",
+         "page": null,
+         "period_id": "FY2025",
+         "value": null
+        }
+       },
+       "label": "ROCE",
+       "missing_inputs": [
+        "total_assets"
+       ],
+       "name": "roce",
+       "reason": "missing_input",
+       "status": "null",
+       "unit": "fraction",
+       "value": null
+      }
+     }
+    },
+    {
+     "end_date": "2024-12-31",
+     "period_id": "FY2024",
+     "ratios": {
+      "current_ratio": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "current_assets / current_liabilities",
+       "formula_text": "Current assets ÷ Current liabilities",
+       "inputs": {
+        "current_assets": {
+         "badges": [],
+         "item": "current_assets",
+         "page": 4,
+         "period_id": "FY2024",
+         "value": 2750.0
+        },
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": 4,
+         "period_id": "FY2024",
+         "value": 3120.0
+        }
+       },
+       "label": "Current ratio",
+       "missing_inputs": [],
+       "name": "current_ratio",
+       "reason": null,
+       "status": "ok",
+       "unit": "multiple",
+       "value": 0.8814102564102564
+      },
+      "debt_to_equity": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [
+        "negative_denominator"
+       ],
+       "formula": "total_debt / total_equity",
+       "formula_text": "Total debt ÷ Total equity",
+       "inputs": {
+        "total_debt": {
+         "badges": [
+          "derived"
+         ],
+         "item": "total_debt",
+         "page": null,
+         "period_id": "FY2024",
+         "value": 7060.0
+        },
+        "total_equity": {
+         "badges": [],
+         "item": "total_equity",
+         "page": 4,
+         "period_id": "FY2024",
+         "value": -520.0
+        }
+       },
+       "label": "Debt-to-equity",
+       "missing_inputs": [],
+       "name": "debt_to_equity",
+       "reason": null,
+       "status": "ok",
+       "unit": "multiple",
+       "value": -13.576923076923077
+      },
+      "operating_margin": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "operating_profit / revenue",
+       "formula_text": "Operating profit ÷ Revenue",
+       "inputs": {
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": 3,
+         "period_id": "FY2024",
+         "value": 1350.0
+        },
+        "revenue": {
+         "badges": [],
+         "item": "revenue",
+         "page": 3,
+         "period_id": "FY2024",
+         "value": 11890.0
+        }
+       },
+       "label": "Operating margin",
+       "missing_inputs": [],
+       "name": "operating_margin",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.1135407905803196
+      },
+      "roce": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "operating_profit / (total_assets - current_liabilities)",
+       "formula_text": "Operating profit ÷ (Total assets - Current liabilities)",
+       "inputs": {
+        "current_liabilities": {
+         "badges": [],
+         "item": "current_liabilities",
+         "page": 4,
+         "period_id": "FY2024",
+         "value": 3120.0
+        },
+        "operating_profit": {
+         "badges": [],
+         "item": "operating_profit",
+         "page": 3,
+         "period_id": "FY2024",
+         "value": 1350.0
+        },
+        "total_assets": {
+         "badges": [],
+         "item": "total_assets",
+         "page": null,
+         "period_id": "FY2024",
+         "value": null
+        }
+       },
+       "label": "ROCE",
+       "missing_inputs": [
+        "total_assets"
+       ],
+       "name": "roce",
+       "reason": "missing_input",
+       "status": "null",
+       "unit": "fraction",
+       "value": null
+      }
+     }
+    }
+   ],
+   "schema_version": "1.0.0",
+   "statement_pack_sha": "cf072479f5b5fc7c0c6fab5e7c861b80523c4593bc84de57616ef8d48cfc18fd",
+   "unit_scale": 1000000,
+   "warnings": [
+    {
+     "code": "negative_denominator",
+     "message": "Debt-to-equity for FY2025 has a negative denominator; the value is shown and is not meaningful",
+     "period_id": "FY2025",
+     "ratio": "debt_to_equity"
+    },
+    {
+     "code": "negative_denominator",
+     "message": "Debt-to-equity for FY2024 has a negative denominator; the value is shown and is not meaningful",
+     "period_id": "FY2024",
+     "ratio": "debt_to_equity"
+    }
+   ]
+  },
+  "reduced_verification": true,
+  "sha256": "d643eeb43cc0d5e911e2c39fdc74cd0c066226d8babcf2b4b5dd8934bceba5fe",
+  "stale": false,
+  "status": "ready",
+  "warnings": [
+   {
+    "code": "reduced_verification",
+    "item": null,
+    "message": "one engine family ran (text layer); Azure DI: not requested (--engines local)",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_assets",
+    "message": "total_assets not found for FY2025 on the balance sheet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_assets",
+    "message": "total_assets not found for FY2024 on the balance sheet",
+    "page": null
+   },
+   {
+    "code": "derived_value",
+    "item": "total_debt",
+    "message": "total_debt is the sum of ['borrowings_current', 'borrowings_non_current', 'lease_liabilities_current', 'lease_liabilities_non_current'] (FY2025)",
+    "page": null
+   },
+   {
+    "code": "derived_value",
+    "item": "total_debt",
+    "message": "total_debt is the sum of ['borrowings_current', 'borrowings_non_current', 'lease_liabilities_current', 'lease_liabilities_non_current'] (FY2024)",
+    "page": null
+   },
+   {
+    "code": "human_override",
+    "item": "current_assets",
+    "message": "current_assets FY2025 set from p.4 by a person",
+    "page": 4
+   }
+  ]
+ },
+ "review": {
+  "items": [],
+  "status": "ready",
+  "warnings": [
+   {
+    "code": "reduced_verification",
+    "item": null,
+    "message": "one engine family ran (text layer); Azure DI: not requested (--engines local)",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_assets",
+    "message": "total_assets not found for FY2025 on the balance sheet",
+    "page": null
+   },
+   {
+    "code": "missing_item",
+    "item": "total_assets",
+    "message": "total_assets not found for FY2024 on the balance sheet",
+    "page": null
+   },
+   {
+    "code": "derived_value",
+    "item": "total_debt",
+    "message": "total_debt is the sum of ['borrowings_current', 'borrowings_non_current', 'lease_liabilities_current', 'lease_liabilities_non_current'] (FY2025)",
+    "page": null
+   },
+   {
+    "code": "derived_value",
+    "item": "total_debt",
+    "message": "total_debt is the sum of ['borrowings_current', 'borrowings_non_current', 'lease_liabilities_current', 'lease_liabilities_non_current'] (FY2024)",
+    "page": null
+   },
+   {
+    "code": "human_override",
+    "item": "current_assets",
+    "message": "current_assets FY2025 set from p.4 by a person",
+    "page": 4
+   }
+  ]
+ }
+}
