@@ -371,16 +371,17 @@ These checks are created in M0 and run in CI.
 ## M7.3 — Upload, progress and review
 
 **Read first:** UI.md §3, §6.3; EXTRACTION §6.
-**Allowed paths:** `web/**`, `tests/e2e/**`.
+**Allowed paths:** `web/**`, `tests/e2e/**`, `finintel/reconcile/pack.py`, `finintel/db/persist.py`, `finintel/worker/stages.py`, `finintel/api/app.py`, `scripts/scope.yaml`.
+*Amended 2026-10-02 (tech lead: option A): no pipeline review row carried a candidate with a printed value, so `accept_candidate` could not succeed on a real report. Reconcile now keeps each withheld reading (`below_threshold`, `unparsed`, unresolved `parser_disagreement`) as a candidate with its value parsed and sign-normalised exactly as for publication, raw text, page and box; the worker stores them as `null_with_candidates` / `disagreement` review rows (the warning-derived disagreement row is gone, so nothing is stored twice). `accept_candidate` now refuses a candidate for another line or period (`candidate_item_mismatch`), found while testing this.*
 
 **Gate:**
 - [x] G1–G6 pass. *2026-10-02: see docs/STATUS.md.*
 - [x] Playwright end to end: a small synthetic PDF moves through the progress stages to `ready`. *`make e2e-live`: the real API and worker on a throwaway schema.*
-- [ ] Playwright: accepting a candidate shows the value with a "Confirmed by you" badge.
+- [x] Playwright: accepting a candidate shows the value with a "Confirmed by you" badge. *Live: the review row comes from extraction (option A); the audit trail records `accept_candidate`.*
 - [x] Playwright: entering a value not on the page shows the refusal message, and nothing is saved.
 - [x] Playwright: after an override, the stale-commentary banner appears.
 - [x] Playwright: the unit-confirmation and point-to-page flows complete on synthetic fixtures.
-*2026-10-02: live suite 5/5 (three consecutive runs). Left unticked: "accepting a candidate". No pipeline-produced review row carries a candidate with a printed value, so `accept_candidate` cannot succeed on a real report; the UI sends it correctly (fixture test) and the live test confirms a withheld candidate through `set_value` (anchored, "Confirmed by you"). Waiting for the tech lead's choice (docs/STATUS.md, options A/B).*
+*2026-10-02: live suite 5/5, every gate item ticked.*
 
 ---
 

@@ -71,7 +71,14 @@ def test_example_states_carries_its_row_and_card_states() -> None:
     assert _value(r, "net_income", p25)["value"] is None  # R6: a withheld candidate
     assert r["extraction"]["candidates"]["net_income:FY2025"]["raw_text"] == "825"
     review = load("example_states")["review"]["items"]
-    assert [(i["item"], i["kind"]) for i in review] == [("revenue", "llm_suggestion")]  # R7
+    kinds = {(i["item"], i["period_id"]): i["kind"] for i in review}
+    assert kinds[("revenue", None)] == "llm_suggestion"  # R7
+    # R6: extraction's withheld reading, stored with its printed value for a person to accept
+    [withheld] = [i for i in review if i["item"] == "net_income" and i["period_id"] == "FY2025"]
+    assert withheld["kind"] == "null_with_candidates"
+    assert [(c["value"], c["raw_text"], c["page"]) for c in withheld["candidates"]] == [
+        (825.0, "825", 3)
+    ]
     assert _value(r, "total_assets", p25)["value"] is None  # R8
     assert r["extraction"]["candidates"]["total_assets:FY2025"]["decision"] == "no_candidate"
     ratios = r["ratios"]["periods"][0]["ratios"]

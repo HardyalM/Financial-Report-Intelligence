@@ -558,6 +558,30 @@
     "current_assets:FY2025": {
      "agreement": 1.0,
      "base": 0.85,
+     "candidates": [
+      {
+       "bbox": [
+        419.98,
+        284.4,
+        440.0,
+        295.39
+       ],
+       "engines": [
+        "azure_di",
+        "pdfplumber",
+        "pymupdf_tables"
+       ],
+       "families": [
+        "image_layout",
+        "text_layer"
+       ],
+       "label": "",
+       "page": 4,
+       "raw_text": "2,950",
+       "row": "4:10",
+       "value": 2950.0
+      }
+     ],
      "checks_failed": [
       "current_assets_section_sum: 2 rows above, off by 750"
      ],
@@ -813,6 +837,30 @@
     "net_income:FY2025": {
      "agreement": 1.0,
      "base": 0.95,
+     "candidates": [
+      {
+       "bbox": [
+        426.66,
+        284.44,
+        440.0,
+        295.46
+       ],
+       "engines": [
+        "azure_di",
+        "pdfplumber",
+        "pymupdf_tables"
+       ],
+       "families": [
+        "image_layout",
+        "text_layer"
+       ],
+       "label": "Profit for the year",
+       "page": 3,
+       "raw_text": "825",
+       "row": "3:10",
+       "value": 825.0
+      }
+     ],
      "checks_failed": [
       "net_income_chain: profit_before_tax plus 1 rows, off by -10",
       "net_income_chain: profit_before_tax plus 1 rows, off by -10",
@@ -1021,6 +1069,30 @@
     "operating_profit:FY2025": {
      "agreement": 1.0,
      "base": 0.95,
+     "candidates": [
+      {
+       "bbox": [
+        419.98,
+        209.4,
+        440.0,
+        220.39
+       ],
+       "engines": [
+        "azure_di",
+        "pdfplumber",
+        "pymupdf_tables"
+       ],
+       "families": [
+        "image_layout",
+        "text_layer"
+       ],
+       "label": "Operating profit",
+       "page": 3,
+       "raw_text": "1,480",
+       "row": "3:5",
+       "value": 1480.0
+      }
+     ],
      "checks_failed": [
       "profit_before_tax_chain: operating_profit plus 2 rows, off by 10",
       "profit_before_tax_chain: operating_profit plus 2 rows, off by 10",
@@ -1078,6 +1150,30 @@
     "profit_before_tax:FY2025": {
      "agreement": 1.0,
      "base": 0.95,
+     "candidates": [
+      {
+       "bbox": [
+        419.98,
+        254.4,
+        440.0,
+        265.39
+       ],
+       "engines": [
+        "azure_di",
+        "pdfplumber",
+        "pymupdf_tables"
+       ],
+       "families": [
+        "image_layout",
+        "text_layer"
+       ],
+       "label": "Profit before taxation",
+       "page": 3,
+       "raw_text": "1,110",
+       "row": "3:8",
+       "value": 1110.0
+      }
+     ],
      "checks_failed": [
       "profit_before_tax_chain: operating_profit plus 2 rows, off by 10",
       "net_income_chain: profit_before_tax plus 1 rows, off by -10",
@@ -3000,6 +3096,130 @@
    {
     "candidates": [
      {
+      "bbox": [
+       419.98,
+       284.4,
+       440.0,
+       295.39
+      ],
+      "engines": [
+       "azure_di",
+       "pdfplumber",
+       "pymupdf_tables"
+      ],
+      "families": [
+       "image_layout",
+       "text_layer"
+      ],
+      "label": "",
+      "page": 4,
+      "raw_text": "2,950",
+      "row": "4:10",
+      "value": 2950.0
+     }
+    ],
+    "id": 1,
+    "item": "current_assets",
+    "kind": "null_with_candidates",
+    "period_id": "FY2025",
+    "status": "open"
+   },
+   {
+    "candidates": [
+     {
+      "bbox": [
+       426.66,
+       284.44,
+       440.0,
+       295.46
+      ],
+      "engines": [
+       "azure_di",
+       "pdfplumber",
+       "pymupdf_tables"
+      ],
+      "families": [
+       "image_layout",
+       "text_layer"
+      ],
+      "label": "Profit for the year",
+      "page": 3,
+      "raw_text": "825",
+      "row": "3:10",
+      "value": 825.0
+     }
+    ],
+    "id": 2,
+    "item": "net_income",
+    "kind": "null_with_candidates",
+    "period_id": "FY2025",
+    "status": "open"
+   },
+   {
+    "candidates": [
+     {
+      "bbox": [
+       419.98,
+       209.4,
+       440.0,
+       220.39
+      ],
+      "engines": [
+       "azure_di",
+       "pdfplumber",
+       "pymupdf_tables"
+      ],
+      "families": [
+       "image_layout",
+       "text_layer"
+      ],
+      "label": "Operating profit",
+      "page": 3,
+      "raw_text": "1,480",
+      "row": "3:5",
+      "value": 1480.0
+     }
+    ],
+    "id": 3,
+    "item": "operating_profit",
+    "kind": "null_with_candidates",
+    "period_id": "FY2025",
+    "status": "open"
+   },
+   {
+    "candidates": [
+     {
+      "bbox": [
+       419.98,
+       254.4,
+       440.0,
+       265.39
+      ],
+      "engines": [
+       "azure_di",
+       "pdfplumber",
+       "pymupdf_tables"
+      ],
+      "families": [
+       "image_layout",
+       "text_layer"
+      ],
+      "label": "Profit before taxation",
+      "page": 3,
+      "raw_text": "1,110",
+      "row": "3:8",
+      "value": 1110.0
+     }
+    ],
+    "id": 4,
+    "item": "profit_before_tax",
+    "kind": "null_with_candidates",
+    "period_id": "FY2025",
+    "status": "open"
+   },
+   {
+    "candidates": [
+     {
       "confidence": 0.7,
       "item": "revenue",
       "kind": "llm_suggestion",
@@ -3010,7 +3230,7 @@
       "row_id": "3:1"
      }
     ],
-    "id": 1,
+    "id": 5,
     "item": "revenue",
     "kind": "llm_suggestion",
     "period_id": null,

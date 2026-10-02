@@ -7,6 +7,32 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M7.3 option A — 2026-10-02 — accepting a candidate works on real reports: gate PASSES (all items)
+
+Tech lead's decision: option A. `reconcile.pack._candidate` keeps each withheld reading (below_threshold, unparsed,
+unresolved parser_disagreement) as `{engines, families, value, raw_text, page, bbox, row, label}`; the value is
+`_signed(item, cell.parsed_value)`, exactly what publication would have stored (liabilities positive). The worker stores
+extraction's review items as `null_with_candidates` / `disagreement` rows (kinds already allowed by migration 003); the
+warning-derived disagreement row is dropped, so nothing is stored twice. Pack contents are unchanged (company_a pack sha
+23728ccd… as before); only the extraction report and the review queue gain candidates.
+
+Found while testing and fixed: `accept_candidate` applied a candidate to whatever line and period the request named, so
+net income's 825 could be written into revenue. It now refuses with 422 `candidate_item_mismatch` and saves nothing.
+
+| Command | Result |
+|---|---|
+| `make lint typecheck test contracts-check scope` | exit 0; 929 passed (+4 review-candidate tests) |
+| `make test-db` | 30 passed (+1: a withheld candidate from extraction accepted; the mismatch refused) |
+| `make e2e` | 39 passed |
+| `make e2e-live` | 5 passed; the audit trail records `accept_candidate` from an extraction review row |
+| `check_scope.py M7.3 --base 12fdd0a` | only fixtures/expected/* and docs/ratings_draft.md (the tech lead's files) |
+
+Still open: the bracketed-liability fix (a8c4097, the other session's branch) is not merged into m4.1, so accepting a
+liability candidate printed in brackets is refused by `check_value` until it is. EXTRACTION section 6 still describes
+review items in general terms; the candidate fields above are documented here and in the code, not yet in the spec.
+
+---
+
 ## M7.3 — 2026-10-02 — upload, progress and review: live gate 5/5; one item blocked (accept_candidate)
 
 Built (web only; no backend change): upload dropzone (50 MB, PDF, the API's refusals in words; Next's proxy body limit

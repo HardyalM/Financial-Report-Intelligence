@@ -270,7 +270,12 @@ def build(case: Case, work: Path) -> dict[str, Any]:
                 id=n, item=item, period_id=period, kind=kind, status="open", candidates=candidates
             )
             for n, (item, period, kind, candidates) in enumerate(
-                review_rows(suggestions, pack["warnings"] if pack else []), start=1
+                review_rows(
+                    suggestions,
+                    pack["warnings"] if pack else [],
+                    result.report.get("review_items", []),
+                ),
+                start=1,
             )
         ],
         warnings=list(pack["warnings"]) if pack else [],

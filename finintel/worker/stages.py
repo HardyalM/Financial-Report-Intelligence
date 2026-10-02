@@ -162,8 +162,9 @@ def extract_stage(conn: psycopg.Connection, ctx: RunContext, doc: Doc) -> Outcom
     persist.store_report(conn, doc.id, pack_id, report)
     review = result.report.get("review", {})
     persist.store_review_items(
-        conn, doc.id, review.get("suggestions", []), pack.get("warnings", [])
-    )
+        conn, doc.id, review.get("suggestions", []), pack.get("warnings", []),
+        result.report.get("review_items", []),
+    )  # fmt: skip
     if result.status in BLOCKING:
         return Outcome(halt=BLOCKING[result.status], detail=result.status)
     if doc_type in (None, "other"):

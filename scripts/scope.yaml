@@ -166,6 +166,11 @@ sessions:
   "M7.3":
     - "web/**"
     - "tests/e2e/**"
+    - "finintel/reconcile/pack.py"
+    - "finintel/db/persist.py"
+    - "finintel/worker/stages.py"
+    - "finintel/api/app.py"
+    - "scripts/scope.yaml"
   "M8.1":
     - "finintel/mapping/aliases/bank.yaml"
     - "finintel/mapping/**"

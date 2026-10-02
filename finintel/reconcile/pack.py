@@ -95,6 +95,24 @@ def _signed(item: str, value: Decimal) -> float:
     return float(abs(value) if item in LIABILITY_ITEMS else value)
 
 
+def _candidate(item: str, group: Sequence[Member]) -> dict[str, Any]:
+    """One printed cell that engines read, for a person to accept (EXTRACTION section 6).
+
+    The value is parsed and sign-normalised exactly as it would be published (`_signed`); a cell
+    that is not a number has no value and cannot be accepted. Never computed from anything else."""
+    _, row, cell, _ = group[0]
+    return {
+        "engines": sorted({v.engine for v, _, _, _ in group}),
+        "families": sorted({v.family.value for v, _, _, _ in group}),
+        "value": _signed(item, cell.parsed_value) if cell.parsed_value is not None else None,
+        "raw_text": cell.raw_text,
+        "page": cell.page,
+        "bbox": list(cell.ink),
+        "row": row.row_id,
+        "label": row.label_text,
+    }
+
+
 def _confidence(
     method: str, checks: Sequence[CheckResult], agreement: float
 ) -> tuple[float, dict[str, Any]]:
@@ -167,7 +185,7 @@ def _resolve(
             f"{v.engine}={c.raw_text} p.{c.page}" for g in groups.values() for v, _, c, _ in g
         )
         page = next(iter(groups.values()))[0][2].page
-        res.record["candidates"] = [c.raw_text for g in groups.values() for _, _, c, _ in g]
+        res.record["candidates"] = [_candidate(item, g) for g in groups.values()]
         if len(passing) != 1:
             res.warn("parser_disagreement", f"unresolved: {shown}", page)
             res.record["decision"] = "parser_disagreement"
@@ -204,9 +222,11 @@ def _resolve(
     if cell.parsed_value is None:
         res.warn("low_confidence", f"printed {cell.raw_text!r} is not a number", cell.page)
         res.record["decision"] = "unparsed"
+        res.record["candidates"] = [_candidate(item, members)]
     elif confidence < TAU:
         res.warn("low_confidence", f"confidence {confidence} is below {TAU}", cell.page)
         res.record["decision"] = "below_threshold"
+        res.record["candidates"] = [_candidate(item, members)]
     else:
         res.value = _signed(item, cell.parsed_value)
         res.record["decision"] = "published"

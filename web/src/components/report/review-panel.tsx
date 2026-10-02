@@ -39,7 +39,7 @@ export function ReviewPanel({ item, period }: { item: string; period: string }) 
         <AcceptCandidates item={item} period={period} candidates={accepted} />
       ) : null}
 
-      {info.state === "R6" && info.candidate?.raw_text ? (
+      {info.state === "R6" && !accepted.length && info.candidate?.raw_text ? (
         <Withheld info={info} onUse={(page, raw) => setForm({ page, raw })} />
       ) : null}
 
@@ -79,7 +79,8 @@ interface ValueCandidate {
   value: number;
   raw_text: string;
   page: number;
-  engine?: string;
+  /** Who read it: engine families from extraction, or an engine name. */
+  source: string | null;
 }
 
 /** Candidates the API can accept: review rows whose candidates carry a printed value. */
@@ -93,7 +94,13 @@ function acceptable(
     if (r.item !== item || (r.period_id !== null && r.period_id !== period)) continue;
     r.candidates.forEach((c, i) => {
       if (typeof c.value === "number" && typeof c.raw_text === "string" && typeof c.page === "number") {
-        out.push({ id: `${r.id}:${i}`, value: c.value, raw_text: c.raw_text, page: c.page, engine: c.engine as string | undefined });
+        const families = Array.isArray(c.families) ? (c.families as string[]) : [];
+        const source = families.length
+          ? families.map((f) => FAMILY_NAMES[f] ?? f).join(" and ")
+          : typeof c.engine === "string"
+            ? c.engine
+            : null;
+        out.push({ id: `${r.id}:${i}`, value: c.value, raw_text: c.raw_text, page: c.page, source });
       }
     });
   }
@@ -119,14 +126,16 @@ function AcceptCandidates({ item, period, candidates }: { item: string; period: 
   };
   return (
     <div className="space-y-2" data-testid="review-candidates">
-      <p className="text-[12.5px] text-ink-2">Candidates read from the page:</p>
+      <p className="text-[12.5px] text-ink-2">
+        {candidates.length > 1 ? "The engines read different figures. Choose the one printed on the page:" : "The figure read from the page, withheld for review:"}
+      </p>
       <ul className="space-y-1.5">
         {candidates.map((c) => (
           <li key={c.id} className="flex items-center justify-between gap-2 rounded-lg border border-line px-3 py-2">
             <span className="flex items-center gap-2 text-[13px]">
               <span className="num font-mono text-ink">{c.raw_text}</span>
               <PageChip page={c.page} />
-              {c.engine ? <span className="text-[11.5px] text-ink-3">{c.engine}</span> : null}
+              {c.source ? <span className="text-[11.5px] text-ink-3">{c.source}</span> : null}
             </span>
             <Button size="sm" onClick={() => use(c)} disabled={busy !== null} data-testid="use-candidate">
               {busy === c.id ? "Saving…" : "Use this"}

@@ -350,3 +350,28 @@ def test_the_report_carries_a_read_only_extraction_view_for_the_report_screen(
     assert set(view["searched_for"]) == pack_nulls
     for where in view["searched_for"].values():
         assert where["statement"] and isinstance(where["labels"], list)
+
+
+def test_a_withheld_candidate_from_extraction_can_be_accepted(client: TestClient) -> None:
+    """Option A (M7.3): the review row comes from extraction itself, not from a test insert."""
+    pdf = ROOT / "tests" / "e2e" / "fixtures" / "pdfs" / "example_states.pdf"
+    rid = int(str(upload(client, pdf)["id"]))
+    review = client.get(f"/reports/{rid}/review").json()["items"]
+    row = next(
+        r for r in review if r["item"] == "net_income" and r["period_id"] == "FY2025"
+    )  # the misprinted profit before tax withholds the line below it
+    assert row["kind"] == "null_with_candidates"
+    [candidate] = row["candidates"]
+    assert (candidate["value"], candidate["raw_text"], candidate["page"]) == (825.0, "825", 3)
+    cid = f"{row['id']}:0"
+    elsewhere = override(client, rid, action="accept_candidate", candidate_id=cid)  # revenue FY2024
+    assert elsewhere.status_code == 422 and code(elsewhere) == "candidate_item_mismatch"
+    assert client.get(f"/reports/{rid}/overrides").json() == []  # a figure never fills another line
+    ok = override(
+        client, rid, action="accept_candidate", candidate_id=cid, item="net_income",
+        period_id="FY2025",
+    )  # fmt: skip
+    assert ok.status_code == 200 and ok.json()["anchored"] is True
+    pack = client.get(f"/reports/{rid}").json()["pack"]
+    value = next(v for v in pack["items"]["net_income"]["values"] if v["period_id"] == "FY2025")
+    assert (value["value"], value["engine"], value["raw_text"]) == (825.0, "human_override", "825")

@@ -8,8 +8,9 @@ from typing import Any
 
 import psycopg
 
+#: Warnings that become review rows. A parser disagreement is not here: extraction's own review
+#: item for it carries the candidates (with period and printed value), see EXTRACTED_KIND.
 _WARNING_KIND = {
-    "parser_disagreement": "disagreement",
     "document_type_ambiguous": "document_type",
     "entity_scope_ambiguous": "scope",
     "unit_ambiguous": "unit",
@@ -45,14 +46,30 @@ def store_report(
     )
 
 
+#: Extraction decisions that leave a figure for a person, as review-row kinds (migration 003).
+EXTRACTED_KIND = {
+    "parser_disagreement": "disagreement",
+    "below_threshold": "null_with_candidates",
+    "unparsed": "null_with_candidates",
+    "alias_weak": "null_with_candidates",
+}
+
+
 def review_rows(
-    suggestions: Sequence[Mapping[str, Any]], warnings: Sequence[Mapping[str, Any]]
+    suggestions: Sequence[Mapping[str, Any]],
+    warnings: Sequence[Mapping[str, Any]],
+    extracted: Sequence[Mapping[str, Any]] = (),
 ) -> list[tuple[Any, Any, str, list[dict[str, Any]]]]:
-    """`(item, period_id, kind, candidates)` for each review row: LLM pointers (never published)
-    and the warnings that need a person."""
+    """`(item, period_id, kind, candidates)` for each review row: extraction's withheld
+    candidates (each with its printed value, text, page and box, so a person can accept one:
+    EXTRACTION section 6), LLM pointers (never published) and the warnings that need a person."""
     rows: list[tuple[Any, Any, str, list[dict[str, Any]]]] = [
-        (s.get("item"), s.get("period_id"), "llm_suggestion", [dict(s)]) for s in suggestions
-    ]
+        (r.get("item"), r.get("period"), EXTRACTED_KIND[str(r.get("kind"))],
+         [dict(c) for c in r.get("candidates", []) if isinstance(c, Mapping)])
+        for r in extracted
+        if str(r.get("kind")) in EXTRACTED_KIND
+    ]  # fmt: skip
+    rows += [(s.get("item"), s.get("period_id"), "llm_suggestion", [dict(s)]) for s in suggestions]
     for w in warnings:
         kind = _WARNING_KIND.get(str(w.get("code")))
         if kind is not None:
@@ -65,12 +82,13 @@ def store_review_items(
     document_id: int,
     suggestions: Sequence[Mapping[str, Any]],
     warnings: Sequence[Mapping[str, Any]],
+    extracted: Sequence[Mapping[str, Any]] = (),
 ) -> int:
     """Review queue rows (`review_rows`); open rows from an earlier extraction are replaced."""
     conn.execute(
         "DELETE FROM review_items WHERE document_id = %s AND status = 'open'", (document_id,)
     )
-    rows = review_rows(suggestions, warnings)
+    rows = review_rows(suggestions, warnings, extracted)
     for item, period_id, kind, candidates in rows:
         conn.execute(
             "INSERT INTO review_items (document_id, item, period_id, kind, candidates) "

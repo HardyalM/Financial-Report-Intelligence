@@ -77,7 +77,7 @@ test("pointing to the statement page re-reads it and the report comes back ready
   expect(report.status).toBe("ready");
 });
 
-test("document type, then a withheld candidate confirmed by you, then the stale banner", async ({ page }) => {
+test("document type, then accepting a candidate shows Confirmed by you, then the stale banner", async ({ page }) => {
   const id = await upload(page, "example_states.pdf");
   await expect(page.getByTestId("status-badge")).toHaveText("Needs document type", { timeout: READY });
   await expect(page.getByTestId("ratio-card-state-K5")).toHaveCount(4);
@@ -95,12 +95,10 @@ test("document type, then a withheld candidate confirmed by you, then the stale 
   await expect(row).toHaveAttribute("data-testid", "figure-row-state-R6");
   await row.getByTestId("open-review").click();
   const panel = page.getByTestId("review-panel");
-  await expect(panel.getByTestId("review-withheld")).toContainText("825");
-  await panel.getByTestId("use-withheld").click();
-  await expect(panel.getByTestId("enter-page")).toHaveValue("3");
-  await expect(panel.getByTestId("enter-raw")).toHaveValue("825");
-  await panel.getByTestId("enter-value").fill("825");
-  await panel.getByTestId("enter-submit").click();
+  // Accepting a candidate (EXTRACTION 6): the review row comes from extraction itself.
+  const candidates = panel.getByTestId("review-candidates");
+  await expect(candidates).toContainText("825");
+  await candidates.getByTestId("use-candidate").click();
 
   await expect(row).toHaveAttribute("data-testid", "figure-row-state-R4");
   await expect(row).toContainText("Confirmed by you");
@@ -110,7 +108,7 @@ test("document type, then a withheld candidate confirmed by you, then the stale 
   const saved = (await overrides(page, id)) as { action: string; anchored: boolean }[];
   expect(saved.map((o) => [o.action, o.anchored])).toEqual([
     ["document_type", true],
-    ["set_value", true],
+    ["accept_candidate", true],
   ]);
 });
 

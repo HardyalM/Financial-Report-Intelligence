@@ -348,12 +348,22 @@ def create_app(
             )
         rid, _, idx = body.candidate_id.partition(":")
         row = conn.execute(
-            "SELECT candidates FROM review_items WHERE id = %s AND document_id = %s",
+            "SELECT candidates, item, period_id FROM review_items WHERE id = %s AND document_id = %s",
             (int(rid) if rid.isdigit() else -1, doc_id),
         ).fetchone()
         candidates = list(row[0]) if row else []
         if not idx.isdigit() or int(idx) >= len(candidates):
             raise OverrideError(404, "candidate_not_found", f"no candidate {body.candidate_id}")
+        assert row is not None
+        # A candidate is a reading of one line in one period: it never fills another line.
+        if (row[1] is not None and row[1] != body.item) or (
+            row[2] is not None and row[2] != body.period_id
+        ):
+            raise OverrideError(
+                422, "candidate_item_mismatch",
+                f"candidate {body.candidate_id} is for {row[1]} {row[2]}, "
+                f"not {body.item} {body.period_id}",
+            )  # fmt: skip
         c = candidates[int(idx)]
         if c.get("value") is None or not c.get("raw_text") or c.get("page") is None:
             raise OverrideError(
