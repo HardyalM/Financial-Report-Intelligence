@@ -405,7 +405,8 @@ These checks are created in M0 and run in CI.
 ## M8.2 — Bank ratios and reported metrics *(only if OQ-4 = B)*
 
 **Read first:** OQ-4; SCHEMA §11 (`ReportedMetric`).
-**Allowed paths:** `finintel/ratios/**`, `finintel/commentary/**`, `schemas/reported_metric.schema.json`, `finintel/contracts/**`, `web/**`, `tests/**`.
+**Allowed paths:** `finintel/ratios/**`, `finintel/commentary/**`, `schemas/reported_metric.schema.json`, `finintel/contracts/**`, `web/**`, `tests/**`, `scripts/gen_contracts.py`, `scripts/scope.yaml`.
+*Amended 2026-10-02: registering the new schema needs one entry in `scripts/gen_contracts.py`. Status: reported metrics built (CET1 statutory and pro forma, banking NIM, from verified quotes; never computed, never a ratio input). The two bank ratios are NOT built: `CLAUDE.md` does not contain them yet (the tech lead's text is in an untracked `CLAUDE_updated.md`), OQ-4's decision line is blank and `fixtures/expected/company_b.ratios.json` does not exist.*
 
 **Gate:**
 - [ ] G1–G6 pass.

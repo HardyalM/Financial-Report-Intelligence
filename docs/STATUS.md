@@ -7,6 +7,34 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M8.2 — 2026-10-02 — reported metrics built; bank ratios BLOCKED (CLAUDE.md, OQ-4, company_b.ratios.json)
+
+`finintel/commentary/reported.py` + `schemas/reported_metric.schema.json` (contract generated). Deterministic patterns over
+narrative chunks; `value_text` is a verbatim substring of `quote`, `quote` a verbatim slice of the chunk, `value` parsed from
+`value_text`; no model. A target, expectation, requirement or quarter near the figure ("expect", "guidance" before it,
+"minimum", "requirement", "fall below", "quarter") is never the reported figure. Period from "at 31 December YYYY" or a
+"(YYYY: X per cent)" comparator; a figure stated with no period only corroborates (a disagreement blocks the metric).
+Pro forma is its own metric. Disagreeing figures for one metric and period are not shown; the reason is kept.
+
+company_b (local PDF): CET1 ratio 14.2% FY2024 / 14.6% FY2023 (p. 72); CET1 pro forma 13.5% / 13.7% (p. 72); banking net
+interest margin 2.95% / 3.11% (p. 69). Not picked up, correctly: the ~12% regulatory requirement, the 4.5% Pillar 1 minimum,
+the 2.97% fourth-quarter margin, the 7.0% conversion trigger.
+
+| Command | Result |
+|---|---|
+| `make ci` | exit 0; 961 passed (+8: value_text in quote, targets/requirements/quarters excluded, pro forma, corroboration, disagreement, no ratio input references a reported metric, Lloyds, no model import) |
+
+Blocked (the tech lead's): (1) `CLAUDE.md` is unchanged; the two formulas are in an untracked `CLAUDE_updated.md` (G4: only
+the tech lead edits `CLAUDE.md`). (2) As written, cost-to-income = operating_expenses / total_income gives a NEGATIVE ratio,
+because operating expenses are stored signed as printed ((11,601) → −11,601): the definition must say "the magnitude of
+operating expenses" (or the pipeline must store costs positive, a SCHEMA §4.2 change). (3) `total_income` for a bancassurer is
+34,281 (before insurance finance expense): cost-to-income 33.8%; the after-insurance line (18,003) gives 64.4%. The text
+chooses the former; recorded, not changed. (4) OQ-4's decision line is blank. (5) `fixtures/expected/company_b.ratios.json`
+does not exist (E2). (6) `fixtures/expected/company_b.json` is still untracked. Not yet wired into the API and UI (the commentary
+artefact and API carry no reported metrics yet); that and the ratios follow once unblocked.
+
+---
+
 ## M8.1 — 2026-10-02 — bank support: gate PASSES
 
 OQ-4 is unanswered, so default A, which is also the tech lead's instruction: bank lines are extracted under their own ids and

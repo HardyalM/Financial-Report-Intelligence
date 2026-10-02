@@ -63,6 +63,7 @@ select = ["E", "F", "I", "B", "UP", "N", "SIM", "RUF"]
 "finintel/contracts/ratio_pack.py" = ["ALL"]
 "finintel/contracts/citation.py" = ["ALL"]
 "finintel/contracts/commentary.py" = ["ALL"]
+"finintel/contracts/reported_metric.py" = ["ALL"]
 # A table of section-title regular expressions: one pattern per line is the readable form.
 "finintel/narrative/sections.py" = ["E501"]
 # Typographic characters are the point of these tests.

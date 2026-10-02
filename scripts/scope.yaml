@@ -191,6 +191,8 @@ sessions:
     - "finintel/contracts/**"
     - "web/**"
     - "tests/**"
+    - "scripts/gen_contracts.py"
+    - "scripts/scope.yaml"
   "M8.3":
     - "docs/RESULTS.md"
     - "docs/INTERVIEW.md"

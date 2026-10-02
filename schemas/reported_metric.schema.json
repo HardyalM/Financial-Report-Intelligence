@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/schemas/reported_metric.schema.json",
+  "title": "ReportedMetric",
+  "description": "A figure the company states in its narrative (for example its CET1 ratio or net interest margin), shown 'as reported (p. X)' and never used in any computation (SCHEMA section 11, OQ-4 = B). value_text is a verbatim substring of quote, quote a verbatim substring of the chunk; value is parsed from value_text by code; a model never supplies either.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "label", "label_found", "value_text", "value", "unit", "period_id", "page", "page_label", "quote", "chunk_id", "char_start", "char_end", "basis"],
+  "properties": {
+    "id": { "enum": ["cet1_ratio", "cet1_ratio_pro_forma", "net_interest_margin"] },
+    "label": { "type": "string", "description": "Readable name, for example 'CET1 ratio (pro forma)'." },
+    "label_found": { "type": "string", "description": "The metric's words as printed, for example 'banking net interest margin'." },
+    "value_text": { "type": "string", "minLength": 1, "description": "Verbatim from quote, for example '14.2 per cent'." },
+    "value": { "type": "number", "description": "Parsed from value_text by code." },
+    "unit": { "enum": ["percent"] },
+    "period_id": { "type": ["string", "null"], "description": "The pack period the figure is stated for; null if the sentence does not say." },
+    "page": { "type": "integer", "minimum": 1, "description": "1-based PDF page of value_text, code-derived." },
+    "page_label": { "type": ["string", "null"] },
+    "quote": { "type": "string", "minLength": 1, "description": "The sentence that states the figure, verbatim from the chunk." },
+    "chunk_id": { "type": "string" },
+    "char_start": { "type": "integer", "minimum": 0, "description": "Offset of quote in the chunk text." },
+    "char_end": { "type": "integer", "minimum": 0 },
+    "basis": { "type": ["string", "null"], "description": "'pro forma' when the sentence says so; null otherwise." }
+  }
+}

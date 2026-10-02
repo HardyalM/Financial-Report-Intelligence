@@ -36,6 +36,11 @@ TARGETS: list[tuple[str, str, str]] = [
     ("schemas/ratio_pack.schema.json", "finintel/contracts/ratio_pack.py", "RatioPack"),
     ("schemas/citation.schema.json", "finintel/contracts/citation.py", "Citation"),
     ("schemas/commentary.schema.json", "finintel/contracts/commentary.py", "Commentary"),
+    (
+        "schemas/reported_metric.schema.json",
+        "finintel/contracts/reported_metric.py",
+        "ReportedMetric",
+    ),
 ]
 
 HEADER = (
