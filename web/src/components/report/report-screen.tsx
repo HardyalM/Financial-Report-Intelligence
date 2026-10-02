@@ -10,14 +10,17 @@ import { FiguresTable } from "@/components/report/figures-table";
 import { ReportFooter, SiteFooter } from "@/components/report/footer";
 import { ReportHeader } from "@/components/report/header";
 import { RatioCards } from "@/components/report/ratio-cards";
+import { failureSentence, ProgressStepper } from "@/components/report/progress-stepper";
 import { NumbersSnapshot } from "@/components/report/snapshot";
+import { UnitDialog } from "@/components/report/unit-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useReport } from "@/lib/api";
+import { inProgress, useReport } from "@/lib/api";
+import type { Report } from "@/lib/types";
 
 /** The one primary screen (UI.md section 2). */
 export function ReportScreen({ id }: { id: string }) {
-  const state = useReport(id);
+  const { state, reload } = useReport(id);
   if (state.status === "loading") return <LoadingScreen />;
   if (state.status === "error") {
     const { error } = state;
@@ -47,10 +50,12 @@ export function ReportScreen({ id }: { id: string }) {
   }
   return (
     <TooltipProvider delayDuration={250} skipDelayDuration={100}>
-      <ReportProvider data={state.data}>
+      <ReportProvider data={state.data} reload={reload}>
         <div className="flex min-h-screen flex-col">
           <ReportHeader />
+          {state.data.report.status === "needs_unit_confirmation" ? <UnitDialog /> : null}
           <main className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
+            <StageStatus report={state.data.report} />
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_440px] 2xl:grid-cols-[minmax(0,1fr)_520px]">
               <div className="min-w-0 space-y-6">
                 <BannerStack />
@@ -68,6 +73,38 @@ export function ReportScreen({ id }: { id: string }) {
         </div>
       </ReportProvider>
     </TooltipProvider>
+  );
+}
+
+/** Processing (stepper) or failed (the error in words and the stage), UI.md section 3. */
+function StageStatus({ report }: { report: Report }) {
+  if (inProgress(report)) {
+    return (
+      <div className="mb-6">
+        <ProgressStepper report={report} />
+      </div>
+    );
+  }
+  if (report.status !== "failed") return null;
+  const failure = failureSentence(report);
+  return (
+    <div
+      role="alert"
+      data-testid="report-failed"
+      className="mb-6 rounded-xl border border-missing-line bg-missing-soft px-5 py-4"
+    >
+      <p className="text-[14px] font-semibold text-ink">{failure?.text ?? "Processing stopped."}</p>
+      <p className="mt-1 text-[12.5px] leading-relaxed text-ink-2">
+        It stopped at “{failure?.stage}” after its retries. Uploading the same file again shows this
+        report; a different file starts afresh.{" "}
+        <span className="font-mono text-[11.5px] text-ink-3">
+          report {report.id} · {failure?.code}
+        </span>
+      </p>
+      <div className="mt-3">
+        <ProgressStepper report={report} />
+      </div>
+    </div>
   );
 }
 

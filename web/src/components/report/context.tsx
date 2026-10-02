@@ -21,11 +21,21 @@ interface ReportContextValue extends ReportData {
   focusRow: (item: string) => void;
   /** Scroll to a ratio card and highlight it briefly (from a ratio placeholder in commentary). */
   focusRatio: (ratio: string) => void;
+  /** Re-read the report after a person's decision. */
+  reload: () => Promise<void>;
 }
 
 const ReportContext = React.createContext<ReportContextValue | null>(null);
 
-export function ReportProvider({ data, children }: { data: ReportData; children: React.ReactNode }) {
+export function ReportProvider({
+  data,
+  reload,
+  children,
+}: {
+  data: ReportData;
+  reload: () => Promise<void>;
+  children: React.ReactNode;
+}) {
   const [selection, select] = React.useState<Selection>(null);
   const periods = data.report.pack?.periods ?? [];
   const focusRow = React.useCallback((item: string) => {
@@ -48,9 +58,9 @@ export function ReportProvider({ data, children }: { data: ReportData; children:
   const value = React.useMemo(
     () => ({
       ...data, current: periods[0] ?? null, prior: periods[1] ?? null, selection, select, focusRow,
-      focusRatio,
+      focusRatio, reload,
     }),
-    [data, periods, selection, focusRow, focusRatio],
+    [data, periods, selection, focusRow, focusRatio, reload],
   );
   return <ReportContext.Provider value={value}>{children}</ReportContext.Provider>;
 }

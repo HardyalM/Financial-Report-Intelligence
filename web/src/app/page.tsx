@@ -1,6 +1,7 @@
 import { FileSearch } from "lucide-react";
 import { SiteFooter } from "@/components/report/footer";
 import { OpenReport } from "./open-report";
+import { UploadDropzone } from "./upload-dropzone";
 
 export default function Home() {
   return (
@@ -17,7 +18,11 @@ export default function Home() {
             empty and says why.
           </p>
         </div>
-        <OpenReport />
+        <UploadDropzone />
+        <div className="space-y-2">
+          <p className="text-[12.5px] text-ink-3">Or open a report already read:</p>
+          <OpenReport />
+        </div>
       </main>
       <SiteFooter />
     </div>

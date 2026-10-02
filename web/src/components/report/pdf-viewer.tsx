@@ -22,11 +22,14 @@ export function PdfViewer({
   page,
   highlights,
   folio,
+  onPageChange,
 }: {
   url: string;
   page: number;
   highlights: Highlight[];
   folio: (page: number) => string | null;
+  /** Told whenever the page on screen changes (the unit dialog uses it as the evidence page). */
+  onPageChange?: (page: number) => void;
 }) {
   const [doc, setDoc] = React.useState<PDFDocumentProxy | null>(null);
   const [error, setError] = React.useState<string | null>(null);
@@ -39,6 +42,7 @@ export function PdfViewer({
   const [width, setWidth] = React.useState(0);
 
   React.useEffect(() => setCurrent(page), [page, highlights]);
+  React.useEffect(() => onPageChange?.(current), [current, onPageChange]);
 
   React.useEffect(() => {
     let live = true;

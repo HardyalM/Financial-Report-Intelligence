@@ -23,6 +23,21 @@ export const LOCKED: Record<RatioName, { label: string; formula: string }> = {
 const ORDER: RatioName[] = ["operating_margin", "current_ratio", "debt_to_equity", "roce"];
 
 export function RatioCards() {
+  const { report } = useReportContext();
+  if (!report.ratios && ["queued", "processing", "failed"].includes(report.status)) {
+    return (
+      <section aria-labelledby="ratios-heading" data-testid="ratios-pending">
+        <h2 id="ratios-heading" className="mb-3 text-[15px] font-semibold tracking-[-0.01em]">
+          Ratios
+        </h2>
+        <p className="rounded-xl border border-line bg-surface px-5 py-4 text-[13px] text-ink-2">
+          {report.status === "failed"
+            ? "Not calculated: processing stopped before the figures were ready."
+            : "Calculated in code once the figures are checked."}
+        </p>
+      </section>
+    );
+  }
   return (
     <section aria-labelledby="ratios-heading">
       <div className="mb-3 flex items-baseline justify-between">

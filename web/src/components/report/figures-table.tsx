@@ -26,7 +26,9 @@ const NOTABLE: RowState[] = ["R3", "R4", "R5", "R6", "R7", "R8"];
 export function FiguresTable() {
   const { report, current, prior } = useReportContext();
   const pack = report.pack;
-  if (!pack || !current) return <BlockedTable />;
+  if (!pack || !current) {
+    return report.status === "needs_unit_confirmation" ? <BlockedTable /> : <PendingTable />;
+  }
   const unit = unitLabel(pack.currency, pack.unit_scale);
   const items = orderedItems(Object.keys(pack.items));
   const groups = (["income", "balance", "equity", "debt"] as const)
@@ -290,6 +292,7 @@ function RowDetail({
             {info.candidate?.page ? (
               <PageChip page={info.candidate.page} onOpen={onOpen} />
             ) : null}
+            <ReviewButton onOpen={onOpen} />
           </div>
           <WarningList warnings={sentences} fallbackText={checks[0] ? checkSentence(checks[0]) : null} />
         </div>
@@ -298,7 +301,10 @@ function RowDetail({
     case "R7":
       return (
         <div className="mt-1.5 space-y-1">
-          <StateBadge state="R7" label="Suggested by model: confirm?" />
+          <div className="flex flex-wrap items-center gap-1.5">
+            <StateBadge state="R7" label="Suggested by model: confirm?" />
+            <ReviewButton onOpen={onOpen} />
+          </div>
           {info.suggestion ? (
             <p className="text-[12.5px] leading-relaxed text-ink-2">
               The model points at the row{" "}
@@ -312,7 +318,10 @@ function RowDetail({
     case "R8":
       return (
         <div className="mt-1.5 space-y-1">
-          <StateBadge state="R8" />
+          <div className="flex flex-wrap items-center gap-1.5">
+            <StateBadge state="R8" />
+            {report.status === "ready" || report.status === "needs_document_type" ? <ReviewButton onOpen={onOpen} /> : null}
+          </div>
           <WhereWeLooked item={item} />
           <WarningList warnings={reasons.filter((w) => w.code !== "missing_item" || item === "total_debt")} />
         </div>
@@ -332,6 +341,20 @@ function RowDetail({
     return { code: "human_override_unanchored", message: "", item: id };
   }
   void report;
+}
+
+/** Opens the figure in the evidence panel, where review actions are (UI.md 6.3). */
+function ReviewButton({ onOpen }: { onOpen: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      data-testid="open-review"
+      className="ml-1 inline-flex h-5 items-center rounded border border-accent/40 px-1.5 text-[11px] font-medium text-accent hover:bg-accent-soft"
+    >
+      Review
+    </button>
+  );
 }
 
 function reasonOf(warnings: PackWarning[], code: string): string | undefined {
@@ -419,6 +442,21 @@ function ComponentRow({ component, colSpan }: { component: DerivedComponent; col
       {colSpan > 1 ? <td /> : null}
       <td />
     </tr>
+  );
+}
+
+/** Before extraction has finished: nothing to show yet, and nothing guessed. */
+function PendingTable() {
+  const { report } = useReportContext();
+  return (
+    <Card className="px-5 py-4" data-testid="figures-pending">
+      <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Key figures</h2>
+      <p className="mt-1 text-[13px] text-ink-2">
+        {report.status === "failed"
+          ? "No figures: extraction did not finish."
+          : "Figures appear here as soon as the statements have been read and checked."}
+      </p>
+    </Card>
   );
 }
 

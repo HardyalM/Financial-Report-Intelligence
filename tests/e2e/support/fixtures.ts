@@ -37,8 +37,16 @@ export function loadFixture(name: FixtureName): FixtureBody {
   return JSON.parse(readFileSync(path.join(API_DIR, `${name}.json`), "utf8")) as FixtureBody;
 }
 
-/** Route the report's endpoints to its fixture, then open the report screen. */
-export async function openReport(page: Page, name: FixtureName): Promise<FixtureBody> {
+/**
+ * Route the report's endpoints to its fixture, then open the report screen. `setup` registers a
+ * test's own routes after the fixture's, so they take precedence (Playwright runs the most
+ * recently registered matching route first).
+ */
+export async function openReport(
+  page: Page,
+  name: FixtureName,
+  setup?: (page: Page) => Promise<void>,
+): Promise<FixtureBody> {
   const body = loadFixture(name);
   const id = body.report.id;
   await page.route("**/api/**", async (route) => {
@@ -61,6 +69,7 @@ export async function openReport(page: Page, name: FixtureName): Promise<Fixture
     }
     return json(404, { detail: { code: "report_not_found", message: `unexpected ${rest}` } });
   });
+  await setup?.(page);
   await page.goto(`/reports/${id}`);
   await expect(page.getByTestId("report-header")).toBeVisible();
   return body;

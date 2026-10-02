@@ -7,6 +7,40 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M7.3 — 2026-10-02 — upload, progress and review: built; live gate NOT RUN; one blocker
+
+Built (web only; no backend change): upload dropzone (50 MB, PDF, the API's refusals in words; Next's proxy body limit
+raised to 51 MB so the API's own 413 is what a person sees); progress stepper driven by `jobs`, polled every second while
+queued/processing, figures before commentary; failed state (stage and error class in words); blocking unit dialog (currency,
+scale, the page on screen as evidence page, pdf.js viewer); document-type choice with a reason; review actions (UI.md 6.3):
+candidates with "Use this" (accept_candidate), withheld candidate offered to "Enter from a page", model suggestion
+("confirm from the page", never a number), enter-from-page with the exact refusal "That text isn't on page N. Check the page
+number or select the figure on the page." and force-with-reason, leave empty with a reason, point to the statement page
+(also on the statement-not-found banner). Review actions are desktop-only (hidden below 768 px).
+
+| Command | Result |
+|---|---|
+| `make lint typecheck test contracts-check scope` | exit 0; 925 passed |
+| `make web-check` | exit 0 |
+| `make e2e` (fixtures) | 39 passed (+3: accept_candidate request, model suggestion, no review on a settled figure) |
+| `check_scope.py M7.3 --base 12fdd0a` | only fixtures/expected/* and docs/ratings_draft.md (the tech lead's files) |
+| `make e2e-live` (tests/e2e/live: upload→ready, refusal saves nothing, point to page, document type → withheld candidate confirmed → stale banner, unit dialog) | NOT RUN: Docker daemon not running |
+
+Blocker (gate item "accepting a candidate"): no pipeline-produced review row carries a candidate with a printed value.
+`reconcile.pack` records disagreement candidates as raw strings and low-confidence rows with none; `persist.store_review_items`
+stores only model pointers and warnings. So `POST /overrides {accept_candidate}` succeeds only for the hand-inserted row in
+the M6.2 API test. Options for the tech lead:
+- A. Extraction emits deterministic candidates with `{engine, value, raw_text, page, bbox}` (value parsed and sign-normalised
+  exactly as for publication) and the worker stores them as `disagreement` / `below_threshold` review rows. Small change in
+  reconcile + persist; then "Use this" works on real reports.
+- B. Keep `accept_candidate` for future engines; a withheld candidate is confirmed through `set_value` (the person types the
+  value; the server anchors the printed text). This is what the live test does today; the badge is the same.
+
+Other notes: no Undo (the API has no reversing action); "Reject" for a model suggestion is not offered (no endpoint; the
+suggestion stays open); no Regenerate for stale commentary (no endpoint).
+
+---
+
 ## M7.2 — 2026-10-02 — evidence panel and commentary: gate PASSES (Postgres tests not re-run)
 
 pdf.js viewer (pdfjs-dist 6, worker served from web/public, no CDN): one page at a time, prev/next, zoom, "PDF p. N · printed

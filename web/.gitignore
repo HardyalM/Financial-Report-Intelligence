@@ -2,6 +2,8 @@ node_modules/
 .next/
 out/
 test-results/
+test-results-live/
 playwright-report/
 *.tsbuildinfo
 public/pdf.worker.min.mjs
+.next-live/

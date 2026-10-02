@@ -5,6 +5,7 @@ import * as React from "react";
 import { CodeHint, StateBadge } from "@/components/report/chips";
 import { useReportContext, type Selection } from "@/components/report/context";
 import { type Highlight, PdfViewer } from "@/components/report/pdf-viewer";
+import { ReviewPanel } from "@/components/report/review-panel";
 import { Badge } from "@/components/ui/badge";
 import { warningSentence } from "@/lib/copy";
 import { pageRange, unitLabel } from "@/lib/format";
@@ -143,7 +144,10 @@ function PanelBody() {
           <p className="num text-[12.5px] text-ink-3">Printed on {pageRange(selection.pages)}</p>
         </div>
       ) : (
-        <FigureProvenance item={selection.item} period={selection.period} input={selection.kind === "input"} />
+        <>
+          <FigureProvenance item={selection.item} period={selection.period} input={selection.kind === "input"} />
+          <ReviewPanel item={selection.item} period={selection.period} />
+        </>
       )}
     </div>
   );

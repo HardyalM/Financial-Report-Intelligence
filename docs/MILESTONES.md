@@ -380,6 +380,7 @@ These checks are created in M0 and run in CI.
 - [ ] Playwright: entering a value not on the page shows the refusal message, and nothing is saved.
 - [ ] Playwright: after an override, the stale-commentary banner appears.
 - [ ] Playwright: the unit-confirmation and point-to-page flows complete on synthetic fixtures.
+*2026-10-02: built; the live suite (`make e2e-live`: the real API and worker on a throwaway schema) is written but NOT YET RUN: the Docker daemon is not running. Blocker for "accepting a candidate": the pipeline never stores a review row whose candidate carries a printed value (reconcile keeps raw strings for disagreements and none for low-confidence rows; the worker stores only model pointers and warnings), so `accept_candidate` cannot succeed on a real report. The UI sends it correctly (fixture test); the live test confirms a withheld candidate through `set_value` (anchored, "Confirmed by you"). See docs/STATUS.md for the options.*
 
 ---
 
