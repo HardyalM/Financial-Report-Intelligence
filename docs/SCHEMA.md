@@ -245,13 +245,26 @@ Rules:
 | 13 | Top-level optional `balance_sheet_classified` (boolean) (added at review) | Records the EXTRACTION §1.4 test that drives current-ratio applicability |
 | 14 | `derived_from[]` entries may carry `assumed_zero: true` (added at review) | Makes the "absent component counted as zero" decision visible and auditable |
 
-### Bank ids (M8.1; subject to OQ-4)
+### Bank ids (M8.1; approved by the tech lead 2026-10-02, following `fixtures/expected/company_b.json`)
 
-`total_income`, `net_interest_income`, `operating_expenses`, `impairment_charge`, `loans_and_advances_to_customers`, `customer_deposits`, together with the existing `profit_before_tax`, `total_assets`, `total_liabilities` and `total_equity`.
+| Id | Statement | Meaning | Example label (company_b) |
+|---|---|---|---|
+| `net_interest_income` | Income statement | Interest income less interest expense | Net interest income |
+| `total_income` | Income statement | Total income before insurance finance expense and before costs | Total income |
+| `total_income_after_insurance_finance` | Income statement | Total income after net finance expense in respect of insurance and investment contracts (bancassurers) | Total income, after net finance expense in respect of insurance and investment contracts |
+| `operating_expenses` | Income statement | Operating expenses, **excluding** impairment; signed as printed (negative) | Operating expenses |
+| `impairment` | Income statement | Credit impairment charge (or credit); signed as printed. Was `impairment_charge` in the draft | Impairment |
+| `profit_for_the_year` | Income statement | Profit for the year, total (all equity holders and non-controlling interests) | Profit for the year |
+| `loans_and_advances_to_customers` | Balance sheet | Loans and advances to customers | Loans and advances to customers |
+| `customer_deposits` | Balance sheet | Deposits from customers | Customer deposits |
+| `debt_securities_in_issue` | Balance sheet | Debt securities in issue (as its own line; never summed into `total_debt`) | Debt securities in issue at amortised cost |
+| `subordinated_liabilities` | Balance sheet | Subordinated liabilities (as its own line; never summed into `total_debt`) | Subordinated liabilities |
+
+Together with the existing `profit_before_tax`, `total_assets`, `total_liabilities` and `total_equity` (including non-controlling interests). The alias map is `finintel/mapping/aliases/bank.yaml`. A bank's profit for the year uses `profit_for_the_year`, not the corporate `net_income`.
 
 For banks:
-- `revenue`, `current_assets` and `current_liabilities` are **present and null** with `bank_layout` and `unclassified_balance_sheet`.
-- They are **not** mapped from "Total income" or liquidity-ordered lines.
+- `revenue`, `operating_profit`, `current_assets`, `current_liabilities` and `total_debt` are **present and null by design**, with `bank_layout`, `unclassified_balance_sheet` and a `missing_item` warning that says why.
+- They are **not** mapped from "Total income", "Profit before tax", liquidity-ordered lines or customer deposits.
 
 ### NHS trust ids (M8.1 optional, or v1.1; subject to OQ-5)
 
