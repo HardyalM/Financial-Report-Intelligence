@@ -52,7 +52,8 @@ ui-fixtures:
 	$(RUN) python -m tests.e2e.fixtures.build_fixtures
 
 e2e-live:  # the real API and worker on a throwaway schema; needs `docker compose up -d db`
-	cd web && E2E_LIVE=1 npx playwright test
+	cd web && E2E_LIVE=1 npx playwright test; status=$$?; cd .. && \
+	$(RUN) python -m tests.e2e.live_server --drop-only; exit $$status
 
 ci-web: web-check e2e
 

@@ -7,7 +7,7 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
-## M7.3 — 2026-10-02 — upload, progress and review: built; live gate NOT RUN; one blocker
+## M7.3 — 2026-10-02 — upload, progress and review: live gate 5/5; one item blocked (accept_candidate)
 
 Built (web only; no backend change): upload dropzone (50 MB, PDF, the API's refusals in words; Next's proxy body limit
 raised to 51 MB so the API's own 413 is what a person sees); progress stepper driven by `jobs`, polled every second while
@@ -24,7 +24,12 @@ number or select the figure on the page." and force-with-reason, leave empty wit
 | `make web-check` | exit 0 |
 | `make e2e` (fixtures) | 39 passed (+3: accept_candidate request, model suggestion, no review on a settled figure) |
 | `check_scope.py M7.3 --base 12fdd0a` | only fixtures/expected/* and docs/ratings_draft.md (the tech lead's files) |
-| `make e2e-live` (tests/e2e/live: upload→ready, refusal saves nothing, point to page, document type → withheld candidate confirmed → stale banner, unit dialog) | NOT RUN: Docker daemon not running |
+| `make e2e-live` (tests/e2e/live: upload→ready, refusal saves nothing, point to page, document type → withheld candidate confirmed → stale banner, unit dialog) | 5 passed, three consecutive runs; no e2e_* schema left behind |
+| `make test-db` (Docker restarted at the tech lead's go-ahead) | 29 passed (incl. M7.2's `folio_offset` assertion) |
+
+First live run: the point-to-page test read `pack_version` before the worker had re-run extraction (the badge still said
+Ready from before); the tests now wait for the stepper to appear and clear. Schemas leaked because Playwright stops the server
+through `uv run`; the launcher now clears e2e_* schemas at start and `make e2e-live` drops them after.
 
 Blocker (gate item "accepting a candidate"): no pipeline-produced review row carries a candidate with a printed value.
 `reconcile.pack` records disagreement candidates as raw strings and low-confidence rows with none; `persist.store_review_items`

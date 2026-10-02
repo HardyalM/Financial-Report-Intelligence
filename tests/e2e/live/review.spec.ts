@@ -65,12 +65,16 @@ test("pointing to the statement page re-reads it and the report comes back ready
   await expect(form).toContainText("Point to the consolidated balance sheet");
   await form.getByTestId("point-page").fill("4");
   await form.getByTestId("point-submit").click();
+  // The re-read runs in the worker: the stepper shows it, then the report is ready again.
+  await expect(page.getByTestId("progress-stepper")).toBeVisible();
   await expect(page.getByTestId("status-badge")).toHaveText("Ready", { timeout: READY });
+  await expect(page.getByTestId("progress-stepper")).toHaveCount(0);
   await expect.poll(async () => (await overrides(page, id)).map((o) => (o as { action: string }).action)).toEqual([
     "statement_location",
   ]);
   const report = await (await page.request.get(`/api/reports/${id}`)).json();
   expect(report.pack_version).toBe(2);
+  expect(report.status).toBe("ready");
 });
 
 test("document type, then a withheld candidate confirmed by you, then the stale banner", async ({ page }) => {
@@ -81,7 +85,9 @@ test("document type, then a withheld candidate confirmed by you, then the stale 
   await choice.getByText("Corporate").click();
   await choice.getByTestId("document-type-reason").fill("A retailer: revenue is printed as Sales of goods");
   await choice.getByTestId("document-type-submit").click();
+  await expect(page.getByTestId("progress-stepper")).toBeVisible();
   await expect(page.getByTestId("status-badge")).toHaveText("Ready", { timeout: READY });
+  await expect(page.getByTestId("progress-stepper")).toHaveCount(0);
   await expect(page.getByTestId("ratio-card-state-K5")).toHaveCount(0);
   await expect(page.getByTestId("banner-stale")).toHaveCount(0);
 

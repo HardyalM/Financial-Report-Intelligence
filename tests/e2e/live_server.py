@@ -33,6 +33,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--stage-delay", type=float, default=0.4)
+    parser.add_argument("--drop-only", action="store_true", help="drop e2e_* schemas and exit")
     args = parser.parse_args()
 
     schema = "e2e_" + uuid.uuid4().hex[:10]
@@ -44,6 +45,16 @@ def main() -> int:
             file=sys.stderr,
         )
         return 2
+    # Playwright stops this server through `uv run`, which may not pass the signal on, so a
+    # schema can outlive its run. Only this harness creates e2e_* schemas, and live runs are
+    # serial (one server), so any left over is a previous run's: drop it before starting.
+    for (old,) in admin.execute(
+        "SELECT schema_name FROM information_schema.schemata WHERE schema_name LIKE 'e2e\\_%'"
+    ).fetchall():
+        admin.execute(f'DROP SCHEMA "{old}" CASCADE')
+    if args.drop_only:
+        admin.close()
+        return 0
     admin.execute(f"CREATE SCHEMA {schema}")
     admin.execute(f"SET search_path TO {schema}, public")
     migrate(admin)
