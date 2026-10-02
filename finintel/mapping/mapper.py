@@ -5,8 +5,10 @@ Applied in order; the first rule that yields a unique candidate wins:
 2. regex alias                                 (`regex_alias`)
 3. structural: an unlabelled subtotal or total row that closes a named section  (`structural`)
 The exclusion filter removes a row whatever rule produced it. Two candidates at one precedence: the
-total-styled row wins if it is unique, otherwise the item is `alias_weak` and stays null.
-No number is consulted here, except by the arithmetic checks that later score a structural pick.
+total-styled row wins if it is unique; rows that print the same text in every column are the same
+figure printed twice (a bank repeats "Profit for the year" under its attribution lines), so the
+first is taken; otherwise the item is `alias_weak` and stays null.
+No number is interpreted here: repeated rows are compared as printed text, never by magnitude.
 """
 
 from __future__ import annotations
@@ -46,12 +48,19 @@ def _excluded(label: str, spec: AliasSpec) -> bool:
     return any(token in label for token in spec.exclude_any)
 
 
+def _printed(row: Row) -> tuple[tuple[str, str], ...]:
+    return tuple(sorted((k, c.raw_text) for k, c in row.cells.items()))
+
+
 def _unique(candidates: list[Row]) -> tuple[Row | None, tuple[Row, ...]]:
     if len(candidates) == 1:
         return candidates[0], ()
     totals = [r for r in candidates if r.style is RowStyle.TOTAL]
     if len(totals) == 1:
         return totals[0], ()
+    first = _printed(candidates[0])
+    if first and all(_printed(r) == first for r in candidates[1:]):
+        return candidates[0], ()  # one figure printed twice, not a choice between figures
     return None, tuple(candidates)
 
 

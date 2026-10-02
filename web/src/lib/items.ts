@@ -9,15 +9,26 @@ export interface ItemDef {
 }
 
 export const ITEMS: ItemDef[] = [
+  // A bank's income statement (M8.1). These never stand in for revenue or operating profit.
+  { id: "net_interest_income", label: "Net interest income", group: "income" },
+  { id: "total_income", label: "Total income", group: "income" },
+  { id: "total_income_after_insurance_finance", label: "Total income after insurance finance expense", group: "income" },
+  { id: "operating_expenses", label: "Operating expenses", group: "income" },
+  { id: "impairment", label: "Impairment", group: "income" },
   { id: "revenue", label: "Revenue", group: "income", ratioInput: true },
   { id: "operating_profit", label: "Operating profit", group: "income", ratioInput: true },
   { id: "profit_before_tax", label: "Profit before tax", group: "income" },
   { id: "net_income", label: "Profit for the year", group: "income" },
+  { id: "profit_for_the_year", label: "Profit for the year", group: "income" },
+  { id: "loans_and_advances_to_customers", label: "Loans and advances to customers", group: "balance" },
   { id: "non_current_assets", label: "Non-current assets", group: "balance" },
   { id: "current_assets", label: "Current assets", group: "balance", ratioInput: true },
   { id: "cash", label: "Cash and cash equivalents", group: "balance" },
   { id: "total_assets", label: "Total assets", group: "balance", ratioInput: true },
   { id: "current_liabilities", label: "Current liabilities", group: "balance", ratioInput: true },
+  { id: "customer_deposits", label: "Customer deposits", group: "balance" },
+  { id: "debt_securities_in_issue", label: "Debt securities in issue", group: "balance" },
+  { id: "subordinated_liabilities", label: "Subordinated liabilities", group: "balance" },
   { id: "total_liabilities", label: "Total liabilities", group: "balance" },
   { id: "equity_attributable_to_owners", label: "Equity attributable to owners", group: "equity" },
   { id: "non_controlling_interests", label: "Non-controlling interests", group: "equity" },

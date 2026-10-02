@@ -52,6 +52,16 @@ _SECTION_CHECK = {
     "borrowings_non_current": "non_current_liabilities_section_sum",
     "lease_liabilities_non_current": "non_current_liabilities_section_sum",
 }
+#: Why a corporate input is null for a bank (EXTRACTION 1.4, SCHEMA 9): by design, never mapped.
+BANK_NULL = {
+    "revenue": "a bank reports net interest income and total income, not revenue",
+    "operating_profit": "a bank's income statement has no operating profit line, and profit "
+    "before tax is not operating profit",
+    "current_assets": "a bank's balance sheet has no current/non-current split",
+    "current_liabilities": "a bank's balance sheet has no current/non-current split",
+    "total_debt": "customer deposits are not corporate debt, and debt securities in issue and "
+    "subordinated liabilities are reported as their own lines, never summed into total debt",
+}
 STATEMENT_OF = {
     StatementType.INCOME_STATEMENT: "income_statement",
     StatementType.BALANCE_SHEET: "balance_sheet",
@@ -355,7 +365,10 @@ def assemble(
         for period in statement_periods.get(spec.statement, []):
             res[(item, period)] = _resolve(item, period, views, spec.statement)
     balance_periods = statement_periods.get(StatementType.BALANCE_SHEET, [])
+    bank = located.profile.document_type.value == "bank"
     for period in balance_periods:
+        if bank:
+            continue  # total_debt is null by design for a bank (BANK_NULL); never derived
         res[("total_debt", period)] = _total_debt(period, views, res)
         ta = res.get(("total_assets", period))
         parts = [res.get(("non_current_assets", period)), res.get(("current_assets", period))]
@@ -387,7 +400,7 @@ def assemble(
         if not rows or not (
             item in REQUIRED or any(r.record.get("decision") != "no_candidate" for r in rows)
         ):
-            if item in REQUIRED and not rows:
+            if item in REQUIRED and not rows and not (bank and item in BANK_NULL):
                 warnings.append(
                     {
                         "code": "missing_item",
@@ -448,7 +461,11 @@ def assemble(
         kind = specs[item].statement if item in specs else StatementType.BALANCE_SHEET
         periods = statement_periods.get(kind) or [p.id for p in header.periods]
         kind_name = located.profile.document_type.value
-        reason = f"not extracted: no alias map for document type {kind_name} yet"
+        reason = (
+            f"is null by design for a bank: {BANK_NULL[item]}"
+            if bank and item in BANK_NULL
+            else f"not extracted: no alias map for document type {kind_name} yet"
+        )
         items[item] = {
             "id": item, "label_found": None, "statement": STATEMENT_OF[kind], "note_ref": None,
             "values": [{"period_id": p, "value": None, "confidence": 0.0} for p in periods],

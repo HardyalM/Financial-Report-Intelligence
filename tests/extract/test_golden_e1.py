@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -72,3 +73,44 @@ def test_no_published_value_is_from_an_llm_or_unanchored(result) -> None:  # typ
 
 def test_reduced_verification_is_declared(result) -> None:  # type: ignore[no-untyped-def]
     assert "reduced_verification" in {w["code"] for w in result.pack["warnings"]}
+
+
+def _pack(
+    periods: list[tuple[str, str]], items: dict[str, list[tuple[str, float | None]]]
+) -> dict[str, Any]:
+    return {
+        "currency": "GBP", "unit_scale": 1_000_000, "warnings": [],
+        "periods": [{"id": i, "end_date": e} for i, e in periods],
+        "items": {
+            k: {"values": [
+                {"period_id": p, "value": v, "page": 216, "raw_text": f"{v:,.0f}" if v else None}
+                for p, v in vals
+            ]}
+            for k, vals in items.items()
+        },
+    }  # fmt: skip
+
+
+def test_a_label_period_matches_the_pack_period_with_the_same_end_date() -> None:
+    from finintel.evals.e1 import compare
+
+    pack = _pack([("FY2024", "2024-12-31")], {"total_income": [("FY2024", 34281.0)]})
+    label = {
+        "currency": "GBP", "unit_scale": 1_000_000,
+        "periods": [{"id": "2024", "end_date": "2024-12-31"}],
+        "items": {"total_income": {"values": [
+            {"period_id": "2024", "value": 34281.0, "page": 216, "raw_text": "34,281"}]}},
+    }  # fmt: skip
+    assert compare(pack, label)["matched"] == 1
+    other = {**label, "periods": [{"id": "2024", "end_date": "2024-06-30"}]}  # never a guess
+    assert compare(pack, other)["matched"] == 0
+
+
+def test_an_item_labelled_absent_must_not_be_published() -> None:
+    from finintel.evals.e1 import absent_published
+
+    pack = _pack(
+        [("FY2024", "2024-12-31")], {"revenue": [("FY2024", None)], "total_debt": [("FY2024", 5.0)]}
+    )
+    out = absent_published(pack, {"absent": ["revenue", "total_debt", "current_assets"]})
+    assert out == {"labelled": 3, "published": 1, "items": ["total_debt"]}

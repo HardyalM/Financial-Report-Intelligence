@@ -7,6 +7,42 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M8.1 — 2026-10-02 — bank support: gate PASSES
+
+OQ-4 is unanswered, so default A, which is also the tech lead's instruction: bank lines are extracted under their own ids and
+never mapped to revenue or operating profit; all four corporate ratios not applicable, none computed. `bank.yaml` maps the
+labelled ids (net_interest_income, total_income, total_income_after_insurance_finance, operating_expenses, impairment,
+profit_before_tax, profit_for_the_year, loans_and_advances_to_customers, customer_deposits, total_assets,
+total_liabilities, total_equity, debt_securities_in_issue, subordinated_liabilities). Revenue, operating profit, current
+assets, current liabilities and total debt are null "by design for a bank" with the reason (deposits are not corporate
+debt; debt securities and subordinated liabilities are never summed).
+
+| Command | Result |
+|---|---|
+| `make eval-e1 COMPANY=company_b` | labelled 28, matched 28, honest null 0, silent wrong 0, unit errors 0 |
+| `python scripts/gate.py M8.1` | exit 0: report is company_b's; E1; `ratios.not_applicable == 4`; `ratios.computed == 0`; `absent.published == 0` |
+| `make eval COMPANY=company_a` | E1 22/22, E2 8/8 (unchanged); company_a pack sha 23728ccd… unchanged; `gate.py M2.4` exit 0 |
+| `make ci` | exit 0; 953 passed (+10: bank map, null by design, ratios, repeated rows, equity subtotal, E1 periods/absent, gate) |
+| `make test-db` / `make web-check` / `make e2e` / `make e2e-live` | 31 / exit 0 / 41 (+2 bank) / 5 passed |
+| `check_scope.py M8.1 --base 6a7b6c2` | only fixtures/expected/* and docs/ratings_draft.md (the tech lead's files) |
+
+Found and fixed on the way:
+- Lloyds prints "Profit for the year" twice (the total, then again under the attribution lines). Rows that print the same
+  text in every column are one figure printed twice, so the mapper takes the first; two different figures still tie
+  (`alias_weak`). Compared as printed text, never by magnitude.
+- Total equity (45,888) was withheld: the equity check summed the printed subtotal "Ordinary shareholders' equity" with its
+  own components (off by exactly 39,521). It now skips a ruled row equal to the running sum, the chain checks' rule.
+- E1 matched periods by id only; the labels say "2024", the pipeline "FY2024". It now matches by end date (never a guess:
+  a label period with no same-id or same-end-date pack period stays unmatched).
+
+Notes: label ids win over SCHEMA §9 (`impairment` vs `impairment_charge`; `profit_for_the_year`; three extra lines). The
+numbers snapshot written by the commentary reads "missing input" for a bank's corporate ratios where the truth is "not
+applicable"; the UI hides it for banks until the commentary writes a bank snapshot (follow-up, commentary code). The
+liquidity bullet for a bank states its printed total equity with its page (correct). company_b's PDF is not committed;
+its e2e fixture is built from it locally like company_a's.
+
+---
+
 ## M7.3 option A — 2026-10-02 — accepting a candidate works on real reports: gate PASSES (all items)
 
 Tech lead's decision: option A. `reconcile.pack._candidate` keeps each withheld reading (below_threshold, unparsed,

@@ -57,10 +57,18 @@ CONDITIONS: dict[str, list[str]] = {
         "ratings.supported >= 0.9",
         "ratings.contradicted == 0",
     ],
-    "M8.1": ["e1.matched + e1.honest_null == e1.labelled", "e1.silent_wrong == 0"],
+    "M8.1": [
+        "e1.matched + e1.honest_null == e1.labelled",
+        "e1.silent_wrong == 0",
+        "ratios.not_applicable == 4",  # all four corporate ratios: applicability not_applicable
+        "ratios.computed == 0",  # and no value computed for any of them, in any period
+        "absent.published == 0",  # revenue, operating profit, ... never mapped from bank lines
+    ],
 }
 # Scripted checks that compare pipeline output with labels; each is written in its own session.
-PENDING = {"M8.1"}
+PENDING: set[str] = set()
+#: Gates that read the shared latest report must read the right company's report.
+COMPANY = {"M8.1": "company_b"}
 
 _COMPARE = {
     ast.Eq: operator.eq,
@@ -392,6 +400,13 @@ def run(session: str, report_path: Path) -> tuple[int, list[str]]:
             return 1, [f"{session}: eval report not found at {report_path}"]
         report = json.loads(report_path.read_text(encoding="utf-8"))
         failed = False
+        if session in COMPANY:
+            ok = report.get("company") == COMPANY[session]
+            failed |= not ok
+            lines.append(
+                f"{'PASS' if ok else 'FAIL'}  report is for {COMPANY[session]} "
+                f"({report.get('company')})"
+            )
         for condition in conditions:
             try:
                 ok = evaluate(condition, report)

@@ -4,9 +4,13 @@ import { useReportContext } from "@/components/report/context";
 
 /** One code-rendered line (UI.md section 7). Written by the backend, never by a model. */
 export function NumbersSnapshot() {
-  const { commentary } = useReportContext();
+  const { commentary, report } = useReportContext();
   const snapshot = commentary?.validation?.snapshot;
   if (!snapshot?.rendered) return null;
+  // The snapshot is written in the corporate ratios' terms; for a bank they are not applicable
+  // (shown on the cards), so the line would read "missing input" where the truth is "not
+  // applicable". Hidden until the commentary writes a bank snapshot (follow-up in STATUS).
+  if (report.document_type === "bank") return null;
   return (
     <div
       data-testid="numbers-snapshot"

@@ -30,6 +30,10 @@ export function warningSentence(w: PackWarning): string {
   const page = w.page ? `p. ${w.page}` : null;
   switch (w.code) {
     case "missing_item":
+      if (w.message.includes("null by design for a bank: ")) {
+        const why = w.message.split("null by design for a bank: ")[1] ?? "";
+        return `Not applicable to a bank: ${why}.`;
+      }
       if (/no alias map for document type (\w+)/.test(w.message)) {
         const kind = /document type (\w+)/.exec(w.message)?.[1] ?? "this";
         return `Not extracted: there is no line-item map for ${kind === "bank" ? "bank" : kind} accounts yet.`;

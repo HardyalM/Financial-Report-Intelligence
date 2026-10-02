@@ -103,5 +103,17 @@
    "stale"
   ],
   "title": "Example Group plc (stale commentary)"
+ },
+ {
+  "id": 9,
+  "name": "company_b",
+  "notes": [
+   "The bank golden report (M8.1): bank alias map, local engines, extractive commentary; all four corporate ratios not applicable."
+  ],
+  "states": [
+   "R9",
+   "K4"
+  ],
+  "title": "company_b (bank golden report)"
  }
 ]

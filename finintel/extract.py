@@ -165,9 +165,11 @@ def extract_pack(
             }
         )
     # Corporate and ambiguous ("other") documents use the corporate alias map: values stay anchored
-    # and checked, and ratios are withheld for "other" in M3. Bank and NHS maps arrive in M8.
-    mapped_type = located.profile.document_type.value in ("corporate", "other")
-    specs = load_aliases("corporate") if mapped_type else {}
+    # and checked, and ratios are withheld for "other" (M3). A bank uses the bank map (M8.1), whose
+    # lines never map to the corporate ids. NHS trusts have no map yet (OQ-5).
+    doc_type = located.profile.document_type.value
+    map_name = {"corporate": "corporate", "other": "corporate", "bank": "bank"}.get(doc_type)
+    specs = load_aliases(map_name) if map_name else {}
     assembly: Assembly = assemble(
         views,
         specs=specs,

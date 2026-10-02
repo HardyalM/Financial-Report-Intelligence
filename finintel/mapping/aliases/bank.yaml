@@ -1,0 +1,68 @@
+# Bank alias map (EXTRACTION section 1.4; SCHEMA section 9; OQ-4 default A; tech lead 2026-10-02).
+# Configuration, not code: see corporate.yaml for the keys.
+#
+# Bank lines never map to the corporate ids. Total income is not revenue and profit before tax is
+# not operating profit, so `revenue`, `operating_profit`, `current_assets`, `current_liabilities`
+# and `total_debt` stay null by design (`bank_layout`, `unclassified_balance_sheet`), and all four
+# corporate ratios are not applicable. Customer deposits are not corporate debt; debt securities
+# in issue and subordinated liabilities are their own lines and are never summed into anything.
+#
+# Ids follow the tech lead's labels (fixtures/expected/company_b.json). SCHEMA section 9 names the
+# impairment line `impairment_charge`; the labels say `impairment`, and labels win.
+_apm: &apm [adjusted, underlying, "statutory to underlying"]
+
+net_interest_income:
+  statement: income_statement
+  include_exact: ["net interest income"]
+  exclude_any: *apm
+total_income:
+  statement: income_statement
+  include_exact: ["total income", "total operating income", "total income before impairment"]
+  exclude_any: [adjusted, underlying, "after net finance", "net of insurance"]
+total_income_after_insurance_finance:
+  statement: income_statement
+  include_exact: ["total income, after net finance expense in respect of insurance and investment contracts",
+                  "total income, after net finance income in respect of insurance and investment contracts",
+                  "total income, after net finance (expense) income in respect of insurance and investment contracts"]
+operating_expenses:
+  statement: income_statement
+  include_exact: ["operating expenses", "total operating expenses"]
+  exclude_any: *apm
+impairment:
+  statement: income_statement
+  include_exact: ["impairment", "impairment charge", "impairment (charge) credit",
+                  "impairment (charge)/credit", "impairment credit (charge)", "credit impairment charge",
+                  "credit impairment charges"]
+  exclude_any: [goodwill, intangible]
+profit_before_tax:
+  statement: income_statement
+  include_exact: ["profit before tax", "profit before taxation", "profit/(loss) before tax",
+                  "profit/(loss) before taxation", "(loss)/profit before tax", "loss before tax"]
+  exclude_any: *apm
+profit_for_the_year:
+  statement: income_statement
+  include_exact: ["profit for the year", "profit for the period", "profit/(loss) for the year"]
+  exclude_any: [attributable, "owners of", shareholders, "non-controlling"]
+
+loans_and_advances_to_customers:
+  statement: balance_sheet
+  include_exact: ["loans and advances to customers"]
+customer_deposits:
+  statement: balance_sheet
+  include_exact: ["customer deposits", "deposits from customers", "customer accounts"]
+total_assets:
+  statement: balance_sheet
+  include_exact: ["total assets"]
+total_liabilities:
+  statement: balance_sheet
+  include_exact: ["total liabilities"]
+total_equity:
+  statement: balance_sheet
+  include_exact: ["total equity", "total shareholders' equity"]
+  exclude_any: [excluding, "and liabilities"]
+debt_securities_in_issue:
+  statement: balance_sheet
+  include_exact: ["debt securities in issue", "debt securities in issue at amortised cost"]
+subordinated_liabilities:
+  statement: balance_sheet
+  include_exact: ["subordinated liabilities"]

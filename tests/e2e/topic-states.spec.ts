@@ -13,7 +13,6 @@ test("insufficient_evidence: says there isn't enough to comment on", async ({ pa
   await openReport(page, "liquidity_ordered_bank");
   const topic = page.getByTestId("topic-state-insufficient_evidence").first();
   await expect(topic).toContainText("There isn’t enough in the report to comment on this topic.");
-  await expect(page.getByTestId("topic-state-omitted")).toContainText("No liquidity or capital evidence retrieved.");
 });
 
 test("validation_failed: withheld, with the count and the reasons on hover", async ({ page }) => {

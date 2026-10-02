@@ -389,16 +389,18 @@ These checks are created in M0 and run in CI.
 ## M8.1 — Bank support
 
 **Read first:** EXTRACTION §1.4, §7; SCHEMA §9 (bank ids); OQ-4; OQ-5.
-**Allowed paths:** `finintel/mapping/aliases/bank.yaml`, `finintel/mapping/**`, `finintel/locate/**`, `web/**`, `tests/**`.
+**Allowed paths:** `finintel/mapping/aliases/bank.yaml`, `finintel/mapping/**`, `finintel/locate/**`, `web/**`, `tests/**`, `finintel/extract.py`, `finintel/reconcile/pack.py`, `finintel/reconcile/checks.py`, `finintel/evals/e1.py`, `finintel/cli/extract_cmd.py`, `scripts/gate.py`, `scripts/scope.yaml`.
+*Amended 2026-10-02 in the M8.1 session (OQ-4 unanswered, so default A; the tech lead's instruction: map net interest income, total income, profit before tax, total assets and total equity, never to revenue or operating profit; no current ratio or operating margin for company_b). `extract.py` picks the alias map by document type; `reconcile` states why a bank's corporate inputs are null by design and never derives total debt for a bank; the equity check skips a printed subtotal by the chain checks' own rule (it double-counted "Ordinary shareholders' equity"); E1 matches a label period to the pack period with the same end date (the labels say "2024", the pipeline "FY2024"); the E1 report carries ratio applicability and the label's `absent` items; `gate.py` implements M8.1 (written in this session, as the gate says). Label ids win over SCHEMA §9 where they differ (`impairment`, `profit_for_the_year`, and the extra labelled lines).*
 
 **Gate:**
-- [ ] G1–G6 pass; `fixtures/expected/company_b.json` exists (you labelled it).
-- [ ] `make eval-e1 COMPANY=company_b` followed by `python scripts/gate.py M8.1` exits 0, requiring:
+- [x] G1–G6 pass; `fixtures/expected/company_b.json` exists (you labelled it). *2026-10-02: see docs/STATUS.md.*
+- [x] `make eval-e1 COMPANY=company_b` followed by `python scripts/gate.py M8.1` exits 0, requiring:
   - `e1.matched + e1.honest_null == e1.labelled`
   - `e1.silent_wrong == 0`
   - all four corporate ratios have `applicability == "not_applicable"`.
-- [ ] `make eval COMPANY=company_a`: E1 and E2 are unchanged (`matched == labelled`).
-- [ ] Playwright: the bank report shows "Not applicable to banks" on all four ratio cards.
+  *28/28 matched, 0 honest null, 0 silent wrong; also checked: no ratio value computed in any period, no `absent` item published, the report is company_b's.*
+- [x] `make eval COMPANY=company_a`: E1 and E2 are unchanged (`matched == labelled`). *E1 22/22, E2 8/8; pack sha 23728ccd… unchanged.*
+- [x] Playwright: the bank report shows "Not applicable to banks" on all four ratio cards. *`bank.spec.ts` on company_b from the real pipeline.*
 
 ## M8.2 — Bank ratios and reported metrics *(only if OQ-4 = B)*
 

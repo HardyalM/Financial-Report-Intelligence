@@ -15,7 +15,7 @@ from typing import Any, TextIO
 from finintel.cache import StageCache
 from finintel.cli.common import resolve_pdf
 from finintel.evals import e2
-from finintel.evals.e1 import compare, report_json, write_report
+from finintel.evals.e1 import absent_published, compare, report_json, write_report
 from finintel.extract import ExtractionResult, extract_pack
 from finintel.parse.engines.azure_di_engine import AzureDiConfig, AzureDiEngine
 
@@ -70,6 +70,22 @@ def print_summary(pdf: Path, result: ExtractionResult, out: Path, stream: TextIO
     print(f"  -> {out}", file=stream)
 
 
+def ratio_summary(pack: dict[str, Any]) -> dict[str, Any]:
+    """How the four locked ratios came out for this pack, for gates (M8.1: all not applicable)."""
+    from finintel.ratios import compute_ratios
+
+    periods = compute_ratios(pack).periods
+    names = ("operating_margin", "current_ratio", "debt_to_equity", "roce")
+    by_name = {n: [getattr(p.ratios, n) for p in periods] for n in names}
+    return {
+        "not_applicable": sum(
+            all(r.applicability == "not_applicable" for r in rs) for rs in by_name.values()
+        ),
+        "computed": sum(r.value is not None for rs in by_name.values() for r in rs),
+        "applicability": {n: sorted({r.applicability for r in rs}) for n, rs in by_name.items()},
+    }
+
+
 def run_e1(
     company: str,
     engines: str,
@@ -104,6 +120,8 @@ def run_e1(
                 "ran": "azure_di" in result.pack["source"]["parser_engines"],
                 "skipped": skipped,
             },
+            "ratios": ratio_summary(result.pack),
+            "absent": absent_published(result.pack, expected),
         },
     )
     path = write_report(report, artifacts / "eval" / "latest" / "report.json")

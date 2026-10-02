@@ -71,6 +71,7 @@ PDFS = HERE / "pdfs"
 SPECS = ROOT / "evals" / "synthetic" / "specs"
 COMPANY_A_PDF = ROOT / "fixtures" / "pdfs" / "company_a.pdf"
 COMPANY_A_COMMENTARY = ROOT / "artifacts" / "commentary" / "company_a.json"
+COMPANY_B_PDF = ROOT / "fixtures" / "pdfs" / "company_b.pdf"
 
 
 @dataclass
@@ -507,7 +508,18 @@ def cases(work: Path) -> list[Case]:
                 notes=["The golden report: local engines (one family), M5.2 gated commentary."],
             ),
         )
+    if COMPANY_B_PDF.exists():
+        out.append(
+            Case(
+                id=9, name="company_b", title="company_b (bank golden report)", pdf=COMPANY_B_PDF,
+                cache=ROOT / "artifacts" / "cache", states=("R9", "K4"),
+                notes=["The bank golden report (M8.1): bank alias map, local engines, extractive "
+                       "commentary; all four corporate ratios not applicable."],
+            )
+        )  # fmt: skip
     else:
+        print("company_b: source PDF missing; keeping the committed fixture", file=sys.stderr)
+    if not (COMPANY_A_PDF.exists() and COMPANY_A_COMMENTARY.exists()):
         print(
             "company_a: source PDF or commentary artefact missing; keeping the committed fixture",
             file=sys.stderr,

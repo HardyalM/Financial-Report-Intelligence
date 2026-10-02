@@ -46,6 +46,11 @@ export function candidateFor(report: Report, item: string, period: string): Cand
 }
 
 function notApplicable(pack: StatementPack, item: string): string | null {
+  // The extractor says when a line is null by design (a bank's revenue, operating profit, ...).
+  const byDesign = pack.warnings.find(
+    (w) => w.item === item && w.code === "missing_item" && w.message.includes("null by design"),
+  );
+  if (byDesign) return byDesign.message.split("null by design for a bank: ")[1] ?? byDesign.message;
   for (const w of pack.warnings) {
     if (NOT_APPLICABLE_BY[w.code]?.includes(item)) {
       return NOT_APPLICABLE_REASON[w.code] ?? "this line does not apply to this kind of report";

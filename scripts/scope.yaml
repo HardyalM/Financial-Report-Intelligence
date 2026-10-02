@@ -177,6 +177,13 @@ sessions:
     - "finintel/locate/**"
     - "web/**"
     - "tests/**"
+    - "finintel/extract.py"
+    - "finintel/reconcile/pack.py"
+    - "finintel/reconcile/checks.py"
+    - "finintel/evals/e1.py"
+    - "finintel/cli/extract_cmd.py"
+    - "scripts/gate.py"
+    - "scripts/scope.yaml"
   "M8.2":
     - "finintel/ratios/**"
     - "finintel/commentary/**"

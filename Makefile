@@ -78,8 +78,9 @@ migrate:
 inspect:
 	$(RUN) finintel inspect --fixtures
 
-eval:
-	@echo "make eval is implemented in M2.4 (docs/MILESTONES.md)." >&2; exit 2
+eval:  # E1 then E2 for COMPANY (M8.1 gate: company_a E1 and E2 unchanged)
+	$(RUN) finintel eval-e1 $(COMPANY) --engines $(ENGINES)
+	$(RUN) finintel eval-e2 $(COMPANY)
 
 # STAGE=commentary: local Ollama by default, else extractive; exits 0 either way.
 eval-live:

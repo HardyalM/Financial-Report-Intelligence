@@ -7,6 +7,8 @@ Per labelled (item, period) cell:
 - extracted null with a warning for that item: honest_null (an acceptable failure)
 - extracted null without a warning, or any published wrong value: silent_wrong
 A pack unit scale or currency that differs from the label fails every cell (unit_errors).
+A labelled period is the pack's period with the same id or, failing that, the same end date (a label
+may say "2024" where the pipeline says "FY2024"; the end date is the period's identity).
 Expected files are read, never written.
 """
 
@@ -28,6 +30,7 @@ def compare(
     pack: dict[str, Any], expected: dict[str, Any], report: dict[str, Any] | None = None
 ) -> dict[str, Any]:
     labelled = [(i, v) for i, it in expected["items"].items() for v in it["values"]]
+    period_of = _period_map(pack, expected)
     unit_error = (pack["currency"], pack["unit_scale"]) != (
         expected["currency"],
         expected["unit_scale"],
@@ -39,7 +42,7 @@ def compare(
             (
                 v
                 for v in pack["items"].get(item, {}).get("values", [])
-                if v["period_id"] == want["period_id"]
+                if v["period_id"] == period_of.get(want["period_id"], want["period_id"])
             ),
             None,
         )
@@ -68,6 +71,32 @@ def compare(
         ),
         "published_vision_only": 0,
     }
+
+
+def _period_map(pack: dict[str, Any], expected: dict[str, Any]) -> dict[str, str]:
+    """Label period id -> pack period id: the same id, else the same end date (never a guess:
+    a label period with neither stays unmatched and its cells cannot match)."""
+    ids = {p["id"] for p in pack.get("periods", [])}
+    by_end = {p.get("end_date"): p["id"] for p in pack.get("periods", []) if p.get("end_date")}
+    out: dict[str, str] = {}
+    for p in expected.get("periods", []):
+        if p["id"] in ids:
+            out[p["id"]] = p["id"]
+        elif p.get("end_date") in by_end:
+            out[p["id"]] = by_end[p["end_date"]]
+    return out
+
+
+def absent_published(pack: dict[str, Any], expected: dict[str, Any]) -> dict[str, Any]:
+    """Items the label says are absent (for a bank: revenue, operating profit, ...) must be null:
+    any published value for them is a line mapped where it must not be."""
+    absent = list(expected.get("absent", []))
+    published = sorted(
+        i
+        for i in absent
+        if any(v.get("value") is not None for v in pack["items"].get(i, {}).get("values", []))
+    )
+    return {"labelled": len(absent), "published": len(published), "items": published}
 
 
 def _status(

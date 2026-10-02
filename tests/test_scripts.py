@@ -259,3 +259,25 @@ def test_gate_m2_2_requires_every_labelled_cell_per_engine() -> None:
     results = gate.check_m22(one_short, labels)
     assert [ok for ok, _ in results] == [True, False]
     assert "missing: revenue FY2024 '60,761' p.141" in results[1][1]
+
+
+def test_the_m81_gate_reads_company_b_and_checks_ratios_and_absent_items(tmp_path: Path) -> None:
+    from scripts import gate
+
+    report = {
+        "company": "company_b",
+        "e1": {"labelled": 28, "matched": 28, "honest_null": 0, "silent_wrong": 0},
+        "ratios": {"not_applicable": 4, "computed": 0},
+        "absent": {"published": 0},
+    }
+    path = tmp_path / "report.json"
+    path.write_text(json.dumps(report))
+    assert gate.run("M8.1", path)[0] == 0
+    for change in (
+        {"company": "company_a"},
+        {"ratios": {"not_applicable": 3, "computed": 0}},
+        {"ratios": {"not_applicable": 4, "computed": 1}},
+        {"absent": {"published": 1}},
+    ):
+        path.write_text(json.dumps({**report, **change}))
+        assert gate.run("M8.1", path)[0] == 1, change

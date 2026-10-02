@@ -161,11 +161,20 @@ def _equity_components(
     section, start = section_of(rows, i)
     if not total or section != "equity":
         return []
-    parts = [
-        p
-        for r in rows[(start or 0) + 1 : i]
-        if r.cells and not r.label_text.lower().startswith("total") and (p := _cell(r, column))
-    ]
+    parts: list[tuple[Decimal, int]] = []
+    running: Decimal | None = None
+    for r in rows[(start or 0) + 1 : i]:
+        if not r.cells or r.label_text.lower().startswith("total"):
+            continue
+        cell = _cell(r, column)
+        if cell is None:
+            continue
+        # A printed subtotal ("Ordinary shareholders' equity", "Equity attributable to owners")
+        # restates the rows above it: the same rule as the chain checks, so it is not counted twice.
+        if r.style is not RowStyle.NORMAL and running is not None and cell[0] == running:
+            continue
+        running = cell[0] if running is None else running + cell[0]
+        parts.append(cell)
     if not parts:
         return []
     return [

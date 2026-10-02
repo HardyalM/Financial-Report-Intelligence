@@ -24,7 +24,8 @@ export type FixtureName =
   | "liquidity_ordered_insurer"
   | "missing_unit"
   | "example_failed"
-  | "example_stale";
+  | "example_stale"
+  | "company_b";
 
 interface FixtureBody {
   fixture: { id: number; name: string; states: string[] };
