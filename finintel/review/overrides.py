@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from finintel.parse.text_layer import TextLayer
+from finintel.reconcile.pack import LIABILITY_ITEMS
 from finintel.tables.numbers import parse_number
 
 VALUE_ACTIONS = ("set_value", "accept_candidate")
@@ -48,15 +49,19 @@ def anchored_on_page(layer: TextLayer, page: int, raw_text: str) -> bool:
     return False
 
 
-def check_value(value: float, raw_text: str) -> None:
-    """The value must be the number the printed text reads as (same sign and digits)."""
+def check_value(item: str, value: float, raw_text: str) -> None:
+    """The value must be the number the printed text reads as, in the item's canonical sign: the
+    same digits, and the printed sign except for a liability, which is stored as a positive
+    magnitude even when printed in brackets (SCHEMA section 4.2, the extractor's own rule)."""
     parsed = parse_number(raw_text)
     if parsed is None or parsed.nil:
         raise OverrideError(422, "raw_text_not_a_number", f"{raw_text!r} is not a printed figure")
-    printed = parsed.value
-    if abs(float(printed) - value) > 1e-9 * max(1.0, abs(value)):
+    # The extractor's rule (reconcile.pack._signed): a liability is the magnitude of what is printed.
+    expected = float(abs(parsed.value) if item in LIABILITY_ITEMS else parsed.value)
+    if abs(expected - value) > 1e-9 * max(1.0, abs(value)):
+        how = f"{expected} for {item}" if expected != float(parsed.value) else f"{expected}"
         raise OverrideError(
-            422, "value_does_not_match_raw_text", f"{raw_text!r} reads as {printed}, not {value}"
+            422, "value_does_not_match_raw_text", f"{raw_text!r} reads as {how}, not {value}"
         )
 
 
