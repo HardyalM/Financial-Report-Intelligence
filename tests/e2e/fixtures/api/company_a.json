@@ -2600,6 +2600,7 @@
    "families": [
     "text_layer"
    ],
+   "folio_offset": 3,
    "searched_for": {
     "total_debt": {
      "components": [

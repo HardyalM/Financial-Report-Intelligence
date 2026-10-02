@@ -266,17 +266,47 @@ def feedback(report: TopicReport) -> list[str]:
     return lines
 
 
+#: Why a paragraph was removed, in words (the UI shows these on hover, UI.md section 7).
+CHECK_WORDS = {
+    "V1": "the reply was not in the required shape",
+    "V2": "it cited a passage outside the evidence",
+    "V3": "a quote was not found in the report",
+    "V4": "it used an unknown figure",
+    "V5": "it typed a number instead of using a code-rendered figure",
+    "V6": "it used advice language",
+    "V7": "its direction words contradicted the figures",
+    "V8": "it had no citation",
+    "V9": "a figure was used for the wrong meaning",
+    "V10": "bullets were out of report order",
+    "V11": "quoted text was not cited",
+    "V12": "a figure had no source page",
+}
+
+
+def failure_reason(report: TopicReport) -> str:
+    """'2 paragraphs removed: it typed a number ...; a quote was not found in the report'."""
+    n = len(report.paragraphs)
+    codes = sorted({v.code for v in report.violations}, key=lambda c: int(c[1:]))
+    words = (
+        "; ".join(CHECK_WORDS.get(c, c) for c in codes) or "no paragraph had a verified citation"
+    )
+    if n == 0:
+        return f"No paragraph was usable: {words}"
+    return f"{n} paragraph{'' if n == 1 else 's'} removed: {words}"
+
+
 def finalize(report: TopicReport, *, retried: bool) -> tuple[str, str | None, list[Paragraph]]:
     """Apply the drop policy. Returns (status, reason, paragraphs) for the persisted topic.
 
-    Paragraphs that still violate are dropped. A topic left with none is `validation_failed`;
-    an accepted `insufficient_evidence` carries no paragraphs and keeps its reason.
+    Paragraphs that still violate are dropped. A topic left with none is `validation_failed`,
+    with the number removed and why (`failure_reason`); an accepted `insufficient_evidence`
+    carries no paragraphs and keeps its reason.
     """
     if report.status == "insufficient_evidence":
         clean = not any(v.code == "V1" or v.paragraph is None for v in report.violations)
         if clean:
             return "insufficient_evidence", report.reason, []
-        return "validation_failed", None, []
+        return "validation_failed", failure_reason(report), []
     kept = [
         Paragraph(
             template=p.template,
@@ -296,7 +326,7 @@ def finalize(report: TopicReport, *, retried: bool) -> tuple[str, str | None, li
         for p in report.paragraphs
         if p.accepted
     ]
-    return ("ok", None, kept) if kept else ("validation_failed", None, [])
+    return ("ok", None, kept) if kept else ("validation_failed", failure_reason(report), [])
 
 
 def summary_evidence(

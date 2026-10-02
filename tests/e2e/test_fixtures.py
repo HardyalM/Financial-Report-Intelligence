@@ -51,7 +51,8 @@ def test_each_fixture_is_a_valid_api_response(name: str) -> None:
     if body["commentary"] is not None:
         out = m.CommentaryOut.model_validate(body["commentary"])
         commentary = Commentary.model_validate(out.output)
-        assert commentary.statement_pack_sha == report.pack_sha
+        # Stale means written for an earlier pack version; otherwise it is this pack's.
+        assert (commentary.statement_pack_sha != report.pack_sha) == out.stale == report.stale
 
 
 def _value(report: dict[str, Any], item: str, period: str) -> dict[str, Any]:
@@ -96,3 +97,18 @@ def test_the_bank_insurer_and_blocked_fixtures() -> None:
     assert insurer["status"] == "needs_document_type" and insurer["ratios"] is None  # K5
     blocked = load("missing_unit")["report"]
     assert blocked["status"] == "needs_unit_confirmation" and blocked["pack"] is None  # R10
+
+
+def test_the_commentary_topic_states() -> None:
+    failed = load("example_failed")["commentary"]["output"]
+    assert failed["mode"] == "generated"
+    statuses = {t["topic"]: (t["status"], t["reason"]) for t in failed["topics"]}
+    status, reason = statuses["revenue_drivers"]
+    assert status == "validation_failed" and reason.startswith("1 paragraph removed: ")
+    assert "it used advice language" in reason
+    stale = load("example_stale")
+    assert stale["commentary"]["stale"] and stale["report"]["stale"]
+    assert [o["action"] for o in stale["overrides"]] == ["set_value"]
+    bank = load("liquidity_ordered_bank")["commentary"]["output"]
+    assert {t["status"] for t in bank["topics"]} >= {"insufficient_evidence"}
+    assert load("example_states")["commentary"]["output"]["mode"] == "extractive"

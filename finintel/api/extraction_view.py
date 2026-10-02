@@ -72,6 +72,7 @@ def extraction_view(
     candidates = report.get("candidates") or {}
     families = sorted({f for c in candidates.values() for f in c.get("families", [])})
     return {
+        "folio_offset": locator.get("folio_offset"),
         "statements": locator.get("statements", {}),
         "statement_names": STATEMENT_NAMES,
         "candidates": candidates,

@@ -1620,6 +1620,7 @@
     "image_layout",
     "text_layer"
    ],
+   "folio_offset": -2,
    "searched_for": {
     "revenue": {
      "components": [],

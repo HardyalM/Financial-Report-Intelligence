@@ -82,6 +82,8 @@ export interface SearchedFor {
 }
 
 export interface ExtractionView {
+  /** printed folio = PDF page − folio_offset, when the locator could infer it. */
+  folio_offset?: number | null;
   statements: Record<string, StatementLocation>;
   statement_names: Record<string, string>;
   candidates: Record<string, Candidate>;

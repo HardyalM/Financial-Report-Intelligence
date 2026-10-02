@@ -338,6 +338,8 @@ def test_the_report_carries_a_read_only_extraction_view_for_the_report_screen(
     report = client.get(f"/reports/{rid}").json()
     view = report["extraction"]
     assert view["families"] and set(view["families"]) <= {"text_layer", "table_ml", "ocr"}
+    # The excerpt's other pages are blank, so no folio offset can be inferred (the full PDF: 3).
+    assert "folio_offset" in view and view["folio_offset"] is None
     revenue = view["candidates"]["revenue:FY2024"]
     assert revenue["page"] == 141 and revenue["families"] and revenue["decision"]
     assert view["statements"]["income_statement"] and view["checks"]

@@ -4,3 +4,4 @@ out/
 test-results/
 playwright-report/
 *.tsbuildinfo
+public/pdf.worker.min.mjs

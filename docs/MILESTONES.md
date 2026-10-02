@@ -359,13 +359,14 @@ These checks are created in M0 and run in CI.
 ## M7.2 — Evidence panel and commentary
 
 **Read first:** UI.md §6–7; RAG §5.
-**Allowed paths:** `web/**`, `tests/e2e/**`.
+**Allowed paths:** `web/**`, `tests/e2e/**`, `finintel/api/extraction_view.py`, `finintel/commentary/validators/validate.py`, `scripts/scope.yaml`.
+*Amended 2026-10-02 in the M7.2 session: UI.md §7 shows "N paragraphs removed" with reasons for a `validation_failed` topic, but the persisted topic carried no reason, so `finalize` now records one (`failure_reason`); the extraction view gains `folio_offset` for "PDF p. 142 · printed p. 140". company_a's PDF stays uncommitted (ADR-009 covers statement pages only): its viewer tests run where `fixtures/pdfs/company_a.pdf` exists and skip with that reason elsewhere; the synthetic reports' PDFs are committed, so the viewer is tested everywhere.*
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] Playwright clicks **every** citation on `company_a`. For each, the viewer's page equals `citation.page` and at least one highlight box is visible.
-- [ ] Playwright clicks every page chip. The provenance panel shows the engine families and checks.
-- [ ] Topic states (`ok`, `insufficient_evidence`, `validation_failed`, extractive, stale) each render from fixtures.
+- [x] G1–G6 pass. *2026-10-02: see docs/STATUS.md.*
+- [x] Playwright clicks **every** citation on `company_a`. For each, the viewer's page equals `citation.page` and at least one highlight box is visible. *`evidence.spec.ts`; also every citation of a synthetic report.*
+- [x] Playwright clicks every page chip. The provenance panel shows the engine families and checks.
+- [x] Topic states (`ok`, `insufficient_evidence`, `validation_failed`, extractive, stale) each render from fixtures. *`topic-states.spec.ts`; `validation_failed` from a stand-in model through the real validators, stale from an override after the commentary.*
 
 ## M7.3 — Upload, progress and review
 

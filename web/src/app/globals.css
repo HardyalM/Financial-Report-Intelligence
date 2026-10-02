@@ -196,6 +196,17 @@
 .row-flash > * {
   animation: row-flash 2.2s ease-out 1;
 }
+.card-flash {
+  animation: row-flash 2.2s ease-out 1;
+}
 @media (prefers-reduced-motion: reduce) {
-  .row-flash > * { animation: none; background-color: var(--highlight); }
+  .row-flash > *, .card-flash { animation: none; background-color: var(--highlight); }
+}
+
+/* Highlight boxes on the PDF page: the cited text or the figure's cell. */
+.pdf-highlight {
+  background: color-mix(in oklch, var(--highlight) 55%, transparent);
+  outline: 2px solid color-mix(in oklch, oklch(0.75 0.16 85) 85%, transparent);
+  border-radius: 2px;
+  mix-blend-mode: multiply;
 }

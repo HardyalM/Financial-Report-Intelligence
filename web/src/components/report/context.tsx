@@ -2,12 +2,14 @@
 
 import * as React from "react";
 import type { ReportData } from "@/lib/api";
-import type { Period } from "@/lib/types";
+import type { Citation, Period } from "@/lib/types";
 
 /** What the evidence panel shows (UI.md section 6). */
 export type Selection =
   | { kind: "figure"; item: string; period: string }
   | { kind: "input"; ratio: string; item: string; period: string }
+  | { kind: "citation"; citation: Citation; n: number }
+  | { kind: "pages"; label: string; pages: number[]; note: string }
   | null;
 
 interface ReportContextValue extends ReportData {
@@ -17,6 +19,8 @@ interface ReportContextValue extends ReportData {
   select: (s: Selection) => void;
   /** Scroll to a figures-table row and highlight it briefly (from a ratio card, UI.md K3). */
   focusRow: (item: string) => void;
+  /** Scroll to a ratio card and highlight it briefly (from a ratio placeholder in commentary). */
+  focusRatio: (ratio: string) => void;
 }
 
 const ReportContext = React.createContext<ReportContextValue | null>(null);
@@ -33,9 +37,20 @@ export function ReportProvider({ data, children }: { data: ReportData; children:
     row.classList.add("row-flash");
     row.querySelector<HTMLElement>("[data-row-focus]")?.focus({ preventScroll: true });
   }, []);
+  const focusRatio = React.useCallback((ratio: string) => {
+    const card = document.querySelector<HTMLElement>(`[data-ratio="${ratio}"]`);
+    if (!card) return;
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    card.classList.remove("card-flash");
+    void card.getBoundingClientRect();
+    card.classList.add("card-flash");
+  }, []);
   const value = React.useMemo(
-    () => ({ ...data, current: periods[0] ?? null, prior: periods[1] ?? null, selection, select, focusRow }),
-    [data, periods, selection, focusRow],
+    () => ({
+      ...data, current: periods[0] ?? null, prior: periods[1] ?? null, selection, select, focusRow,
+      focusRatio,
+    }),
+    [data, periods, selection, focusRow, focusRatio],
   );
   return <ReportContext.Provider value={value}>{children}</ReportContext.Provider>;
 }

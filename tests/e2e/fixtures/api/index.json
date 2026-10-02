@@ -81,5 +81,27 @@
    "R10"
   ],
   "title": "Example Unit plc"
+ },
+ {
+  "id": 7,
+  "name": "example_failed",
+  "notes": [
+   "Generated commentary from a stand-in model whose replies fail V1/V3/V5/V6."
+  ],
+  "states": [
+   "validation_failed"
+  ],
+  "title": "Example Group plc (failed commentary)"
+ },
+ {
+  "id": 8,
+  "name": "example_stale",
+  "notes": [
+   "A person confirmed current assets after the commentary was written."
+  ],
+  "states": [
+   "stale"
+  ],
+  "title": "Example Group plc (stale commentary)"
  }
 ]

@@ -17,6 +17,8 @@ the API's own response models before it is written.
 | 4  | liquidity_ordered_bank | evals/synthetic/specs                       | R9, K4              |
 | 5  | liquidity_ordered_insurer | evals/synthetic/specs                    | R9, K5              |
 | 6  | missing_unit        | evals/synthetic/specs                          | R10                 |
+| 7  | example_failed      | company_before_group spec, failing model       | validation_failed   |
+| 8  | example_stale       | company_before_group spec, override after it   | stale commentary    |
 
 company_a needs the source PDF (not committed) and the M5.2 commentary artefact
 (`artifacts/commentary/company_a.json`); the builder refuses to run if that artefact was written
@@ -85,6 +87,10 @@ class Case:
     #: A person's decisions, as rows of the `overrides` table: (action, payload, reason, force).
     decisions: Sequence[tuple[str, dict[str, Any], str | None]] = ()
     commentary_artefact: Path | None = None
+    #: The model the commentary stage uses (None: extractive).
+    commentary_provider: Any = None
+    #: Decisions a person makes after the commentary was written: the API marks it stale.
+    after_commentary: Sequence[tuple[str, dict[str, Any], str | None]] = ()
     notes: list[str] = field(default_factory=list)
 
 
@@ -92,11 +98,11 @@ class Case:
 
 
 def _overrides(
-    layer: TextLayer, decisions: Sequence[tuple[str, dict[str, Any], str | None]]
+    layer: TextLayer, decisions: Sequence[tuple[str, dict[str, Any], str | None]], first: int = 1
 ) -> list[dict[str, Any]]:
     """The rows the API would have stored: anchoring is checked on the page, never assumed."""
     rows = []
-    for n, (action, payload, reason) in enumerate(decisions, start=1):
+    for n, (action, payload, reason) in enumerate(decisions, start=first):
         anchored = True
         if action == "set_value":
             check_value(float(payload["value"]), str(payload["raw_text"]))
@@ -172,7 +178,7 @@ def _commentary(
             r.topic: r for r in retrieve_all(DocumentType(doc_type), index, FusionOrderReranker())
         }
         run = build_commentary(
-            provider=None,
+            provider=case.commentary_provider,
             pack=pack,
             ratios=ratios,
             chunks=chunks,
@@ -227,6 +233,16 @@ def build(case: Case, work: Path) -> dict[str, Any]:
             commentary = _commentary(
                 case, case.pdf, layer, pack, ratio_pack, str(doc_type), case.cache
             )
+            if case.after_commentary:
+                # As POST /overrides: a new pack version, ratios recomputed, commentary stale.
+                later = _overrides(layer, case.after_commentary, first=len(overrides) + 1)
+                overrides = [*overrides, *later]
+                assert result.pack is not None
+                pack = materialise(result.pack, overrides)
+                ratios = compute_ratios(pack).model_dump(mode="json")
+                commentary = commentary.model_copy(update={"stale": True})
+                report["warnings"] = pack.get("warnings", [])
+    stale = bool(commentary and commentary.stale)
     out = m.ReportOut(
         id=case.id,
         sha256=record.sha256,
@@ -242,7 +258,7 @@ def build(case: Case, work: Path) -> dict[str, Any]:
         ratios=ratios,
         warnings=list(pack["warnings"]) if pack else [],
         reduced_verification=bool(report.get("reduced_verification", False)),
-        stale=False,
+        stale=stale,
         jobs=_jobs(halted_after),
         extraction=extraction_view(report, pack),
     )
@@ -433,12 +449,44 @@ def cases(work: Path) -> list[Case]:
             states=states_,
         )
 
+    def group(name: str) -> Path:
+        data = load_spec(SPECS / "company_before_group.yaml").model_dump(mode="json")
+        return _render(Spec.model_validate({**data, "name": name}), work)
+
+    # A model whose every reply fails the validators: a typed number, advice language and a quote
+    # the report does not contain. Each topic it writes is dropped (validation_failed).
+    unfaithful = FakeProvider({
+        "topic": "revenue_drivers", "status": "ok", "reason": None,
+        "paragraphs": [{
+            "template": "Revenue rose 45% to a record, so investors should buy the shares.",
+            "citations": [{"chunk_id": "none",
+                           "quote": "Revenue rose to a record level in every market we serve"}],
+        }],
+    })  # fmt: skip
+    failed = Case(
+        id=7, name="example_failed", title="Example Group plc (failed commentary)",
+        pdf=group("example_failed"), cache=work / "cache_failed", commentary_provider=unfaithful,
+        states=("validation_failed",),
+        notes=["Generated commentary from a stand-in model whose replies fail V1/V3/V5/V6."],
+    )  # fmt: skip
+    stale = Case(
+        id=8, name="example_stale", title="Example Group plc (stale commentary)",
+        pdf=group("example_stale"), cache=work / "cache_stale", states=("stale",),
+        after_commentary=(
+            ("set_value", {"item": "current_assets", "period_id": "FY2025", "value": 2700.0,
+                           "raw_text": "2,700", "page": 4}, None),
+        ),
+        notes=["A person confirmed current assets after the commentary was written."],
+    )  # fmt: skip
+
     out = [
         states,
         not_found,
         synthetic(4, "liquidity_ordered_bank", "Example Bank plc", ("R9", "K4")),
         synthetic(5, "liquidity_ordered_insurer", "Example Insurance plc", ("R9", "K5")),
         synthetic(6, "missing_unit", "Example Unit plc", ("R10",)),
+        failed,
+        stale,
     ]
     if COMPANY_A_PDF.exists() and COMPANY_A_COMMENTARY.exists():
         out.insert(

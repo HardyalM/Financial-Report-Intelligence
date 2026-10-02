@@ -160,6 +160,9 @@ sessions:
   "M7.2":
     - "web/**"
     - "tests/e2e/**"
+    - "finintel/api/extraction_view.py"
+    - "finintel/commentary/validators/validate.py"
+    - "scripts/scope.yaml"
   "M7.3":
     - "web/**"
     - "tests/e2e/**"

@@ -7,6 +7,34 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M7.2 — 2026-10-02 — evidence panel and commentary: gate PASSES (Postgres tests not re-run)
+
+pdf.js viewer (pdfjs-dist 6, worker served from web/public, no CDN): one page at a time, prev/next, zoom, "PDF p. N · printed
+p. M", highlight boxes from code (citation.bbox in display space; value.bbox in unrotated points). Provenance card: printed
+label, raw text, page and folio, note, unit, engine families, arithmetic checks in words (✓/✗ with the difference), warnings;
+for a citation: section path, full quote, match type. Commentary: citation markers and code-rendered figures are buttons
+(figure → its row's evidence; ratio → its card and first input; supplemental fact → its pages).
+
+| Command | Result |
+|---|---|
+| `make lint typecheck test contracts-check scope` | exit 0; 925 passed |
+| `make web-check` | exit 0 (tsc, generated types current, check-deps: 21 dependencies, no charting library) |
+| `make e2e` | 36 passed, incl. every citation on company_a (local PDF) and on a synthetic report, every page chip, topic states |
+| `make ui-fixtures` twice | byte-identical (8 fixtures) |
+| `check_scope.py M7.2 --base a647558` | only fixtures/expected/* and docs/ratings_draft.md (the tech lead's uncommitted files, G2/G3) |
+| `make test-db` | NOT RUN: the Docker daemon stopped answering (`docker ps` hangs) after the disk filled; not restarted because another session may be using Postgres. The one change it covers (`extraction.folio_offset`) was checked without Postgres on the excerpt: `None` (blank pages carry no folios), which the test now asserts |
+
+Scope amendment (MILESTONES M7.2): `validators.finalize` records why a topic failed ("1 paragraph removed: it typed a number …;
+it used advice language"; "No paragraph was usable: …"), shown on hover as UI.md 7 asks; T1/T4/V1 hallucination tests updated
+to the new reason (status and dropped paragraphs unchanged). Extraction view gains `folio_offset`.
+New fixtures: `example_failed` (a stand-in model whose replies fail V1/V2/V5/V6/V8, through the real validators) and
+`example_stale` (a person's override after the commentary: new pack version, ratios recomputed, commentary stale).
+company_a's PDF is not committed (ADR-009): its viewer tests skip with that reason where the file is absent.
+Follow-ups: an anchored override drops the value's bbox, so a figure a person confirmed opens its page without a highlight
+(the panel says so); the stale state has no Regenerate button because the API has no regenerate endpoint.
+
+---
+
 ## M7.1 — 2026-10-02 — report screen (read-only): gate PASSES
 
 Tag `m3-done` created at 916f120 (tech lead's instruction). `web/`: Next.js 16 App Router, React 19, TypeScript 5 strict,

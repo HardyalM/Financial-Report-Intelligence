@@ -51,7 +51,7 @@ export function ReportScreen({ id }: { id: string }) {
         <div className="flex min-h-screen flex-col">
           <ReportHeader />
           <main className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_400px]">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_440px] 2xl:grid-cols-[minmax(0,1fr)_520px]">
               <div className="min-w-0 space-y-6">
                 <BannerStack />
                 <NumbersSnapshot />
@@ -78,7 +78,7 @@ function LoadingScreen() {
         <Skeleton className="h-5 w-64" />
         <Skeleton className="mt-3 h-4 w-96" />
       </div>
-      <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-6 px-8 py-6 xl:grid-cols-[minmax(0,1fr)_400px]">
+      <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-6 px-8 py-6 xl:grid-cols-[minmax(0,1fr)_440px] 2xl:grid-cols-[minmax(0,1fr)_520px]">
         <div className="space-y-4">
           <Skeleton className="h-12 w-full" />
           <Skeleton className="h-96 w-full" />

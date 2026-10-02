@@ -1,13 +1,13 @@
 "use client";
 
-import { ChevronRight, FileText, Info, ShieldAlert } from "lucide-react";
+import { ChevronRight, FileText, Info, RefreshCw, ShieldAlert } from "lucide-react";
 import * as React from "react";
 import { useReportContext } from "@/components/report/context";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cn";
-import type { Citation, Paragraph, Topic } from "@/lib/types";
+import type { Citation, Figure, Paragraph, RatioName, Topic } from "@/lib/types";
 
 const TOPIC_TITLES: Record<string, string> = {
   revenue_drivers: "Income drivers",
@@ -51,6 +51,21 @@ export function CommentaryPanel() {
           <p className="text-xs text-ink-3">Figures are filled in by code; quotes are checked against the report.</p>
         )}
       </div>
+
+      {commentary.stale || report.stale ? (
+        <div
+          role="status"
+          data-testid="commentary-stale"
+          className="flex items-start gap-2.5 rounded-xl border border-amber-line bg-amber-soft px-4 py-3"
+        >
+          <RefreshCw aria-hidden className="mt-0.5 size-4 shrink-0 text-amber" />
+          <div className="text-[12.5px] leading-relaxed text-ink-2">
+            <p className="text-[13px] font-semibold text-ink">Figures changed since this commentary was written</p>
+            It describes an earlier version of the figures (pack {output.statement_pack_sha.slice(0, 12)}; now{" "}
+            {report.pack_sha?.slice(0, 12)}). Figures in the table and the ratio cards are current.
+          </div>
+        </div>
+      ) : null}
 
       {summary.status === "ok" && summary.bullets.length ? (
         <Card className="px-5 py-4" data-testid="executive-summary">
@@ -102,10 +117,10 @@ function TopicPanel({ topic }: { topic: Topic }) {
           There isn’t enough in the report to comment on this topic.
         </p>
       ) : topic.status === "validation_failed" ? (
-        <Tooltip content={topic.reason}>
-          <p tabIndex={0} className="mt-1.5 flex items-center gap-1.5 text-[13px] text-ink-2">
-            <ShieldAlert aria-hidden className="size-4 text-review" />
-            Commentary withheld: it failed evidence checks ({removedCount(topic)} paragraphs removed).
+        <Tooltip content={topic.reason ? `Why: ${topic.reason.split(": ").slice(1).join(": ") || topic.reason}.` : null}>
+          <p tabIndex={0} className="mt-1.5 flex items-center gap-1.5 text-[13px] text-ink-2" data-testid="validation-failed-text">
+            <ShieldAlert aria-hidden className="size-4 shrink-0 text-review" />
+            Commentary withheld: it failed evidence checks{removedText(topic)}.
           </p>
         </Tooltip>
       ) : (
@@ -121,25 +136,23 @@ function TopicPanel({ topic }: { topic: Topic }) {
   );
 }
 
-function removedCount(topic: Topic): number {
-  const m = /(\d+)/.exec(topic.reason ?? "");
-  return m ? Number(m[1]) : topic.paragraphs.length;
+/** " (2 paragraphs removed)" from the validator's reason; nothing when no paragraph was usable. */
+function removedText(topic: Topic): string {
+  const m = /^(\d+) paragraphs? removed/.exec(topic.reason ?? "");
+  if (!m) return "";
+  const n = Number(m[1]);
+  return ` (${n} paragraph${n === 1 ? "" : "s"} removed)`;
 }
 
 /** The rendered text with code-rendered figures underlined and citation markers appended. */
 function ParagraphText({ paragraph }: { paragraph: Paragraph }) {
-  const figures = paragraph.figures
-    .map((f) => f.rendered)
-    .filter((r): r is string => Boolean(r))
-    .sort((a, b) => b.length - a.length);
+  const figures = paragraph.figures.filter((f): f is Figure & { rendered: string } => Boolean(f.rendered));
   const parts = splitFigures(paragraph.rendered, figures);
   return (
     <span>
       {parts.map((part, i) =>
         part.figure ? (
-          <span key={i} className="placeholder-figure num" data-testid="placeholder-figure">
-            {part.text}
-          </span>
+          <FigureLink key={i} figure={part.figure} text={part.text} />
         ) : (
           <React.Fragment key={i}>{part.text}</React.Fragment>
         ),
@@ -151,31 +164,80 @@ function ParagraphText({ paragraph }: { paragraph: Paragraph }) {
   );
 }
 
-function splitFigures(text: string, figures: string[]): { text: string; figure: boolean }[] {
-  if (!figures.length) return [{ text, figure: false }];
+type Part = { text: string; figure: (Figure & { rendered: string }) | null };
+
+function splitFigures(text: string, figures: (Figure & { rendered: string })[]): Part[] {
+  if (!figures.length) return [{ text, figure: null }];
   // Figures outside quotation marks only: a quoted figure is the company's text, not ours.
-  const out: { text: string; figure: boolean }[] = [];
-  const pattern = new RegExp(figures.map((f) => f.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "g");
+  const byText = new Map(figures.map((f) => [f.rendered, f]));
+  const ordered = [...byText.keys()].sort((a, b) => b.length - a.length);
+  const pattern = new RegExp(ordered.map((f) => f.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "g");
+  const out: Part[] = [];
   let last = 0;
+  let scanned = 0;
   let inQuote = false;
-  const quoteAt = (i: number) => {
-    for (let j = last; j < i; j++) if (text[j] === "“" || text[j] === "”" || text[j] === '"') inQuote = !inQuote;
-  };
   for (const m of text.matchAll(pattern)) {
     const at = m.index ?? 0;
-    quoteAt(at);
+    for (let j = scanned; j < at; j++) {
+      const ch = text[j];
+      if (ch === "“") inQuote = true;
+      else if (ch === "”") inQuote = false;
+      else if (ch === '"') inQuote = !inQuote;
+    }
+    scanned = at;
     if (inQuote) continue;
-    if (at > last) out.push({ text: text.slice(last, at), figure: false });
-    out.push({ text: m[0], figure: true });
+    if (at > last) out.push({ text: text.slice(last, at), figure: null });
+    out.push({ text: m[0], figure: byText.get(m[0]) ?? null });
     last = at + m[0].length;
   }
-  if (last < text.length) out.push({ text: text.slice(last), figure: false });
+  if (last < text.length) out.push({ text: text.slice(last), figure: null });
   return out;
 }
 
+/** A code-rendered figure. Clicking selects its source: the figure, the ratio, or the pages. */
+function FigureLink({ figure, text }: { figure: Figure; text: string }) {
+  const { select, focusRatio, report } = useReportContext();
+  const open = () => {
+    const parts = figure.placeholder.split(":");
+    const [kind] = parts;
+    if (kind === "item" || kind === "exact") {
+      select({ kind: "figure", item: parts[1]!, period: parts[2]! });
+    } else if (kind === "change" && parts[1] === "item") {
+      select({ kind: "figure", item: parts[2]!, period: parts[4]! });
+    } else if (kind === "ratio" || (kind === "change" && parts[1] === "ratio")) {
+      const name = kind === "ratio" ? parts[1]! : parts[2]!;
+      const period = kind === "ratio" ? parts[2]! : parts[4]!;
+      focusRatio(name);
+      const ratio = report.ratios?.periods.find((p) => p.period_id === period)?.ratios[name as RatioName];
+      const input = ratio ? Object.values(ratio.inputs).find((i) => i.page) : undefined;
+      if (input) select({ kind: "input", ratio: name, item: input.item, period });
+    } else {
+      select({
+        kind: "pages",
+        label: text,
+        pages: figure.pages,
+        note: "A figure from the report’s own text (for example earnings per share or free cash flow), read by code from the printed pages. It never feeds a ratio.",
+      });
+    }
+  };
+  return (
+    <button
+      type="button"
+      onClick={open}
+      data-testid="placeholder-figure"
+      data-placeholder={figure.placeholder}
+      className="placeholder-figure num cursor-pointer rounded-sm hover:bg-accent-soft hover:text-accent"
+    >
+      {text}
+    </button>
+  );
+}
+
 function CitationMarker({ citation, n }: { citation: Citation; n: number }) {
+  const { select, selection } = useReportContext();
   const where = citation.heading_path.slice(1).join(" › ");
   const folio = citation.page_label ? ` · printed p. ${citation.page_label}` : "";
+  const active = selection?.kind === "citation" && selection.citation === citation;
   return (
     <Tooltip
       content={
@@ -189,7 +251,12 @@ function CitationMarker({ citation, n }: { citation: Citation; n: number }) {
         type="button"
         data-testid="citation-marker"
         data-page={citation.page}
-        className="num ml-0.5 inline-flex h-4 min-w-4 -translate-y-1.5 items-center justify-center rounded border border-line bg-surface px-1 align-baseline text-[10px] font-semibold text-accent hover:border-accent"
+        aria-pressed={active}
+        onClick={() => select({ kind: "citation", citation, n })}
+        className={cn(
+          "num ml-0.5 inline-flex h-4 min-w-4 -translate-y-1.5 items-center justify-center rounded border px-1 align-baseline text-[10px] font-semibold",
+          active ? "border-accent bg-accent text-ink-inverse" : "border-line bg-surface text-accent hover:border-accent",
+        )}
         aria-label={`Citation ${n}: PDF page ${citation.page}`}
       >
         {n}

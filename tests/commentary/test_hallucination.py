@@ -86,7 +86,11 @@ def test_t1_fabricated_quote_removes_the_citation_and_drops_a_paragraph_without_
     assert not p.citations and not p.accepted
     assert [x["reason"] for x in p.removed] == ["quote_not_in_chunk"]
     assert {"V3", "V8"} <= codes(r) and r.needs_retry
-    assert finalize(r, retried=True) == ("validation_failed", None, [])
+    assert finalize(r, retried=True) == (
+        "validation_failed",
+        "1 paragraph removed: a quote was not found in the report; it had no citation",
+        [],
+    )
     both = run(raw([para("Risk is managed.", ("c_a", fake), ("c_a", Q_RISK))]))
     assert both.paragraphs[0].accepted and len(both.paragraphs[0].citations) == 1
     _, _, kept = finalize(both, retried=False)
@@ -125,7 +129,10 @@ def test_t4_naked_number_is_a_violation_then_dropped_if_repeated() -> None:
     assert "V5" in codes(r) and r.needs_retry
     assert any(line.startswith("V5 (paragraph 1)") for line in feedback(r))
     again = run(raw([para("Revenue rose 12% on the prior year.", ("c_a", Q_RISK))]))
-    assert finalize(again, retried=True) == ("validation_failed", None, [])
+    status, reason, kept = finalize(again, retried=True)
+    assert (status, kept) == ("validation_failed", [])
+    assert reason is not None and reason.startswith("1 paragraph removed: ")
+    assert "it typed a number instead of using a code-rendered figure" in reason
 
 
 def test_t5_unknown_placeholder_is_a_violation() -> None:
@@ -386,7 +393,7 @@ def test_v1_malformed_output_is_a_schema_violation() -> None:
     assert "V1" in codes(wrong_topic)
     assert finalize(run({"topic": "strategic_risks"}), retried=True) == (
         "validation_failed",
-        None,
+        "No paragraph was usable: the reply was not in the required shape",
         [],
     )
 

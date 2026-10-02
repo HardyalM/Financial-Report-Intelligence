@@ -4,6 +4,8 @@
   "private": true,
   "description": "Financial Report Intelligence: the report screen (docs/UI.md).",
   "scripts": {
+    "predev": "node scripts/copy-pdf-worker.mjs",
+    "prebuild": "node scripts/copy-pdf-worker.mjs",
     "dev": "next dev --port 3100",
     "build": "next build",
     "start": "next start --port 3100",
@@ -25,6 +27,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.49.0",
     "next": "^16.3.8",
+    "pdfjs-dist": "^6.3.289",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "tailwind-merge": "^3.7.0"

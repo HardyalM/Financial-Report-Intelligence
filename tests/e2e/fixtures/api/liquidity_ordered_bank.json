@@ -120,6 +120,7 @@
     "pymupdf_tables"
    ],
    "families": [],
+   "folio_offset": null,
    "searched_for": {
     "current_assets": {
      "components": [],

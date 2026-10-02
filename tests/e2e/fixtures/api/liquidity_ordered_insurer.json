@@ -634,6 +634,7 @@
    "families": [
     "text_layer"
    ],
+   "folio_offset": null,
    "searched_for": {
     "current_assets": {
      "components": [],
