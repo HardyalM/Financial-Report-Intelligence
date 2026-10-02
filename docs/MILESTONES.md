@@ -329,6 +329,7 @@ These checks are created in M0 and run in CI.
 **Read first:** EXTRACTION §6; ADR-004; OQ-8.
 **Allowed paths:** `finintel/api/**`, `schemas/openapi.json`, `finintel/review/**`, `finintel/worker/**`, `finintel/db/jobs.py`, `finintel/extract.py`, `finintel/locate/locator.py`, `scripts/export_openapi.py`, `scripts/scope.yaml`, `tests/**`.
 *Amended 2026-10-01 in the M6.2 session: override and review logic lives in finintel/review; the extract stage reads stored human decisions (worker); the locator accepts a person's statement page and extract_pack a confirmed unit (extract.py, locator.py); jobs can be reset; the OpenAPI export is scripts/export_openapi.py, checked by `make contracts-check`.*
+*Amended 2026-10-02: `check_value` is item-aware. A liability (the extractor's `LIABILITY_ITEMS`) is accepted as the positive magnitude of its printed figure, so a bracketed liability such as "(3,300)" is confirmed as 3300 and never stored negative (SCHEMA §4.2); every other item, including profit lines and `total_equity`, keeps the strict signed check. Applies to `set_value` and `accept_candidate`.*
 
 **Gate:**
 - [ ] G1–G6 pass. *`make ci` green (897); `check_scope.py M6.2` flags only the tech lead's uncommitted fixtures/expected files (G2/G3).*

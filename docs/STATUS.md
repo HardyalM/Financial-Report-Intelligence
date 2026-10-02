@@ -129,6 +129,22 @@ PDF viewer (M7.2–M7.3).
 
 ---
 
+## M6.2 amendment — 2026-10-02 — bracketed liabilities can be confirmed
+
+Overrides of a liability printed in brackets were refused 422 `value_does_not_match_raw_text` ("'(3,300)' reads as -3300, not
+3300.0"), and the old check accepted -3300, a negative liability SCHEMA §4.2 forbids. `check_value(item, value, raw_text)` now
+takes the item: liabilities (`reconcile.pack.LIABILITY_ITEMS`) compare against the printed magnitude, every other item keeps
+the signed check. Tests: tests/review/test_check_value.py, tests/api `test_a_bracketed_liability_is_confirmed_as_a_positive_magnitude`.
+
+| Command | Result |
+|---|---|
+| `make lint typecheck` | ruff clean, formatted; mypy no issues (219 files) |
+| `make test` | 870 passed, 2 failed: tests/commentary/test_evals.py needs the tech lead's uncommitted `fixtures/expected/ratings.json` and `company_a.qa.json`, absent from this worktree (unrelated to overrides) |
+| `make test-db` | 29 passed against Postgres (retrieval, worker, API 13) |
+| `check_scope.py M6.2 --base HEAD` | scope checks passed |
+
+---
+
 ## M5.2 — 2026-10-01 — scripted gate PASSES (exit 0); two caveats for the tech lead
 
 M5.2 gate green. `python scripts/gate.py M5.2` exits 0: all 15 conditions PASS, including the human ratings. Provider gemini

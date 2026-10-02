@@ -326,7 +326,7 @@ def create_app(
             raise OverrideError(
                 422, "missing_field", f"{body.action} requires value, raw_text and page"
             )
-        check_value(value, raw_text)
+        check_value(body.item, value, raw_text)
         is_anchored = anchored_on_page(text_layer(conn, doc_id), page, raw_text)
         if not is_anchored:
             if body.action == "accept_candidate" or not body.force:

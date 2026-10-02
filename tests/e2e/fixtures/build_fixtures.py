@@ -105,7 +105,7 @@ def _overrides(
     for n, (action, payload, reason) in enumerate(decisions, start=first):
         anchored = True
         if action == "set_value":
-            check_value(float(payload["value"]), str(payload["raw_text"]))
+            check_value(str(payload["item"]), float(payload["value"]), str(payload["raw_text"]))
             anchored = anchored_on_page(layer, int(payload["page"]), str(payload["raw_text"]))
         if not anchored and not reason:
             raise SystemExit(f"decision {n}: an unanchored value needs a reason")

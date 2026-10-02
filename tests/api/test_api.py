@@ -222,6 +222,43 @@ def test_a_review_candidate_with_a_printed_value_can_be_accepted(
     assert len(client.get(f"/reports/{rid}/review").json()["items"]) == 1
 
 
+def test_a_bracketed_liability_is_confirmed_as_a_positive_magnitude(
+    client: TestClient, db: psycopg.Connection
+) -> None:
+    # "(1,113)" is printed once on p.141; the anchor test needs the bracketed word as printed.
+    rid = ready_report(client)
+    liability = {"item": "current_liabilities", "raw_text": "(1,113)", "page": 141}
+    negative = override(client, rid, **liability, value=-1113.0)
+    assert negative.status_code == 422 and code(negative) == "value_does_not_match_raw_text"
+    equity = override(client, rid, item="total_equity", value=1113.0, raw_text="(1,113)", page=141)
+    assert equity.status_code == 422 and code(equity) == "value_does_not_match_raw_text"
+    assert db.execute("SELECT count(*) FROM overrides").fetchone() == (0,)
+
+    row = db.execute(
+        "INSERT INTO review_items (document_id, item, period_id, kind, candidates) "
+        "VALUES (%s, 'current_liabilities', 'FY2024', 'disagreement', %s::jsonb) RETURNING id",
+        (rid, json.dumps([{"engine": "x", "value": 1113.0, "raw_text": "(1,113)", "page": 141}])),
+    ).fetchone()
+    assert row is not None
+    ok = override(
+        client,
+        rid,
+        action="accept_candidate",
+        item="current_liabilities",
+        candidate_id=f"{row[0]}:0",
+    )
+    assert ok.status_code == 200 and ok.json()["anchored"] is True, ok.text
+    values = client.get(f"/reports/{rid}").json()["pack"]["items"]["current_liabilities"]["values"]
+    value = next(v for v in values if v["period_id"] == "FY2024")
+    assert (value["value"], value["raw_text"], value["engine"]) == (
+        1113.0,
+        "(1,113)",
+        "human_override",
+    )
+    typed = override(client, rid, **liability, value=1113.0)
+    assert typed.status_code == 200 and typed.json()["anchored"] is True, typed.text
+
+
 def test_a_unit_ambiguous_report_stays_blocked_until_the_unit_is_confirmed(
     client: TestClient, tmp_path: Path
 ) -> None:
