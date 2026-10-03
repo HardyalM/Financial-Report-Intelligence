@@ -82,7 +82,7 @@ All are additive or conditional; every 1.0.0 pack stays valid.
 
 **Default if unanswered:** A.
 
-**Decision:** _________
+**Decision:** 2026-10-02: **B**, bank-literate.
 
 ---
 

@@ -56,6 +56,10 @@ Document these in the UI and in code comments. Do not silently substitute.
 - **ROCE** = `operating_profit / (total_assets - current_liabilities)`  
   Year-end balances, not averages, in v1.  
   (Changed 2026-09-26 by the tech lead: OQ-1 = B.)
+- **Cost-to-income** = `abs(operating_expenses) / total_income_after_insurance_finance`  
+  `operating_expenses` excludes impairment. Preserve the printed expense sign in `StatementPack`; take its magnitude only when calculating this ratio.  
+  `total_income_after_insurance_finance` is the printed line “Total income, after net finance expense in respect of insurance and investment contracts”.
+- **Loan-to-deposit** = `loans_and_advances_to_customers / customer_deposits`
 
 Input definitions:
 
