@@ -165,7 +165,7 @@ def build_ground_truth(
                 )
     ratio_pages: dict[tuple[str, str], tuple[int, ...]] = {}
     for period in ratios.periods:
-        for name, ratio in period.ratios.model_dump().items():
+        for name, ratio in period.ratios.model_dump(exclude_unset=True).items():
             ratio_pages[(name, period.period_id)] = tuple(
                 sorted({i["page"] for i in ratio["inputs"].values() if i.get("page")})
             )
@@ -186,7 +186,7 @@ def build_ground_truth(
 
     for period in ratios.periods:
         change = into.get(period.period_id)
-        for name, ratio in period.ratios.model_dump().items():
+        for name, ratio in period.ratios.model_dump(exclude_unset=True).items():
             key = f"ratio:{name}:{period.period_id}"
             if ratio["status"] != "ok" and ratio["value"] is None:
                 reason = ratio["reason"] or ratio["status"]

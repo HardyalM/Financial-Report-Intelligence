@@ -29,7 +29,7 @@ from finintel.locate import locate
 from finintel.locate.models import DocumentType, StatementType
 from finintel.narrative import CHUNKER_VERSION
 from finintel.parse.cached import cached_text_layer
-from finintel.ratios import compute_ratios, pack_sha256
+from finintel.ratios import compute_ratios, pack_sha256, ratio_pack_json
 from finintel.retrieval.pipeline import FusionOrderReranker, retrieve_all
 from finintel.retrieval.queries import QUERY_SET_VERSION
 from finintel.review import materialise
@@ -175,7 +175,7 @@ def extract_stage(conn: psycopg.Connection, ctx: RunContext, doc: Doc) -> Outcom
 def ratios_stage(conn: psycopg.Connection, ctx: RunContext, doc: Doc) -> Outcome:
     pack_id, _, pack = _latest_pack(conn, doc.id)
     ratios = compute_ratios(pack)
-    persist.store_ratio_pack(conn, pack_id, ratios.model_dump(mode="json"))
+    persist.store_ratio_pack(conn, pack_id, ratio_pack_json(ratios))
     return Outcome()
 
 

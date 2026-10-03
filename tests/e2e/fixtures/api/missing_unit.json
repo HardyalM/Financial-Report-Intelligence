@@ -64,6 +64,10 @@
   "status": "needs_unit_confirmation",
   "warnings": []
  },
+ "reported": {
+  "metrics": [],
+  "notes": []
+ },
  "review": {
   "items": [],
   "status": "needs_unit_confirmation",

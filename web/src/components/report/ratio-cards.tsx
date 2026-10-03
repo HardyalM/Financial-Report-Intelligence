@@ -19,8 +19,14 @@ export const LOCKED: Record<RatioName, { label: string; formula: string }> = {
   current_ratio: { label: "Current ratio", formula: "Current assets ÷ Current liabilities" },
   debt_to_equity: { label: "Debt-to-equity", formula: "Total debt ÷ Total equity" },
   roce: { label: "ROCE", formula: "Operating profit ÷ (Total assets − Current liabilities)" },
+  cost_to_income: {
+    label: "Cost-to-income",
+    formula: "Operating expenses (magnitude) ÷ Total income after insurance finance",
+  },
+  loan_to_deposit: { label: "Loan-to-deposit", formula: "Loans and advances to customers ÷ Customer deposits" },
 };
-const ORDER: RatioName[] = ["operating_margin", "current_ratio", "debt_to_equity", "roce"];
+const CORPORATE: RatioName[] = ["operating_margin", "current_ratio", "debt_to_equity", "roce"];
+const BANK: RatioName[] = ["cost_to_income", "loan_to_deposit"];
 
 export function RatioCards() {
   const { report } = useReportContext();
@@ -38,18 +44,40 @@ export function RatioCards() {
       </section>
     );
   }
+  // A bank's pack carries its own two ratios (CLAUDE.md, OQ-4 = B); the corporate four follow,
+  // not applicable, so a reader sees why they are absent rather than wondering.
+  const bank = BANK.filter((n) => report.ratios?.periods.some((p) => p.ratios[n]));
   return (
-    <section aria-labelledby="ratios-heading">
-      <div className="mb-3 flex items-baseline justify-between">
-        <h2 id="ratios-heading" className="text-[15px] font-semibold tracking-[-0.01em]">
-          Ratios
-        </h2>
-        <p className="text-xs text-ink-3">Computed in code from the figures above. Year-end balances.</p>
-      </div>
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        {ORDER.map((name) => (
-          <RatioCard key={name} name={name} />
-        ))}
+    <section aria-labelledby="ratios-heading" className="space-y-5">
+      {bank.length ? (
+        <div>
+          <div className="mb-3 flex items-baseline justify-between">
+            <h2 id="ratios-heading" className="text-[15px] font-semibold tracking-[-0.01em]">
+              Bank ratios
+            </h2>
+            <p className="text-xs text-ink-3">Computed in code from the figures above. Year-end balances.</p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2" data-testid="bank-ratios">
+            {bank.map((name) => (
+              <RatioCard key={name} name={name} />
+            ))}
+          </div>
+        </div>
+      ) : null}
+      <div>
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 id={bank.length ? "corporate-ratios-heading" : "ratios-heading"} className="text-[15px] font-semibold tracking-[-0.01em]">
+            {bank.length ? "Corporate ratios" : "Ratios"}
+          </h2>
+          <p className="text-xs text-ink-3">
+            {bank.length ? "Shown so their absence is explained." : "Computed in code from the figures above. Year-end balances."}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          {CORPORATE.map((name) => (
+            <RatioCard key={name} name={name} />
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -42,6 +42,7 @@ from finintel.facts.models import SupplementalFacts
 from finintel.llm import LLMProvider
 from finintel.llm.anthropic_provider import LLMError
 from finintel.narrative.models import Chunk
+from finintel.ratios import ratio_pack_json
 from finintel.retrieval.pipeline import TopicResult
 from finintel.retrieval.queries import OPTIONAL_TOPICS, QUERY_SET_VERSION
 
@@ -304,7 +305,7 @@ def build_commentary(
         retrieval_set_id=retrieval_set_id(retrieved),
         trace_id=None,
         statement_pack_sha=ratios.statement_pack_sha,
-        ratio_pack_sha=sha256_json(ratios.model_dump(mode="json")),
+        ratio_pack_sha=sha256_json(ratio_pack_json(ratios)),
         disclaimer=DISCLAIMER,
     )
     metrics = pre_validation_metrics(first_pass)

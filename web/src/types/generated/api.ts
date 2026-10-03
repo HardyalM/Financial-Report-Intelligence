@@ -137,6 +137,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/reports/{report_id}/reported-metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Reported Metrics
+         * @description A bank's own CET1 ratio and net interest margin, as stated in its narrative (OQ-4 = B).
+         *     Found on read from the cached narrative chunks by deterministic patterns; shown "as
+         *     reported", never used in a computation. Empty for any other document type.
+         */
+        get: operations["get_reported_metrics_reports__report_id__reported_metrics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/reports/{report_id}/review": {
         parameters: {
             query?: never;
@@ -413,6 +435,86 @@ export interface components {
             warnings: {
                 [key: string]: unknown;
             }[];
+        };
+        /**
+         * ReportedMetric
+         * @description A figure the company states in its narrative (for example its CET1 ratio or net interest margin), shown 'as reported (p. X)' and never used in any computation (SCHEMA section 11, OQ-4 = B). value_text is a verbatim substring of quote, quote a verbatim substring of the chunk; value is parsed from value_text by code; a model never supplies either.
+         */
+        ReportedMetric: {
+            /**
+             * Basis
+             * @description 'pro forma' when the sentence says so; null otherwise.
+             */
+            basis: string | null;
+            /** Char End */
+            char_end: number;
+            /**
+             * Char Start
+             * @description Offset of quote in the chunk text.
+             */
+            char_start: number;
+            /** Chunk Id */
+            chunk_id: string;
+            /**
+             * Id
+             * @enum {string}
+             */
+            id: "cet1_ratio" | "cet1_ratio_pro_forma" | "net_interest_margin";
+            /**
+             * Label
+             * @description Readable name, for example 'CET1 ratio (pro forma)'.
+             */
+            label: string;
+            /**
+             * Label Found
+             * @description The metric's words as printed, for example 'banking net interest margin'.
+             */
+            label_found: string;
+            /**
+             * Page
+             * @description 1-based PDF page of value_text, code-derived.
+             */
+            page: number;
+            /** Page Label */
+            page_label: string | null;
+            /**
+             * Period Id
+             * @description The pack period the figure is stated for; null if the sentence does not say.
+             */
+            period_id: string | null;
+            /**
+             * Quote
+             * @description The sentence that states the figure, verbatim from the chunk.
+             */
+            quote: string;
+            /**
+             * Unit
+             * @constant
+             */
+            unit: "percent";
+            /**
+             * Value
+             * @description Parsed from value_text by code.
+             */
+            value: number;
+            /**
+             * Value Text
+             * @description Verbatim from quote, for example '14.2 per cent'.
+             */
+            value_text: string;
+        };
+        /** ReportedMetricsOut */
+        ReportedMetricsOut: {
+            /**
+             * Metrics
+             * @description schemas/reported_metric.schema.json: as stated in the report, never computed.
+             */
+            metrics: components["schemas"]["ReportedMetric"][];
+            /**
+             * Notes
+             * @description Why a metric is not shown (the report disagrees with itself).
+             */
+            notes: string[];
         };
         /** ReviewItemOut */
         ReviewItemOut: {
@@ -787,6 +889,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PageOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_reported_metrics_reports__report_id__reported_metrics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportedMetricsOut"];
                 };
             };
             /** @description Validation Error */

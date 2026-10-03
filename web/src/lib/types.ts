@@ -34,6 +34,7 @@ export type {
   Topic,
 };
 export type RatioName = keyof PeriodRatios["ratios"];
+export type { ReportedMetric } from "@/types/generated/reported-metric";
 
 type Schemas = components["schemas"];
 export type Job = Schemas["JobOut"];
@@ -112,3 +113,8 @@ export type CommentaryResponse = Omit<Schemas["CommentaryOut"], "output" | "vali
 };
 
 export type Review = Omit<Schemas["ReviewOut"], "warnings"> & { warnings: PackWarning[] };
+
+export interface ReportedMetrics {
+  metrics: import("@/types/generated/reported-metric").ReportedMetric[];
+  notes: string[];
+}

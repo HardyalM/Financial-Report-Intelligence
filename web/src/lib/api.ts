@@ -5,7 +5,7 @@
  * serve fixtures by intercepting these calls, or run them against the real API.
  */
 import * as React from "react";
-import type { CommentaryResponse, Report, Review } from "@/lib/types";
+import type { CommentaryResponse, Report, ReportedMetrics, Review } from "@/lib/types";
 
 export class ApiError extends Error {
   constructor(
@@ -111,6 +111,8 @@ export interface ReportData {
   report: Report;
   commentary: CommentaryResponse | null;
   review: Review | null;
+  /** A bank's own CET1 ratio and NIM, as stated in its narrative (empty for others). */
+  reported: ReportedMetrics;
 }
 
 export type Loadable =
@@ -126,14 +128,18 @@ export function inProgress(report: Report): boolean {
 async function fetchAll(id: string): Promise<ReportData> {
   const path = `/reports/${encodeURIComponent(id)}`;
   const report = await request<Report>(path);
-  const [commentary, review] = await Promise.all([
+  const empty: ReportedMetrics = { metrics: [], notes: [] };
+  const [commentary, review, reported] = await Promise.all([
     request<CommentaryResponse>(`${path}/commentary`).catch((e: unknown) => {
       if (e instanceof ApiError && e.status === 404) return null;
       throw e;
     }),
     request<Review>(`${path}/review`).catch(() => null),
+    report.document_type === "bank"
+      ? request<ReportedMetrics>(`${path}/reported-metrics`).catch(() => empty)
+      : Promise.resolve(empty),
   ]);
-  return { report, commentary, review };
+  return { report, commentary, review, reported };
 }
 
 /**

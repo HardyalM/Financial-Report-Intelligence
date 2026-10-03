@@ -571,6 +571,154 @@
         "title": "ReportOut",
         "type": "object"
       },
+      "ReportedMetric": {
+        "additionalProperties": false,
+        "description": "A figure the company states in its narrative (for example its CET1 ratio or net interest margin), shown 'as reported (p. X)' and never used in any computation (SCHEMA section 11, OQ-4 = B). value_text is a verbatim substring of quote, quote a verbatim substring of the chunk; value is parsed from value_text by code; a model never supplies either.",
+        "properties": {
+          "basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "'pro forma' when the sentence says so; null otherwise.",
+            "title": "Basis"
+          },
+          "char_end": {
+            "minimum": 0.0,
+            "title": "Char End",
+            "type": "integer"
+          },
+          "char_start": {
+            "description": "Offset of quote in the chunk text.",
+            "minimum": 0.0,
+            "title": "Char Start",
+            "type": "integer"
+          },
+          "chunk_id": {
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "id": {
+            "enum": [
+              "cet1_ratio",
+              "cet1_ratio_pro_forma",
+              "net_interest_margin"
+            ],
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "description": "Readable name, for example 'CET1 ratio (pro forma)'.",
+            "title": "Label",
+            "type": "string"
+          },
+          "label_found": {
+            "description": "The metric's words as printed, for example 'banking net interest margin'.",
+            "title": "Label Found",
+            "type": "string"
+          },
+          "page": {
+            "description": "1-based PDF page of value_text, code-derived.",
+            "minimum": 1.0,
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Label"
+          },
+          "period_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The pack period the figure is stated for; null if the sentence does not say.",
+            "title": "Period Id"
+          },
+          "quote": {
+            "description": "The sentence that states the figure, verbatim from the chunk.",
+            "minLength": 1,
+            "title": "Quote",
+            "type": "string"
+          },
+          "unit": {
+            "const": "percent",
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "description": "Parsed from value_text by code.",
+            "title": "Value",
+            "type": "number"
+          },
+          "value_text": {
+            "description": "Verbatim from quote, for example '14.2 per cent'.",
+            "minLength": 1,
+            "title": "Value Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "label_found",
+          "value_text",
+          "value",
+          "unit",
+          "period_id",
+          "page",
+          "page_label",
+          "quote",
+          "chunk_id",
+          "char_start",
+          "char_end",
+          "basis"
+        ],
+        "title": "ReportedMetric",
+        "type": "object"
+      },
+      "ReportedMetricsOut": {
+        "additionalProperties": false,
+        "properties": {
+          "metrics": {
+            "description": "schemas/reported_metric.schema.json: as stated in the report, never computed.",
+            "items": {
+              "$ref": "#/components/schemas/ReportedMetric"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "notes": {
+            "description": "Why a metric is not shown (the report disagrees with itself).",
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "metrics",
+          "notes"
+        ],
+        "title": "ReportedMetricsOut",
+        "type": "object"
+      },
       "ReviewItemOut": {
         "additionalProperties": false,
         "properties": {
@@ -1155,6 +1303,46 @@
           }
         },
         "summary": "Get Page"
+      }
+    },
+    "/reports/{report_id}/reported-metrics": {
+      "get": {
+        "description": "A bank's own CET1 ratio and net interest margin, as stated in its narrative (OQ-4 = B).\nFound on read from the cached narrative chunks by deterministic patterns; shown \"as\nreported\", never used in a computation. Empty for any other document type.",
+        "operationId": "get_reported_metrics_reports__report_id__reported_metrics_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportedMetricsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Reported Metrics"
       }
     },
     "/reports/{report_id}/review": {

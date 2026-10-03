@@ -50,13 +50,16 @@
         "end_date": { "type": ["string", "null"] },
         "ratios": {
           "type": "object",
+          "description": "The four corporate ratios always; cost_to_income and loan_to_deposit only for a bank (CLAUDE.md, OQ-4 = B). Optional, so every earlier ratio pack remains valid.",
           "additionalProperties": false,
           "required": ["operating_margin", "current_ratio", "debt_to_equity", "roce"],
           "properties": {
             "operating_margin": { "$ref": "#/$defs/ratio" },
             "current_ratio": { "$ref": "#/$defs/ratio" },
             "debt_to_equity": { "$ref": "#/$defs/ratio" },
-            "roce": { "$ref": "#/$defs/ratio" }
+            "roce": { "$ref": "#/$defs/ratio" },
+            "cost_to_income": { "$ref": "#/$defs/ratio" },
+            "loan_to_deposit": { "$ref": "#/$defs/ratio" }
           }
         }
       }

@@ -13,7 +13,7 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from finintel.contracts import validate_ratio_pack
-from finintel.ratios import FORMULAS, compute_ratios, pack_sha256
+from finintel.ratios import FORMULAS, compute_ratios, pack_sha256, ratio_pack_json
 
 ROOT = Path(__file__).resolve().parents[2]
 LABELS = ROOT / "fixtures" / "expected" / "company_a.json"
@@ -80,7 +80,10 @@ def test_the_formula_strings_equal_the_ones_in_claude_md() -> None:
         "current_ratio": FORMULAS["current_ratio"],
         "debt_to_equity": FORMULAS["debt_to_equity"],
         "roce": FORMULAS["roce"],
+        "cost_to_income": FORMULAS["cost_to_income"],  # M8.2: OQ-4 = B, the tech lead
+        "loan_to_deposit": FORMULAS["loan_to_deposit"],
     }
+    assert set(found) == set(FORMULAS)  # nothing in code that CLAUDE.md does not define
     for name in NAMES:
         assert ratio(make_pack(**FULL), name).formula == found[name]
 
@@ -119,7 +122,7 @@ def test_company_a_labelled_pack_matches_the_hand_calculator() -> None:
             assert r.formula == want["formula"]
             checked += 1
     assert checked == 8
-    assert validate_ratio_pack(computed.model_dump(mode="json")) == []
+    assert validate_ratio_pack(ratio_pack_json(computed)) == []
 
 
 def test_unilever_debt_to_equity_is_null_because_total_debt_is_null() -> None:
@@ -314,7 +317,7 @@ def test_output_is_valid_against_the_schema_and_deterministic() -> None:
     pack = make_pack(**FULL)
     a, b = compute_ratios(pack), compute_ratios(deepcopy(pack))
     assert a == b and a.formulas_locked is True
-    assert validate_ratio_pack(a.model_dump(mode="json")) == []
+    assert validate_ratio_pack(ratio_pack_json(a)) == []
     assert a.statement_pack_sha == pack_sha256(pack) == pack_sha256(deepcopy(pack))
     changed = deepcopy(pack)
     changed["items"]["revenue"]["values"][0]["value"] = 1.0
@@ -322,7 +325,7 @@ def test_output_is_valid_against_the_schema_and_deterministic() -> None:
 
 
 def test_the_schema_refuses_a_ratio_pack_that_unlocks_the_formulas() -> None:
-    data = compute_ratios(make_pack(**FULL)).model_dump(mode="json")
+    data = ratio_pack_json(compute_ratios(make_pack(**FULL)))
     data["formulas_locked"] = False
     assert validate_ratio_pack(data)
 

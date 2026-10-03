@@ -16,6 +16,7 @@ const jsonSchemas = {
   "statement-pack.ts": "statement_pack.schema.json",
   "ratio-pack.ts": "ratio_pack.schema.json",
   "commentary.ts": "commentary.schema.json",
+  "reported-metric.ts": "reported_metric.schema.json",
 };
 
 async function build() {

@@ -32,6 +32,7 @@ interface FixtureBody {
   report: { id: number };
   commentary: unknown | null;
   review: unknown;
+  reported?: unknown;
 }
 
 export function loadFixture(name: FixtureName): FixtureBody {
@@ -62,6 +63,7 @@ export async function openReport(
         : json(404, { detail: { code: "commentary_not_found", message: "no commentary for this report yet" } });
     }
     if (rest === `/reports/${id}/review`) return json(200, body.review);
+    if (rest === `/reports/${id}/reported-metrics`) return json(200, body.reported ?? { metrics: [], notes: [] });
     if (rest === `/reports/${id}/original`) {
       const file = originalPdf(name);
       return file

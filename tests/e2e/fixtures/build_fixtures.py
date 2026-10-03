@@ -44,6 +44,7 @@ from finintel.cache import StageCache
 from finintel.cli.chunks_cmd import chunk_pdf
 from finintel.commentary.audit import audit_commentary
 from finintel.commentary.render import build_ground_truth
+from finintel.commentary.reported import find_reported_metrics
 from finintel.commentary.run import allowed_years, build_commentary
 from finintel.contracts import validate_pack
 from finintel.contracts.ratio_pack import RatioPack
@@ -56,7 +57,7 @@ from finintel.locate import locate
 from finintel.locate.models import DocumentType
 from finintel.parse.cached import cached_text_layer
 from finintel.parse.text_layer import TextLayer, read_text_layer
-from finintel.ratios import compute_ratios, pack_sha256
+from finintel.ratios import compute_ratios, pack_sha256, ratio_pack_json
 from finintel.retrieval.embeddings import FakeEmbedder
 from finintel.retrieval.pipeline import FusionOrderReranker, InMemoryIndex, retrieve_all
 from finintel.review import anchored_on_page, materialise
@@ -230,7 +231,7 @@ def build(case: Case, work: Path) -> dict[str, Any]:
         }
         if halted_after is None:
             ratio_pack = compute_ratios(pack)
-            ratios = ratio_pack.model_dump(mode="json")
+            ratios = ratio_pack_json(ratio_pack)
             commentary = _commentary(
                 case, case.pdf, layer, pack, ratio_pack, str(doc_type), case.cache
             )
@@ -240,7 +241,7 @@ def build(case: Case, work: Path) -> dict[str, Any]:
                 overrides = [*overrides, *later]
                 assert result.pack is not None
                 pack = materialise(result.pack, overrides)
-                ratios = compute_ratios(pack).model_dump(mode="json")
+                ratios = ratio_pack_json(compute_ratios(pack))
                 commentary = commentary.model_copy(update={"stale": True})
                 report["warnings"] = pack.get("warnings", [])
     stale = bool(commentary and commentary.stale)
@@ -281,7 +282,15 @@ def build(case: Case, work: Path) -> dict[str, Any]:
         ],
         warnings=list(pack["warnings"]) if pack else [],
     )
+    reported = m.ReportedMetricsOut(metrics=[], notes=[])
+    if pack is not None and doc_type == "bank":
+        _, _, chunks, _ = chunk_pdf(str(case.pdf), case.cache)
+        offset = located.folio_offset if located else None
+        labels = {p: str(p - offset) for p in range(1, record.page_count + 1)} if offset else {}
+        found = find_reported_metrics(chunks, pack["periods"], labels)
+        reported = m.ReportedMetricsOut(metrics=found.metrics, notes=found.notes)
     return {
+        "reported": json.loads(reported.model_dump_json()),
         "fixture": {
             "id": case.id,
             "name": case.name,

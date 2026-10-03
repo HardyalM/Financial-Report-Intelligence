@@ -11,7 +11,7 @@ import { warningSentence } from "@/lib/copy";
 import { pageRange, unitLabel } from "@/lib/format";
 import { FAMILY_NAMES, itemLabel } from "@/lib/items";
 import { cellInfo } from "@/lib/states";
-import type { ArithmeticCheck, Candidate, Citation, Report } from "@/lib/types";
+import type { ArithmeticCheck, Candidate, Citation, Report, ReportedMetric } from "@/lib/types";
 
 /** True from 1280 px: the panel sits beside the report; below that it is a bottom sheet. */
 function useWide(): boolean {
@@ -91,6 +91,7 @@ function targetOf(report: Report, selection: Selection): Target {
     };
   }
   if (selection.kind === "pages") return { page: selection.pages[0] ?? null, highlights: [] };
+  if (selection.kind === "reported") return { page: selection.metric.page, highlights: [] };
   const v = report.pack?.items[selection.item]?.values.find((x) => x.period_id === selection.period);
   const candidate = report.extraction?.candidates?.[`${selection.item}:${selection.period}`];
   const page = v?.page ?? candidate?.page ?? null;
@@ -137,6 +138,8 @@ function PanelBody() {
       ) : null}
       {selection.kind === "citation" ? (
         <CitationProvenance citation={selection.citation} n={selection.n} />
+      ) : selection.kind === "reported" ? (
+        <ReportedProvenance metric={selection.metric} />
       ) : selection.kind === "pages" ? (
         <div className="space-y-2 px-5 py-4" data-testid="provenance-card">
           <h3 className="text-[15px] font-semibold text-ink">{selection.label}</h3>
@@ -312,6 +315,41 @@ function CitationProvenance({ citation, n }: { citation: Citation; n: number }) 
         </Row>
         {citation.is_footnote ? <Row term="Source">A footnote</Row> : null}
       </dl>
+    </div>
+  );
+}
+
+// --------------------------------------------------------------------------------- reported
+
+function ReportedProvenance({ metric }: { metric: ReportedMetric }) {
+  return (
+    <div className="space-y-4 px-5 py-4" data-testid="provenance-card">
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-3">
+          Reported by the company · {metric.period_id ?? "period not stated"}
+        </p>
+        <h3 className="mt-0.5 text-[15px] font-semibold text-ink">{metric.label}</h3>
+        <p className="text-[12.5px] text-ink-3">Printed as “{metric.label_found}”</p>
+      </div>
+      <blockquote className="relative rounded-lg border border-line bg-surface-sunk/60 py-2.5 pl-8 pr-3 text-[13px] leading-relaxed text-ink">
+        <Quote aria-hidden className="absolute left-2.5 top-3 size-3.5 text-ink-3" />
+        <span data-testid="reported-quote">{metric.quote}</span>
+      </blockquote>
+      <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-[12.5px]">
+        <Row term="As printed">
+          <span className="font-mono text-ink">{metric.value_text}</span>
+        </Row>
+        <Row term="Page">
+          <span className="num">
+            PDF p.&nbsp;{metric.page}
+            {metric.page_label ? ` · printed p. ${metric.page_label}` : ""}
+          </span>
+        </Row>
+        {metric.basis ? <Row term="Basis">{metric.basis}</Row> : null}
+      </dl>
+      <p className="text-[12px] leading-relaxed text-ink-3" data-testid="reported-note">
+        The company’s own figure, quoted. It is not computed here and never feeds a ratio.
+      </p>
     </div>
   );
 }

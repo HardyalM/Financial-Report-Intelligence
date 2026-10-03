@@ -64,11 +64,12 @@ CONDITIONS: dict[str, list[str]] = {
         "ratios.computed == 0",  # and no value computed for any of them, in any period
         "absent.published == 0",  # revenue, operating profit, ... never mapped from bank lines
     ],
+    "M8.2": ["e2.matched == e2.expected", "e2.expected >= 4"],
 }
 # Scripted checks that compare pipeline output with labels; each is written in its own session.
 PENDING: set[str] = set()
 #: Gates that read the shared latest report must read the right company's report.
-COMPANY = {"M8.1": "company_b"}
+COMPANY = {"M8.1": "company_b", "M8.2": "company_b"}
 
 _COMPARE = {
     ast.Eq: operator.eq,

@@ -193,6 +193,12 @@ sessions:
     - "tests/**"
     - "scripts/gen_contracts.py"
     - "scripts/scope.yaml"
+    - "schemas/ratio_pack.schema.json"
+    - "finintel/evals/e2.py"
+    - "finintel/api/**"
+    - "schemas/openapi.json"
+    - "finintel/worker/stages.py"
+    - "scripts/gate.py"
   "M8.3":
     - "docs/RESULTS.md"
     - "docs/INTERVIEW.md"

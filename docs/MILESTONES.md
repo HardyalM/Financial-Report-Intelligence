@@ -405,15 +405,15 @@ These checks are created in M0 and run in CI.
 ## M8.2 — Bank ratios and reported metrics *(only if OQ-4 = B)*
 
 **Read first:** OQ-4; SCHEMA §11 (`ReportedMetric`).
-**Allowed paths:** `finintel/ratios/**`, `finintel/commentary/**`, `schemas/reported_metric.schema.json`, `finintel/contracts/**`, `web/**`, `tests/**`, `scripts/gen_contracts.py`, `scripts/scope.yaml`.
-*Amended 2026-10-02: registering the new schema needs one entry in `scripts/gen_contracts.py`. Status: reported metrics built (CET1 statutory and pro forma, banking NIM, from verified quotes; never computed, never a ratio input). The two bank ratios are NOT built: `CLAUDE.md` does not contain them yet (the tech lead's text is in an untracked `CLAUDE_updated.md`), OQ-4's decision line is blank and `fixtures/expected/company_b.ratios.json` does not exist.*
+**Allowed paths:** `finintel/ratios/**`, `finintel/commentary/**`, `schemas/reported_metric.schema.json`, `finintel/contracts/**`, `web/**`, `tests/**`, `scripts/gen_contracts.py`, `scripts/scope.yaml`, `schemas/ratio_pack.schema.json`, `finintel/evals/e2.py`, `finintel/api/**`, `schemas/openapi.json`, `finintel/worker/stages.py`, `scripts/gate.py`.
+*Amended 2026-10-03: registering the new schema needs one entry in `scripts/gen_contracts.py`; the ratio-pack schema gains `cost_to_income` and `loan_to_deposit` as optional ratios (corporate packs unchanged, byte for byte: `ratio_pack_json` dumps only what was built, used by the worker, the API and the commentary hash); E2 reads company_b's layout and matches label periods by end date; `GET /reports/{id}/reported-metrics` serves the bank's CET1 and NIM, found on read from the cached narrative; `gate.py` implements M8.2. The tech lead's texts were applied verbatim from `CLAUDE_final.md` and `docs/OPEN_QUESTIONS_updated.md` (commit 9049eb7).*
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] `CLAUDE.md` contains the two bank ratio formulas (added by you), and the drift test passes for them.
-- [ ] `e2` matches `company_b.ratios.json`.
-- [ ] Test: every `ReportedMetric.value_text` is a substring of its verified quote.
-- [ ] Test: no `RatioPack` input references a reported metric.
+- [x] G1–G6 pass. *2026-10-03: see docs/STATUS.md.*
+- [x] `CLAUDE.md` contains the two bank ratio formulas (added by you), and the drift test passes for them. *The drift test now requires the code's formulas to equal CLAUDE.md's, all six, both ways.*
+- [x] `e2` matches `company_b.ratios.json`. *4/4 cells, from both the extracted and the labelled pack, at 1e-9; `gate.py M8.2` exit 0.*
+- [x] Test: every `ReportedMetric.value_text` is a substring of its verified quote. *tests/commentary/test_reported.py*
+- [x] Test: no `RatioPack` input references a reported metric. *by data and by import*
 
 ## M8.3 — Honesty layer
 

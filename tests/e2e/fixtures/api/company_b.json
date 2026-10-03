@@ -13,7 +13,7 @@
    "model": null,
    "prompt_version": null,
    "query_set_version": "1",
-   "ratio_pack_sha": "1fdff0d4418a59e899565d49ded9a61e52d41279d91277355e0b36c2878b86f3",
+   "ratio_pack_sha": "84cbbbf926bad192cbc0d0407ca8a671110b65bfa136d45dc4fc9c6ac5d348e3",
    "retrieval_set_id": "57c9170d7aa75a6d0e74bdc53cf3735d647a7cbc936906e1becb291946772e1a",
    "schema_version": "1.1.0",
    "statement_pack_sha": "225dd3864bac6e5c5e11e337bc41d456e47518201219e2291f6b6da88052f584",
@@ -2418,44 +2418,60 @@
     {
      "from_period_id": "FY2023",
      "items": {
-      "current_assets": {
-       "absolute": null,
-       "percent": null
+      "customer_deposits": {
+       "absolute": 11349.0,
+       "percent": 2.407529974798259
       },
-      "current_liabilities": {
-       "absolute": null,
-       "percent": null
+      "impairment": {
+       "absolute": -128.0,
+       "percent": -42.244224422442244
       },
-      "net_income": {
-       "absolute": null,
-       "percent": null
+      "loans_and_advances_to_customers": {
+       "absolute": 10112.0,
+       "percent": 2.2483851960555428
       },
-      "operating_profit": {
-       "absolute": null,
-       "percent": null
+      "net_interest_income": {
+       "absolute": -1021.0,
+       "percent": -7.67784629267559
+      },
+      "operating_expenses": {
+       "absolute": -778.0,
+       "percent": -7.1883950845421785
       },
       "profit_before_tax": {
        "absolute": -1532.0,
        "percent": -20.418499266959884
       },
-      "revenue": {
-       "absolute": null,
-       "percent": null
+      "profit_for_the_year": {
+       "absolute": -1041.0,
+       "percent": -18.865530989488946
       },
       "total_assets": {
        "absolute": 25244.0,
        "percent": 2.8639076615542747
       },
-      "total_debt": {
-       "absolute": null,
-       "percent": null
-      },
       "total_equity": {
        "absolute": -1477.0,
        "percent": -3.1183363242900874
+      },
+      "total_income": {
+       "absolute": -1124.0,
+       "percent": -3.1746928399943513
+      },
+      "total_income_after_insurance_finance": {
+       "absolute": -626.0,
+       "percent": -3.360352139137903
+      },
+      "total_liabilities": {
+       "absolute": 26721.0,
+       "percent": 3.2036188028121733
       }
      },
      "ratios": {
+      "cost_to_income": {
+       "kind": "percentage_points",
+       "value": 6.34167034393653
+      },
       "current_ratio": {
        "kind": "absolute",
        "value": null
@@ -2463,6 +2479,10 @@
       "debt_to_equity": {
        "kind": "absolute",
        "value": null
+      },
+      "loan_to_deposit": {
+       "kind": "percentage_points",
+       "value": -0.14826578942432
       },
       "operating_margin": {
        "kind": "percentage_points",
@@ -2478,50 +2498,70 @@
     {
      "from_period_id": "FY2022",
      "items": {
-      "current_assets": {
+      "customer_deposits": {
        "absolute": null,
        "percent": null
       },
-      "current_liabilities": {
+      "impairment": {
+       "absolute": 1219.0,
+       "percent": 80.09198423127464
+      },
+      "loans_and_advances_to_customers": {
        "absolute": null,
        "percent": null
       },
-      "net_income": {
-       "absolute": null,
-       "percent": null
+      "net_interest_income": {
+       "absolute": 376.0,
+       "percent": 2.90976629004798
       },
-      "operating_profit": {
-       "absolute": null,
-       "percent": null
+      "operating_expenses": {
+       "absolute": -1586.0,
+       "percent": -17.17007686478294
       },
       "profit_before_tax": {
        "absolute": 2721.0,
        "percent": 56.900878293601004
       },
-      "revenue": {
-       "absolute": null,
-       "percent": null
+      "profit_for_the_year": {
+       "absolute": 1595.0,
+       "percent": 40.657659954116745
       },
       "total_assets": {
-       "absolute": null,
-       "percent": null
-      },
-      "total_debt": {
        "absolute": null,
        "percent": null
       },
       "total_equity": {
        "absolute": null,
        "percent": null
+      },
+      "total_income": {
+       "absolute": 40751.0,
+       "percent": 762.2708567153012
+      },
+      "total_income_after_insurance_finance": {
+       "absolute": 3088.0,
+       "percent": 19.870021234154816
+      },
+      "total_liabilities": {
+       "absolute": null,
+       "percent": null
       }
      },
      "ratios": {
+      "cost_to_income": {
+       "kind": "percentage_points",
+       "value": -1.33873992913672
+      },
       "current_ratio": {
        "kind": "absolute",
        "value": null
       },
       "debt_to_equity": {
        "kind": "absolute",
+       "value": null
+      },
+      "loan_to_deposit": {
+       "kind": "percentage_points",
        "value": null
       },
       "operating_margin": {
@@ -2544,6 +2584,36 @@
      "end_date": "2024-12-31",
      "period_id": "FY2024",
      "ratios": {
+      "cost_to_income": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "abs(operating_expenses) / total_income_after_insurance_finance",
+       "formula_text": "Operating expenses (magnitude) ÷ Total income after insurance finance",
+       "inputs": {
+        "operating_expenses": {
+         "badges": [],
+         "item": "operating_expenses",
+         "page": 216,
+         "period_id": "FY2024",
+         "value": -11601.0
+        },
+        "total_income_after_insurance_finance": {
+         "badges": [],
+         "item": "total_income_after_insurance_finance",
+         "page": 216,
+         "period_id": "FY2024",
+         "value": 18003.0
+        }
+       },
+       "label": "Cost-to-income",
+       "missing_inputs": [],
+       "name": "cost_to_income",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.6443926012331278
+      },
       "current_ratio": {
        "applicability": "not_applicable",
        "explanation": "Not applicable to banks: the statements have no revenue line or current/non-current split, and deposits are not corporate debt",
@@ -2608,6 +2678,36 @@
        "status": "not_applicable",
        "unit": "multiple",
        "value": null
+      },
+      "loan_to_deposit": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "loans_and_advances_to_customers / customer_deposits",
+       "formula_text": "Loans and advances to customers ÷ Customer deposits",
+       "inputs": {
+        "customer_deposits": {
+         "badges": [],
+         "item": "customer_deposits",
+         "page": 218,
+         "period_id": "FY2024",
+         "value": 482745.0
+        },
+        "loans_and_advances_to_customers": {
+         "badges": [],
+         "item": "loans_and_advances_to_customers",
+         "page": 218,
+         "period_id": "FY2024",
+         "value": 459857.0
+        }
+       },
+       "label": "Loan-to-deposit",
+       "missing_inputs": [],
+       "name": "loan_to_deposit",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.9525878051559312
       },
       "operating_margin": {
        "applicability": "not_applicable",
@@ -2688,6 +2788,36 @@
      "end_date": "2023-12-31",
      "period_id": "FY2023",
      "ratios": {
+      "cost_to_income": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "abs(operating_expenses) / total_income_after_insurance_finance",
+       "formula_text": "Operating expenses (magnitude) ÷ Total income after insurance finance",
+       "inputs": {
+        "operating_expenses": {
+         "badges": [],
+         "item": "operating_expenses",
+         "page": 216,
+         "period_id": "FY2023",
+         "value": -10823.0
+        },
+        "total_income_after_insurance_finance": {
+         "badges": [],
+         "item": "total_income_after_insurance_finance",
+         "page": 216,
+         "period_id": "FY2023",
+         "value": 18629.0
+        }
+       },
+       "label": "Cost-to-income",
+       "missing_inputs": [],
+       "name": "cost_to_income",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.5809758977937625
+      },
       "current_ratio": {
        "applicability": "not_applicable",
        "explanation": "Not applicable to banks: the statements have no revenue line or current/non-current split, and deposits are not corporate debt",
@@ -2752,6 +2882,36 @@
        "status": "not_applicable",
        "unit": "multiple",
        "value": null
+      },
+      "loan_to_deposit": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "loans_and_advances_to_customers / customer_deposits",
+       "formula_text": "Loans and advances to customers ÷ Customer deposits",
+       "inputs": {
+        "customer_deposits": {
+         "badges": [],
+         "item": "customer_deposits",
+         "page": 218,
+         "period_id": "FY2023",
+         "value": 471396.0
+        },
+        "loans_and_advances_to_customers": {
+         "badges": [],
+         "item": "loans_and_advances_to_customers",
+         "page": 218,
+         "period_id": "FY2023",
+         "value": 449745.0
+        }
+       },
+       "label": "Loan-to-deposit",
+       "missing_inputs": [],
+       "name": "loan_to_deposit",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.9540704630501744
       },
       "operating_margin": {
        "applicability": "not_applicable",
@@ -2832,6 +2992,36 @@
      "end_date": "2022-12-31",
      "period_id": "FY2022",
      "ratios": {
+      "cost_to_income": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "abs(operating_expenses) / total_income_after_insurance_finance",
+       "formula_text": "Operating expenses (magnitude) ÷ Total income after insurance finance",
+       "inputs": {
+        "operating_expenses": {
+         "badges": [],
+         "item": "operating_expenses",
+         "page": 216,
+         "period_id": "FY2022",
+         "value": -9237.0
+        },
+        "total_income_after_insurance_finance": {
+         "badges": [],
+         "item": "total_income_after_insurance_finance",
+         "page": 216,
+         "period_id": "FY2022",
+         "value": 15541.0
+        }
+       },
+       "label": "Cost-to-income",
+       "missing_inputs": [],
+       "name": "cost_to_income",
+       "reason": null,
+       "status": "ok",
+       "unit": "fraction",
+       "value": 0.5943632970851297
+      },
       "current_ratio": {
        "applicability": "not_applicable",
        "explanation": "Not applicable to banks: the statements have no revenue line or current/non-current split, and deposits are not corporate debt",
@@ -2896,6 +3086,39 @@
        "reason": "missing_input",
        "status": "not_applicable",
        "unit": "multiple",
+       "value": null
+      },
+      "loan_to_deposit": {
+       "applicability": "applicable",
+       "explanation": null,
+       "flags": [],
+       "formula": "loans_and_advances_to_customers / customer_deposits",
+       "formula_text": "Loans and advances to customers ÷ Customer deposits",
+       "inputs": {
+        "customer_deposits": {
+         "badges": [],
+         "item": "customer_deposits",
+         "page": null,
+         "period_id": "FY2022",
+         "value": null
+        },
+        "loans_and_advances_to_customers": {
+         "badges": [],
+         "item": "loans_and_advances_to_customers",
+         "page": null,
+         "period_id": "FY2022",
+         "value": null
+        }
+       },
+       "label": "Loan-to-deposit",
+       "missing_inputs": [
+        "loans_and_advances_to_customers",
+        "customer_deposits"
+       ],
+       "name": "loan_to_deposit",
+       "reason": "missing_input",
+       "status": "null",
+       "unit": "fraction",
        "value": null
       },
       "operating_margin": {
@@ -3040,6 +3263,107 @@
     "page": null
    }
   ]
+ },
+ "reported": {
+  "metrics": [
+   {
+    "basis": null,
+    "char_end": 233,
+    "char_start": 0,
+    "chunk_id": "322dc3606b3c809a",
+    "id": "cet1_ratio",
+    "label": "CET1 ratio",
+    "label_found": "CET1 capital ratio",
+    "page": 72,
+    "page_label": "68",
+    "period_id": "FY2023",
+    "quote": "Excluding the Insurance dividend received in February 2025 and the full impact of the announced ordinary share buyback programme, the Group's CET1 capital ratio at 31 December 2024 was 14.2 per cent (31 December 2023: 14.6 per cent).",
+    "unit": "percent",
+    "value": 14.6,
+    "value_text": "14.6 per cent"
+   },
+   {
+    "basis": null,
+    "char_end": 233,
+    "char_start": 0,
+    "chunk_id": "322dc3606b3c809a",
+    "id": "cet1_ratio",
+    "label": "CET1 ratio",
+    "label_found": "CET1 capital ratio",
+    "page": 72,
+    "page_label": "68",
+    "period_id": "FY2024",
+    "quote": "Excluding the Insurance dividend received in February 2025 and the full impact of the announced ordinary share buyback programme, the Group's CET1 capital ratio at 31 December 2024 was 14.2 per cent (31 December 2023: 14.6 per cent).",
+    "unit": "percent",
+    "value": 14.2,
+    "value_text": "14.2 per cent"
+   },
+   {
+    "basis": "pro forma",
+    "char_end": 666,
+    "char_start": 520,
+    "chunk_id": "7f0a7dbe6502dd3d",
+    "id": "cet1_ratio_pro_forma",
+    "label": "CET1 ratio (pro forma)",
+    "label_found": "CET1 capital ratio",
+    "page": 72,
+    "page_label": "68",
+    "period_id": "FY2023",
+    "quote": "The Group’s pro forma CET1 capital ratio at 31 December 2024 was 13.5 per cent (31 December 2023: 13.7 per cent pro forma), in line with guidance.",
+    "unit": "percent",
+    "value": 13.7,
+    "value_text": "13.7 per cent"
+   },
+   {
+    "basis": "pro forma",
+    "char_end": 666,
+    "char_start": 520,
+    "chunk_id": "7f0a7dbe6502dd3d",
+    "id": "cet1_ratio_pro_forma",
+    "label": "CET1 ratio (pro forma)",
+    "label_found": "CET1 capital ratio",
+    "page": 72,
+    "page_label": "68",
+    "period_id": "FY2024",
+    "quote": "The Group’s pro forma CET1 capital ratio at 31 December 2024 was 13.5 per cent (31 December 2023: 13.7 per cent pro forma), in line with guidance.",
+    "unit": "percent",
+    "value": 13.5,
+    "value_text": "13.5 per cent"
+   },
+   {
+    "basis": null,
+    "char_end": 612,
+    "char_start": 218,
+    "chunk_id": "ae0f6a66c646600f",
+    "id": "net_interest_margin",
+    "label": "Net interest margin",
+    "label_found": "banking net interest margin",
+    "page": 69,
+    "page_label": "65",
+    "period_id": "FY2023",
+    "quote": "Underlying net interest income of £12,845 million was down 7 per cent on 2023, with a resilient banking net interest margin of 2.95 per cent (2023: 3.11 per cent), compared to guidance of greater than 2.90 per cent, benefitting from fewer than expected UK Bank Rate cuts, the change in charging approach for the Bank of England Levy, solid deposit volumes and the structural hedge contribution.",
+    "unit": "percent",
+    "value": 3.11,
+    "value_text": "3.11 per cent"
+   },
+   {
+    "basis": null,
+    "char_end": 612,
+    "char_start": 218,
+    "chunk_id": "ae0f6a66c646600f",
+    "id": "net_interest_margin",
+    "label": "Net interest margin",
+    "label_found": "banking net interest margin",
+    "page": 69,
+    "page_label": "65",
+    "period_id": "FY2024",
+    "quote": "Underlying net interest income of £12,845 million was down 7 per cent on 2023, with a resilient banking net interest margin of 2.95 per cent (2023: 3.11 per cent), compared to guidance of greater than 2.90 per cent, benefitting from fewer than expected UK Bank Rate cuts, the change in charging approach for the Bank of England Levy, solid deposit volumes and the structural hedge contribution.",
+    "unit": "percent",
+    "value": 2.95,
+    "value_text": "2.95 per cent"
+   }
+  ],
+  "notes": []
  },
  "review": {
   "items": [],

@@ -20,11 +20,16 @@ export interface RatioPack {
 export interface PeriodRatios {
   period_id: string;
   end_date: string | null;
+  /**
+   * The four corporate ratios always; cost_to_income and loan_to_deposit only for a bank (CLAUDE.md, OQ-4 = B). Optional, so every earlier ratio pack remains valid.
+   */
   ratios: {
     operating_margin: Ratio;
     current_ratio: Ratio;
     debt_to_equity: Ratio;
     roce: Ratio;
+    cost_to_income?: Ratio;
+    loan_to_deposit?: Ratio;
   };
 }
 export interface Ratio {

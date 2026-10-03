@@ -17,7 +17,7 @@ import pytest
 from finintel.api import models as m
 from finintel.contracts import validate_pack
 from finintel.contracts.commentary import Commentary
-from finintel.ratios import compute_ratios, pack_sha256
+from finintel.ratios import compute_ratios, pack_sha256, ratio_pack_json
 
 API = Path(__file__).resolve().parent / "fixtures" / "api"
 NAMES = sorted(p.stem for p in API.glob("*.json") if p.name != "index.json")
@@ -46,7 +46,7 @@ def test_each_fixture_is_a_valid_api_response(name: str) -> None:
         assert report.pack_sha == pack_sha256(report.pack)
     if report.ratios is not None:
         assert report.pack is not None
-        recomputed = compute_ratios(report.pack).model_dump(mode="json")
+        recomputed = ratio_pack_json(compute_ratios(report.pack))
         assert recomputed == report.ratios  # the ratio engine, not the builder, made these
     if body["commentary"] is not None:
         out = m.CommentaryOut.model_validate(body["commentary"])
@@ -96,9 +96,10 @@ def test_example_not_found_carries_a_manual_input_and_a_missing_one() -> None:
 
 def test_the_bank_insurer_and_blocked_fixtures() -> None:
     bank = load("liquidity_ordered_bank")["report"]
-    assert {v["status"] for v in bank["ratios"]["periods"][0]["ratios"].values()} == {
-        "not_applicable"
-    }  # K4
+    corporate = ("operating_margin", "current_ratio", "debt_to_equity", "roce")
+    first = bank["ratios"]["periods"][0]["ratios"]
+    assert {first[n]["status"] for n in corporate} == {"not_applicable"}  # K4
+    assert first["loan_to_deposit"]["applicability"] == "applicable"  # M8.2: the bank's own
     assert bank["pack"]["balance_sheet_classified"] is False  # R9
     insurer = load("liquidity_ordered_insurer")["report"]
     assert insurer["status"] == "needs_document_type" and insurer["ratios"] is None  # K5

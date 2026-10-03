@@ -10,6 +10,7 @@ import { FiguresTable } from "@/components/report/figures-table";
 import { ReportFooter, SiteFooter } from "@/components/report/footer";
 import { ReportHeader } from "@/components/report/header";
 import { RatioCards } from "@/components/report/ratio-cards";
+import { ReportedMetrics } from "@/components/report/reported-metrics";
 import { failureSentence, ProgressStepper } from "@/components/report/progress-stepper";
 import { NumbersSnapshot } from "@/components/report/snapshot";
 import { UnitDialog } from "@/components/report/unit-dialog";
@@ -62,6 +63,7 @@ export function ReportScreen({ id }: { id: string }) {
                 <NumbersSnapshot />
                 <FiguresTable />
                 <RatioCards />
+                <ReportedMetrics />
                 <CommentaryPanel />
               </div>
               <div className="min-w-0">

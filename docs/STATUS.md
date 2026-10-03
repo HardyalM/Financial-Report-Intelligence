@@ -7,6 +7,37 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M8.2 — 2026-10-03 — bank ratios and reported metrics: gate PASSES
+
+The tech lead's definitions (CLAUDE.md, applied verbatim from CLAUDE_final.md, commit 9049eb7; OQ-4 = B):
+cost-to-income = abs(operating_expenses) / total_income_after_insurance_finance; loan-to-deposit =
+loans_and_advances_to_customers / customer_deposits. Computed for banks only (document type bank, or a v1.0.0 pack with bank
+lines); no fallback to `total_income` when the insurance line is absent (null, missing_input). Operating expenses keep their
+printed sign in the pack; the ratio takes the magnitude. Corporate packs are unchanged byte for byte (`ratio_pack_json` dumps
+only what was built; company_a's stored ratio pack is identical).
+
+| Command | Result |
+|---|---|
+| `make eval-e2 COMPANY=company_b` + `gate.py M8.2` | 4/4 (cost-to-income 0.64439 / 0.58098, loan-to-deposit 0.95259 / 0.95407), extracted and labelled; exit 0 |
+| `gate.py M8.1` (re-run) | exit 0: corporate four still not applicable, none computed |
+| `make eval COMPANY=company_a` + `gate.py M3` | E1 22/22, E2 8/8; exit 0 |
+| `make ci` | exit 0; 969 passed (drift test: CLAUDE.md and code agree on all six formulas, both ways) |
+| `make test-db` / `make e2e` / `make e2e-live` | 32 / 44 / 5 passed |
+| `check_scope.py M8.2 --base 9049eb7` | only the tech lead's files (fixtures/expected/*, docs/ratings_draft.md, the *_updated/_final side files) |
+
+Reported metrics reach the screen: `GET /reports/{id}/reported-metrics` (banks only; found on read from the cached
+narrative, deterministic) and a "Reported by the bank" panel: CET1 14.2 / 14.6 per cent, CET1 pro forma 13.5 / 13.7 (p. 72),
+banking NIM 2.95 / 3.11 per cent (p. 69), each value as printed, with its quote and page in the evidence panel and the note
+that it is never computed and never feeds a ratio. Bank ratio cards come first for a bank, then the corporate four, not
+applicable, so their absence is explained.
+
+Tests changed to the new truth: M3's "every ratio of a bank is not applicable" and M6.2's "document type bank" now assert the
+corporate four; the bank pair is asserted separately (applicable; null with missing_input when the lines are absent).
+Left for the tech lead: commit fixtures/expected/company_b.json and company_b.ratios.json; delete CLAUDE_final.md,
+CLAUDE_updated.md and docs/OPEN_QUESTIONS_updated.md (their content is now in CLAUDE.md and docs/OPEN_QUESTIONS.md).
+
+---
+
 ## M8.2 — 2026-10-02 — reported metrics built; bank ratios BLOCKED (CLAUDE.md, OQ-4, company_b.ratios.json)
 
 `finintel/commentary/reported.py` + `schemas/reported_metric.schema.json` (contract generated). Deterministic patterns over

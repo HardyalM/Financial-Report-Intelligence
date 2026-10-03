@@ -53,18 +53,25 @@ class Ratio(BaseModel):
 
 
 class PeriodRatiosRatios(BaseModel):
+    """The four corporate ratios always; cost_to_income and loan_to_deposit only for a bank (CLAUDE.md, OQ-4 = B). Optional, so every earlier ratio pack remains valid."""
+
     model_config = ConfigDict(extra="forbid")
     operating_margin: Ratio
     current_ratio: Ratio
     debt_to_equity: Ratio
     roce: Ratio
+    cost_to_income: Ratio | None = None
+    loan_to_deposit: Ratio | None = None
 
 
 class PeriodRatios(BaseModel):
     model_config = ConfigDict(extra="forbid")
     period_id: str
     end_date: str | None
-    ratios: PeriodRatiosRatios
+    ratios: PeriodRatiosRatios = Field(
+        ...,
+        description="The four corporate ratios always; cost_to_income and loan_to_deposit only for a bank (CLAUDE.md, OQ-4 = B). Optional, so every earlier ratio pack remains valid.",
+    )
 
 
 class RatioChange(BaseModel):

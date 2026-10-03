@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import type { ReportData } from "@/lib/api";
-import type { Citation, Period } from "@/lib/types";
+import type { Citation, Period, ReportedMetric } from "@/lib/types";
 
 /** What the evidence panel shows (UI.md section 6). */
 export type Selection =
@@ -10,6 +10,7 @@ export type Selection =
   | { kind: "input"; ratio: string; item: string; period: string }
   | { kind: "citation"; citation: Citation; n: number }
   | { kind: "pages"; label: string; pages: number[]; note: string }
+  | { kind: "reported"; metric: ReportedMetric }
   | null;
 
 interface ReportContextValue extends ReportData {

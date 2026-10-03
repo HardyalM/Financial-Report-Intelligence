@@ -22,11 +22,12 @@ from fastapi.responses import FileResponse
 from finintel.api import models as m
 from finintel.api.extraction_view import extraction_view
 from finintel.cache import StageCache
+from finintel.commentary.reported import find_reported_metrics
 from finintel.contracts import validate_pack
 from finintel.db import jobs, persist
 from finintel.ingest import MAX_UPLOAD_BYTES, IngestError, IngestErrorCode
 from finintel.parse.cached import cached_text_layer
-from finintel.ratios import compute_ratios, pack_sha256
+from finintel.ratios import compute_ratios, pack_sha256, ratio_pack_json
 from finintel.review import (
     OverrideError,
     ValueOverride,
@@ -274,6 +275,31 @@ def create_app(
             ctx.store.path(str(doc[6])), media_type="application/pdf", filename=str(doc[2])
         )
 
+    @app.get("/reports/{report_id}/reported-metrics", response_model=m.ReportedMetricsOut)
+    def get_reported_metrics(report_id: int, conn: psycopg.Connection = db) -> m.ReportedMetricsOut:
+        """A bank's own CET1 ratio and net interest margin, as stated in its narrative (OQ-4 = B).
+        Found on read from the cached narrative chunks by deterministic patterns; shown "as
+        reported", never used in a computation. Empty for any other document type."""
+        assert ctx is not None
+        doc = doc_row(conn, report_id)
+        if str(doc[4]) != "bank":
+            return m.ReportedMetricsOut(metrics=[], notes=[])
+        pack = latest_pack(conn, report_id)[3]
+        from finintel.cli.chunks_cmd import chunk_pdf
+
+        _, _, chunks, _ = chunk_pdf(str(ctx.store.path(str(doc[6]))), ctx.cache_dir)
+        offset = (
+            conn.execute(
+                "SELECT report->'locator'->>'folio_offset' FROM extraction_reports "
+                "WHERE document_id = %s ORDER BY pack_id DESC LIMIT 1",
+                (report_id,),
+            ).fetchone()
+            or (None,)
+        )[0]
+        labels = {p: str(p - int(offset)) for p in range(1, int(doc[3]) + 1)} if offset else {}
+        found = find_reported_metrics(chunks, pack.get("periods", []), labels)
+        return m.ReportedMetricsOut(metrics=found.metrics, notes=found.notes)
+
     # ------------------------------------------------------------------ review
 
     @app.get("/reports/{report_id}/review", response_model=m.ReviewOut)
@@ -398,7 +424,7 @@ def create_app(
                 sha = pack_sha256(new_pack)
                 new_id = persist.store_pack(conn, report_id, new_pack, sha, "override")
                 ratios = compute_ratios(new_pack)
-                persist.store_ratio_pack(conn, new_id, ratios.model_dump(mode="json"))
+                persist.store_ratio_pack(conn, new_id, ratio_pack_json(ratios))
                 conn.execute(
                     "UPDATE commentaries SET stale = true WHERE document_id = %s", (report_id,)
                 )

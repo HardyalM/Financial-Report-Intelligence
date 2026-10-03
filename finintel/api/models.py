@@ -6,6 +6,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from finintel.contracts.reported_metric import ReportedMetric
+
 
 class _Model(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -64,6 +66,15 @@ class CommentaryOut(_Model):
     model_id: str | None
     prompt_version: str | None
     validation: dict[str, Any]
+
+
+class ReportedMetricsOut(_Model):
+    metrics: list[ReportedMetric] = Field(
+        description="schemas/reported_metric.schema.json: as stated in the report, never computed."
+    )
+    notes: list[str] = Field(
+        description="Why a metric is not shown (the report disagrees with itself)."
+    )
 
 
 class PageWord(_Model):

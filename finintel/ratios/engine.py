@@ -6,8 +6,13 @@ Locked definitions (CLAUDE.md; a drift test compares these strings with that fil
     current_ratio    = current_assets / current_liabilities
     debt_to_equity   = total_debt / total_equity
     roce             = operating_profit / (total_assets - current_liabilities)
+    cost_to_income   = abs(operating_expenses) / total_income_after_insurance_finance
+    loan_to_deposit  = loans_and_advances_to_customers / customer_deposits
 
-ROCE uses year-end balances, not averages, in v1.
+ROCE uses year-end balances, not averages, in v1. The two bank ratios (OQ-4 = B, the tech lead,
+2026-10-02) are computed for a bank only: a pack whose document type is bank, or a v1.0.0 pack
+(no profile) that carries bank lines. Operating expenses keep their printed sign in the pack;
+cost-to-income takes the magnitude, as CLAUDE.md says. They never read a reported metric.
 
 `total_equity` includes non-controlling interests; `total_debt` is interest-bearing borrowings plus
 lease liabilities where separately presented (resolved, with provenance, in the StatementPack).
@@ -41,36 +46,54 @@ FORMULAS: dict[str, str] = {
     "current_ratio": "current_assets / current_liabilities",
     "debt_to_equity": "total_debt / total_equity",
     "roce": "operating_profit / (total_assets - current_liabilities)",
+    "cost_to_income": "abs(operating_expenses) / total_income_after_insurance_finance",
+    "loan_to_deposit": "loans_and_advances_to_customers / customer_deposits",
 }
+CORPORATE = ("operating_margin", "current_ratio", "debt_to_equity", "roce")
+BANK = ("cost_to_income", "loan_to_deposit")
 FORMULA_TEXT: dict[str, str] = {
     "operating_margin": "Operating profit ÷ Revenue",
     "current_ratio": "Current assets ÷ Current liabilities",
     "debt_to_equity": "Total debt ÷ Total equity",
     "roce": "Operating profit ÷ (Total assets - Current liabilities)",
+    "cost_to_income": "Operating expenses (magnitude) ÷ Total income after insurance finance",
+    "loan_to_deposit": "Loans and advances to customers ÷ Customer deposits",
 }
 LABELS = {
     "operating_margin": "Operating margin",
     "current_ratio": "Current ratio",
     "debt_to_equity": "Debt-to-equity",
     "roce": "ROCE",
+    "cost_to_income": "Cost-to-income",
+    "loan_to_deposit": "Loan-to-deposit",
 }
 INPUTS: dict[str, tuple[str, ...]] = {
     "operating_margin": ("operating_profit", "revenue"),
     "current_ratio": ("current_assets", "current_liabilities"),
     "debt_to_equity": ("total_debt", "total_equity"),
     "roce": ("operating_profit", "total_assets", "current_liabilities"),
+    "cost_to_income": ("operating_expenses", "total_income_after_insurance_finance"),
+    "loan_to_deposit": ("loans_and_advances_to_customers", "customer_deposits"),
 }
 UNIT = {
     "operating_margin": "fraction",
     "roce": "fraction",
     "current_ratio": "multiple",
     "debt_to_equity": "multiple",
+    "cost_to_income": "fraction",
+    "loan_to_deposit": "fraction",
 }
 #: Margin-type ratios change in percentage points; multiples as an absolute difference.
-POINT_RATIOS = frozenset({"operating_margin", "roce"})
+POINT_RATIOS = frozenset({"operating_margin", "roce", "cost_to_income", "loan_to_deposit"})
 CHANGE_ITEMS = (
     "revenue", "operating_profit", "profit_before_tax", "net_income", "current_assets",
     "current_liabilities", "total_assets", "total_equity", "total_debt",
+)  # fmt: skip
+BANK_CHANGE_ITEMS = (
+    "net_interest_income", "total_income", "total_income_after_insurance_finance",
+    "operating_expenses", "impairment", "profit_before_tax", "profit_for_the_year",
+    "loans_and_advances_to_customers", "customer_deposits", "total_assets", "total_liabilities",
+    "total_equity",
 )  # fmt: skip
 _BADGE_BY_ENGINE = {
     "derived": "derived",
@@ -100,15 +123,14 @@ def compute_ratios(pack: Mapping[str, Any]) -> RatioPack:
         pack["periods"], key=lambda p: (p.get("end_date") or "", p["id"]), reverse=True
     )
     profile = (pack.get("document_type"), pack.get("balance_sheet_classified"))
+    names = (*CORPORATE, *BANK) if is_bank(pack) else CORPORATE
     built: list[dict[str, Any]] = []
     values: dict[str, dict[str, Decimal | None]] = {}
     for period in periods:
         pid = period["id"]
-        inputs = {
-            name: _input(items, name, pid) for name in {n for ns in INPUTS.values() for n in ns}
-        }
+        inputs = {name: _input(items, name, pid) for name in {n for r in names for n in INPUTS[r]}}
         values[pid] = {n: i.value for n, i in inputs.items()}
-        ratios = {name: _ratio(name, inputs, pid, profile) for name in FORMULAS}
+        ratios = {name: _ratio(name, inputs, pid, profile) for name in names}
         built.append({"period_id": pid, "end_date": period.get("end_date"), "ratios": ratios})
     out = {
         "schema_version": RATIO_SCHEMA_VERSION,
@@ -118,10 +140,25 @@ def compute_ratios(pack: Mapping[str, Any]) -> RatioPack:
         "unit_scale": pack.get("unit_scale"),
         "document_type": pack.get("document_type"),
         "periods": built,
-        "changes": _changes(built, items, periods),
+        "changes": _changes(built, items, BANK_CHANGE_ITEMS if is_bank(pack) else CHANGE_ITEMS),
         "warnings": _warnings(built),
     }
     return RatioPack.model_validate(out)
+
+
+def ratio_pack_json(ratios: RatioPack) -> dict[str, Any]:
+    """The RatioPack as stored, served and hashed: exactly what was built. A corporate pack has
+    no bank-ratio keys at all (not nulls), so its JSON is unchanged by the bank ratios."""
+    return ratios.model_dump(mode="json", exclude_unset=True)
+
+
+def is_bank(pack: Mapping[str, Any]) -> bool:
+    """A bank's pack: its profile says so, or (a v1.0.0 pack with no profile) it carries bank
+    lines. Only then are the two bank ratios computed; a corporate pack never has them."""
+    kind = pack.get("document_type")
+    if kind is not None:
+        return bool(kind == "bank")
+    return any(i in pack.get("items", {}) for r in BANK for i in INPUTS[r])
 
 
 def _input(items: Mapping[str, Any], name: str, period_id: str) -> _Input:
@@ -137,6 +174,8 @@ def _input(items: Mapping[str, Any], name: str, period_id: str) -> _Input:
 def _applicability(name: str, profile: tuple[Any, Any]) -> tuple[str, str | None]:
     """(applicability, explanation) from the document profile (EXTRACTION section 1.4 matrix)."""
     kind, classified = profile
+    if name in BANK:
+        return "applicable", None  # computed for banks only (is_bank)
     if kind == "bank":
         return (
             "not_applicable",
@@ -215,16 +254,20 @@ def _terms(name: str, v: Mapping[str, Decimal]) -> tuple[Decimal, Decimal]:
         return v["current_assets"], v["current_liabilities"]
     if name == "debt_to_equity":
         return v["total_debt"], v["total_equity"]
+    if name == "cost_to_income":  # the magnitude of the printed (negative) expense: CLAUDE.md
+        return abs(v["operating_expenses"]), v["total_income_after_insurance_finance"]
+    if name == "loan_to_deposit":
+        return v["loans_and_advances_to_customers"], v["customer_deposits"]
     return v["operating_profit"], v["total_assets"] - v["current_liabilities"]  # roce
 
 
 def _changes(
-    built: list[dict[str, Any]], items: Mapping[str, Any], periods: list[dict[str, Any]]
+    built: list[dict[str, Any]], items: Mapping[str, Any], change_items: tuple[str, ...]
 ) -> list[dict[str, Any]]:
     changes = []
     for later, earlier in pairwise(built):
         ratios: dict[str, dict[str, Any]] = {}
-        for name in FORMULAS:
+        for name in later["ratios"]:
             a, b = later["ratios"][name]["value"], earlier["ratios"][name]["value"]
             diff = (
                 None
@@ -238,7 +281,7 @@ def _changes(
                 "value": diff,
             }
         rows: dict[str, dict[str, float | None]] = {}
-        for item in CHANGE_ITEMS:
+        for item in change_items:
             a, b = (
                 _input(items, item, later["period_id"]).value,
                 _input(items, item, earlier["period_id"]).value,

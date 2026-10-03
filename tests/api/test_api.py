@@ -340,8 +340,11 @@ def test_document_type_reapplies_the_applicability_matrix_and_reruns_ratios_and_
     assert executed == Counter({"ratios": 1, "commentary": 1})
     report = client.get(f"/reports/{rid}").json()
     assert report["document_type"] == "bank" and report["pack"]["document_type"] == "bank"
-    for ratio in report["ratios"]["periods"][0]["ratios"].values():
-        assert ratio["applicability"] == "not_applicable"
+    ratios = report["ratios"]["periods"][0]["ratios"]
+    for name in ("operating_margin", "current_ratio", "debt_to_equity", "roce"):
+        assert ratios[name]["applicability"] == "not_applicable"
+    for name in ("cost_to_income", "loan_to_deposit"):  # M8.2: a bank's own; no bank lines here
+        assert ratios[name]["value"] is None and ratios[name]["reason"] == "missing_input"
     assert client.get(f"/reports/{rid}/overrides").json()[0]["action"] == "document_type"
     assert (
         client.post(f"/reports/{rid}/document-type", json={"document_type": "bank"}).status_code
@@ -412,3 +415,14 @@ def test_a_withheld_candidate_from_extraction_can_be_accepted(client: TestClient
     pack = client.get(f"/reports/{rid}").json()["pack"]
     value = next(v for v in pack["items"]["net_income"]["values"] if v["period_id"] == "FY2025")
     assert (value["value"], value["engine"], value["raw_text"]) == (825.0, "human_override", "825")
+
+
+def test_reported_metrics_are_empty_unless_the_report_is_a_bank(client: TestClient) -> None:
+    rid = ready_report(client)  # company_a's excerpt: corporate
+    body = client.get(f"/reports/{rid}/reported-metrics").json()
+    assert body == {"metrics": [], "notes": []}
+    pdf = ROOT / "tests" / "e2e" / "fixtures" / "pdfs" / "liquidity_ordered_bank.pdf"
+    bank = int(str(upload(client, pdf)["id"]))
+    assert client.get(f"/reports/{bank}").json()["document_type"] == "bank"
+    got = client.get(f"/reports/{bank}/reported-metrics")
+    assert got.status_code == 200 and got.json()["notes"] == []  # the synthetic text states none

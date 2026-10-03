@@ -281,3 +281,19 @@ def test_the_m81_gate_reads_company_b_and_checks_ratios_and_absent_items(tmp_pat
     ):
         path.write_text(json.dumps({**report, **change}))
         assert gate.run("M8.1", path)[0] == 1, change
+
+
+def test_the_m82_gate_needs_e2_to_match_for_company_b(tmp_path: Path) -> None:
+    from scripts import gate
+
+    path = tmp_path / "report.json"
+    good = {"company": "company_b", "e2": {"expected": 4, "matched": 4}}
+    path.write_text(json.dumps(good))
+    assert gate.run("M8.2", path)[0] == 0
+    for bad in (
+        {**good, "e2": {"expected": 4, "matched": 3}},
+        {**good, "company": "company_a"},
+        {**good, "e2": {"expected": 0, "matched": 0}},
+    ):
+        path.write_text(json.dumps(bad))
+        assert gate.run("M8.2", path)[0] == 1, bad
