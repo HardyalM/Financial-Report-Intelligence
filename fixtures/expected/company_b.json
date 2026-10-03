@@ -1,0 +1,156 @@
+{
+  "schema_version": "1.0.0",
+  "company_name": "Lloyds Banking Group plc",
+  "source": {
+    "filename": "company_b.pdf",
+    "page_count": 338,
+    "parser_engines": []
+  },
+  "currency": "GBP",
+  "unit_scale": 1000000,
+  "page_basis": "1-indexed PDF viewer pages. Income statement is PDF 216 (printed 212). Balance sheet is PDF 218 (printed 214).",
+  "periods": [
+    { "id": "2024", "label": "2024", "end_date": "2024-12-31", "is_restated": false },
+    { "id": "2023", "label": "2023", "end_date": "2023-12-31", "is_restated": false }
+  ],
+  "items": {
+    "net_interest_income": {
+      "id": "net_interest_income",
+      "label_found": "Net interest income",
+      "statement": "income_statement",
+      "values": [
+        { "period_id": "2024", "value": 12277.0, "page": 216, "raw_text": "12,277", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 13298.0, "page": 216, "raw_text": "13,298", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "total_income": {
+      "id": "total_income",
+      "label_found": "Total income",
+      "statement": "income_statement",
+      "values": [
+        { "period_id": "2024", "value": 34281.0, "page": 216, "raw_text": "34,281", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 35405.0, "page": 216, "raw_text": "35,405", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "total_income_after_insurance_finance": {
+      "id": "total_income_after_insurance_finance",
+      "label_found": "Total income, after net finance expense in respect of insurance and investment contracts",
+      "statement": "income_statement",
+      "values": [
+        { "period_id": "2024", "value": 18003.0, "page": 216, "raw_text": "18,003", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 18629.0, "page": 216, "raw_text": "18,629", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "operating_expenses": {
+      "id": "operating_expenses",
+      "label_found": "Operating expenses",
+      "statement": "income_statement",
+      "values": [
+        { "period_id": "2024", "value": -11601.0, "page": 216, "raw_text": "(11,601)", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": -10823.0, "page": 216, "raw_text": "(10,823)", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "impairment": {
+      "id": "impairment",
+      "label_found": "Impairment",
+      "statement": "income_statement",
+      "values": [
+        { "period_id": "2024", "value": -431.0, "page": 216, "raw_text": "(431)", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": -303.0, "page": 216, "raw_text": "(303)", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "profit_before_tax": {
+      "id": "profit_before_tax",
+      "label_found": "Profit before tax",
+      "statement": "income_statement",
+      "values": [
+        { "period_id": "2024", "value": 5971.0, "page": 216, "raw_text": "5,971", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 7503.0, "page": 216, "raw_text": "7,503", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "profit_for_the_year": {
+      "id": "profit_for_the_year",
+      "label_found": "Profit for the year",
+      "statement": "income_statement",
+      "values": [
+        { "period_id": "2024", "value": 4477.0, "page": 216, "raw_text": "4,477", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 5518.0, "page": 216, "raw_text": "5,518", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "loans_and_advances_to_customers": {
+      "id": "loans_and_advances_to_customers",
+      "label_found": "Loans and advances to customers",
+      "statement": "balance_sheet",
+      "values": [
+        { "period_id": "2024", "value": 459857.0, "page": 218, "raw_text": "459,857", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 449745.0, "page": 218, "raw_text": "449,745", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "customer_deposits": {
+      "id": "customer_deposits",
+      "label_found": "Customer deposits",
+      "statement": "balance_sheet",
+      "values": [
+        { "period_id": "2024", "value": 482745.0, "page": 218, "raw_text": "482,745", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 471396.0, "page": 218, "raw_text": "471,396", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "total_assets": {
+      "id": "total_assets",
+      "label_found": "Total assets",
+      "statement": "balance_sheet",
+      "values": [
+        { "period_id": "2024", "value": 906697.0, "page": 218, "raw_text": "906,697", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 881453.0, "page": 218, "raw_text": "881,453", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "total_liabilities": {
+      "id": "total_liabilities",
+      "label_found": "Total liabilities",
+      "statement": "balance_sheet",
+      "values": [
+        { "period_id": "2024", "value": 860809.0, "page": 218, "raw_text": "860,809", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 834088.0, "page": 218, "raw_text": "834,088", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "total_equity": {
+      "id": "total_equity",
+      "label_found": "Total equity",
+      "statement": "balance_sheet",
+      "values": [
+        { "period_id": "2024", "value": 45888.0, "page": 218, "raw_text": "45,888", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 47365.0, "page": 218, "raw_text": "47,365", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "debt_securities_in_issue": {
+      "id": "debt_securities_in_issue",
+      "label_found": "Debt securities in issue at amortised cost",
+      "statement": "balance_sheet",
+      "values": [
+        { "period_id": "2024", "value": 70834.0, "page": 218, "raw_text": "70,834", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 75592.0, "page": 218, "raw_text": "75,592", "confidence": 1.0, "engine": "hand" }
+      ]
+    },
+    "subordinated_liabilities": {
+      "id": "subordinated_liabilities",
+      "label_found": "Subordinated liabilities",
+      "statement": "balance_sheet",
+      "values": [
+        { "period_id": "2024", "value": 10089.0, "page": 218, "raw_text": "10,089", "confidence": 1.0, "engine": "hand" },
+        { "period_id": "2023", "value": 10253.0, "page": 218, "raw_text": "10,253", "confidence": 1.0, "engine": "hand" }
+      ]
+    }
+  },
+  "absent": [
+    "revenue",
+    "operating_profit",
+    "current_assets",
+    "current_liabilities",
+    "total_debt"
+  ],
+  "warnings": [
+    "Bank statements. Do not map total income to revenue or profit before tax to operating profit.",
+    "No current assets or current liabilities subtotal is printed.",
+    "Do not sum customer deposits into total debt. Debt securities in issue and subordinated liabilities are labelled separately."
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "company": "company_b",
+  "company_name": "Lloyds Banking Group plc",
+  "ratios": {
+    "cost_to_income": {
+      "definition": "abs(operating_expenses) / total_income_after_insurance_finance",
+      "values": [
+        {
+          "period_id": "2024",
+          "value": 0.6443926012331278
+        },
+        {
+          "period_id": "2023",
+          "value": 0.5809758977937624
+        }
+      ]
+    },
+    "loan_to_deposit": {
+      "definition": "loans_and_advances_to_customers / customer_deposits",
+      "values": [
+        {
+          "period_id": "2024",
+          "value": 0.9525878051559312
+        },
+        {
+          "period_id": "2023",
+          "value": 0.9540704630501744
+        }
+      ]
+    }
+  }
+}
