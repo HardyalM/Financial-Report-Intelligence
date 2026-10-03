@@ -297,3 +297,38 @@ def test_the_m82_gate_needs_e2_to_match_for_company_b(tmp_path: Path) -> None:
     ):
         path.write_text(json.dumps(bad))
         assert gate.run("M8.2", path)[0] == 1, bad
+
+
+def test_check_results_requires_every_number_to_equal_a_cited_field(tmp_path: Path) -> None:
+    from scripts import check_results
+
+    run = "company_x-20261003T101500Z-abc1234"
+    snaps = tmp_path / "results"
+    snaps.mkdir()
+    (snaps / f"{run}.json").write_text(
+        json.dumps({"run_id": run, "e1": {"matched": 22, "labelled": 22, "silent_wrong": 0}})
+    )
+    doc = tmp_path / "RESULTS.md"
+
+    def problems(text: str) -> list[str]:
+        doc.write_text(text)
+        return check_results.check(doc, snaps)
+
+    cite = f"`{run}`: e1.matched, e1.labelled, e1.silent_wrong"
+    assert problems(f"# Results (M8.3)\n\n| E1 | 22 of 22, 0 silent wrong | {cite} |\n") == []
+    assert problems(f"| E1 | 21 of 22 | {cite} |\n")  # a number that is not a cited value
+    assert problems("| E1 | 22 of 22 |\n")  # a number with no citation
+    assert problems(f"| E1 | 22 | `{run}`: e1.nope |\n")  # a cited field that does not exist
+    assert problems("| E1 | 22 | `company_x-20261003T000000Z-zzz`: e1.matched |\n")  # no snapshot
+    # names with digits are not numbers: milestones, suites, hit@8, dates, code spans
+    assert problems("E1, E2, M8.3, QA-20, T17, OQ-4, hit@8, FY2024, 2026-10-03, `make e2e`\n") == []
+
+
+def test_an_eval_run_is_written_under_its_run_id(tmp_path: Path) -> None:
+    from finintel.evals.e1 import new_run_id, write_report
+
+    run = new_run_id("company_x")
+    assert run.startswith("company_x-") and run.count("-") >= 2
+    latest = tmp_path / "eval" / "latest" / "report.json"
+    write_report({"run_id": run, "company": "company_x"}, latest)
+    assert latest.is_file() and (tmp_path / "eval" / run / "report.json").is_file()

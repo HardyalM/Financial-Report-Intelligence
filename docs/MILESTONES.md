@@ -418,7 +418,8 @@ These checks are created in M0 and run in CI.
 ## M8.3 — Honesty layer
 
 **Read first:** EVAL §1, §4; PLAN §6; INTERVIEW.md.
-**Allowed paths:** `docs/RESULTS.md`, `docs/INTERVIEW.md`, `README.md`, `web/**`, `tests/**`.
+**Allowed paths:** `docs/RESULTS.md`, `docs/INTERVIEW.md`, `README.md`, `web/**`, `tests/**`, `docs/results/**`, `scripts/check_results.py`, `scripts/scope.yaml`, `finintel/evals/e1.py`, `finintel/cli/extract_cmd.py`, `finintel/commentary/ratings.py`.
+*Amended 2026-10-03 in the M8.3 session: the gate needs `scripts/check_results.py` (written here, as the gate implies) and eval reports with run ids (the harness docstring promised `artifacts/eval/{run_id}/report.json`; `write_report` now writes it, E2 and E3 join the E1 run of the same company); `artifacts/` is git-ignored, so each cited run is snapshotted to `docs/results/{run_id}.json` and the checker reads those (a fresh clone can check them); the ratings report gains `supported_count` and `unsupported_count` so RESULTS.md can state counts, not only a rate (EVAL §1.3). `make dev` (Makefile, global) runs company_a with no keys, on the committed excerpt when the full PDF is absent.*
 
 **Gate:**
 - [ ] G1–G6 pass.

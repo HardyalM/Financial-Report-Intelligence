@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import type * as React from "react";
 
 import { useReportContext } from "@/components/report/context";
@@ -22,6 +23,9 @@ export function SiteFooter({ children }: { children?: React.ReactNode }) {
     <footer className="mt-12 border-t border-line" data-testid="footer">
       <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-x-4 gap-y-1 px-4 py-5 text-xs text-ink-3 sm:px-6 lg:px-8">
         <strong className="font-semibold text-ink-2">Research aid. Not investment advice.</strong>
+        <Link href="/limitations" className="text-ink-2 underline-offset-2 hover:text-ink hover:underline" data-testid="limitations-link">
+          Limitations
+        </Link>
         {children}
       </div>
     </footer>

@@ -64,6 +64,8 @@ def score_ratings(
         "stale": stale,
         "total": total,
         "supported": sum(1 for _, r in rated if r == "supported") / total if total else 0.0,
+        "supported_count": sum(1 for _, r in rated if r == "supported"),  # counts, not only a rate
+        "unsupported_count": sum(1 for _, r in rated if r == "unsupported"),
         "unsupported": sorted(pid for pid, r in rated if r == "unsupported"),
         "contradicted": sum(1 for _, r in rated if r == "contradicted"),
         "unrated": sorted(expected - set(ids)),

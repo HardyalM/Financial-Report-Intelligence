@@ -141,7 +141,29 @@ def report_json(
     }
 
 
+def new_run_id(company: str) -> str:
+    """`{company}-{UTC timestamp}-{git commit}`: when, on what, from which code (EVAL section 1)."""
+    import datetime
+    import subprocess
+
+    stamp = datetime.datetime.now(datetime.UTC).strftime("%Y%m%dT%H%M%SZ")
+    try:
+        commit = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, check=True
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        commit = "nogit"
+    return f"{company}-{stamp}-{commit}"
+
+
 def write_report(report: dict[str, Any], out: Path) -> Path:
+    """Write the report to `out` (artifacts/eval/latest/report.json) and, when it carries a
+    `run_id`, also to artifacts/eval/{run_id}/report.json, which RESULTS.md cites."""
+    text = json.dumps(report, indent=2) + "\n"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    out.write_text(text, encoding="utf-8")
+    if report.get("run_id"):
+        run = out.parent.parent / str(report["run_id"]) / "report.json"
+        run.parent.mkdir(parents=True, exist_ok=True)
+        run.write_text(text, encoding="utf-8")
     return out

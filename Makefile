@@ -7,7 +7,8 @@ help:
 	@echo "make ci              lint, typecheck, test, contracts-check, scope (the standard gate G1 plus G5)"
 	@echo "make contracts       regenerate finintel/contracts from schemas/"
 	@echo "make inspect         inspection dumps for every PDF in fixtures/pdfs/ (never fixtures/holdout/)"
-	@echo "make eval, eval-live arrive in M2.4 (see docs/MILESTONES.md)"
+	@echo "make dev             fresh clone, no keys: Postgres, migrations, company_a end to end"
+	@echo "make eval            E1 and E2 for COMPANY (a run_id under artifacts/eval/)"
 
 lint:
 	$(RUN) ruff check .
@@ -36,6 +37,21 @@ scope:
 	$(RUN) python scripts/check_scope.py --web-guard
 
 ci: lint typecheck test contracts-check scope
+
+# ---- dev (M8.3): a fresh clone, no API keys. Postgres (reused if already running), migrations,
+# then company_a end to end on local engines with extractive commentary; exit 0 = ready.
+# company_a's full PDF is git-ignored, so a clone uses the committed golden excerpt
+# (statement pages at their original page numbers, ADR-009). DEV_EMBEDDER=bge-m3 needs the
+# optional `local` extra (uv sync --extra local); the default needs nothing downloaded.
+DEV_PDF ?= $(if $(wildcard fixtures/pdfs/company_a.pdf),fixtures/pdfs/company_a.pdf,tests/golden/company_a/excerpt.pdf)
+DEV_EMBEDDER ?= fake
+dev:
+	@$(RUN) python -c "import psycopg; from finintel.db.migrate import database_url; psycopg.connect(database_url(), connect_timeout=2).close()" 2>/dev/null \
+		&& echo "postgres: reachable" \
+		|| docker compose up -d --wait db
+	$(RUN) python -m finintel.db migrate
+	@echo "company_a: $(DEV_PDF)"
+	FININTEL_PROVIDER=none $(RUN) finintel run $(DEV_PDF) --engines local --embedder $(DEV_EMBEDDER)
 
 # ---- web (M7): Node 20.9+; the e2e suite serves tests/e2e/fixtures/api, no backend needed
 web-install:

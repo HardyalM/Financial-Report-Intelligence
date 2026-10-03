@@ -15,7 +15,7 @@ from typing import Any, TextIO
 from finintel.cache import StageCache
 from finintel.cli.common import resolve_pdf
 from finintel.evals import e2
-from finintel.evals.e1 import absent_published, compare, report_json, write_report
+from finintel.evals.e1 import absent_published, compare, new_run_id, report_json, write_report
 from finintel.extract import ExtractionResult, extract_pack
 from finintel.parse.engines.azure_di_engine import AzureDiConfig, AzureDiEngine
 
@@ -115,6 +115,7 @@ def run_e1(
         pdf.stem,
         engines,
         {
+            "run_id": new_run_id(pdf.stem),
             "schema_errors": result.schema_errors,
             "azure": {
                 "ran": "azure_di" in result.pack["source"]["parser_engines"],
@@ -149,6 +150,8 @@ def run_e2(company: str, cache_dir: Path, artifacts: Path) -> tuple[dict[str, An
     if target.is_file():
         previous = json.loads(target.read_text(encoding="utf-8"))
         report = previous if previous.get("company") == pdf.stem else {}
+    # E2 joins the E1 run of the same company (make eval runs both); alone, it starts one.
+    report.setdefault("run_id", new_run_id(pdf.stem))
     report.update({"company": pdf.stem, "e2": body})
     return report, write_report(report, target)
 
