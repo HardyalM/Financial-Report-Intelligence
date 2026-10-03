@@ -1,0 +1,1226 @@
+{
+  "company": "company_a",
+  "engines": "local",
+  "e1": {
+    "labelled": 22,
+    "matched": 22,
+    "honest_null": 0,
+    "silent_wrong": 0,
+    "unit_errors": 0,
+    "cells": [
+      {
+        "item": "revenue",
+        "period": "FY2024",
+        "status": "matched",
+        "expected": 60761.0,
+        "got": 60761.0,
+        "page": 141
+      },
+      {
+        "item": "revenue",
+        "period": "FY2023",
+        "status": "matched",
+        "expected": 59604.0,
+        "got": 59604.0,
+        "page": 141
+      },
+      {
+        "item": "operating_profit",
+        "period": "FY2024",
+        "status": "matched",
+        "expected": 9400.0,
+        "got": 9400.0,
+        "page": 141
+      },
+      {
+        "item": "operating_profit",
+        "period": "FY2023",
+        "status": "matched",
+        "expected": 9758.0,
+        "got": 9758.0,
+        "page": 141
+      },
+      {
+        "item": "profit_before_tax",
+        "period": "FY2024",
+        "status": "matched",
+        "expected": 8869.0,
+        "got": 8869.0,
+        "page": 141
+      },
+      {
+        "item": "profit_before_tax",
+        "period": "FY2023",
+        "status": "matched",
+        "expected": 9339.0,
+        "got": 9339.0,
+        "page": 141
+      },
+      {
+        "item": "net_income",
+        "period": "FY2024",
+        "status": "matched",
+        "expected": 6369.0,
+        "got": 6369.0,
+        "page": 141
+      },
+      {
+        "item": "net_income",
+        "period": "FY2023",
+        "status": "matched",
+        "expected": 7140.0,
+        "got": 7140.0,
+        "page": 141
+      },
+      {
+        "item": "current_assets",
+        "period": "FY2024",
+        "status": "matched",
+        "expected": 19194.0,
+        "got": 19194.0,
+        "page": 143
+      },
+      {
+        "item": "current_assets",
+        "period": "FY2023",
+        "status": "matched",
+        "expected": 17902.0,
+        "got": 17902.0,
+        "page": 143
+      },
+      {
+        "item": "current_liabilities",
+        "period": "FY2024",
+        "status": "matched",
+        "expected": 25234.0,
+        "got": 25234.0,
+        "page": 143
+      },
+      {
+        "item": "current_liabilities",
+        "period": "FY2023",
+        "status": "matched",
+        "expected": 23507.0,
+        "got": 23507.0,
+        "page": 143
+      },
+      {
+        "item": "total_assets",
+        "period": "FY2024",
+        "status": "matched",
+        "expected": 79750.0,
+        "got": 79750.0,
+        "page": 143
+      },
+      {
+        "item": "total_assets",
+        "period": "FY2023",
+        "status": "matched",
+        "expected": 75266.0,
+        "got": 75266.0,
+        "page": 143
+      },
+      {
+        "item": "total_equity",
+        "period": "FY2024",
+        "status": "matched",
+        "expected": 22555.0,
+        "got": 22555.0,
+        "page": 143
+      },
+      {
+        "item": "total_equity",
+        "period": "FY2023",
+        "status": "matched",
+        "expected": 20764.0,
+        "got": 20764.0,
+        "page": 143
+      },
+      {
+        "item": "financial_liabilities_current",
+        "period": "FY2024",
+        "status": "matched",
+        "expected": 6987.0,
+        "got": 6987.0,
+        "page": 143
+      },
+      {
+        "item": "financial_liabilities_current",
+        "period": "FY2023",
+        "status": "matched",
+        "expected": 5087.0,
+        "got": 5087.0,
+        "page": 143
+      },
+      {
+        "item": "financial_liabilities_non_current",
+        "period": "FY2024",
+        "status": "matched",
+        "expected": 25066.0,
+        "got": 25066.0,
+        "page": 143
+      },
+      {
+        "item": "financial_liabilities_non_current",
+        "period": "FY2023",
+        "status": "matched",
+        "expected": 24535.0,
+        "got": 24535.0,
+        "page": 143
+      },
+      {
+        "item": "total_debt",
+        "period": "FY2024",
+        "status": "matched",
+        "expected": null,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "total_debt",
+        "period": "FY2023",
+        "status": "matched",
+        "expected": null,
+        "got": null,
+        "page": null
+      }
+    ]
+  },
+  "e6": {
+    "published_llm_pointer": 0,
+    "published_vision_only": 0
+  },
+  "run_id": "company_a-20261003T011619Z-01552f5",
+  "schema_errors": [],
+  "azure": {
+    "ran": false,
+    "skipped": null
+  },
+  "ratios": {
+    "not_applicable": 0,
+    "computed": 7,
+    "applicability": {
+      "operating_margin": [
+        "applicable"
+      ],
+      "current_ratio": [
+        "applicable"
+      ],
+      "debt_to_equity": [
+        "applicable"
+      ],
+      "roce": [
+        "applicable"
+      ]
+    }
+  },
+  "absent": {
+    "labelled": 0,
+    "published": 0,
+    "items": []
+  },
+  "e2": {
+    "expected": 8,
+    "matched": 8,
+    "matched_extracted": 8,
+    "matched_labelled": 8,
+    "tolerance": 1e-09,
+    "cells": [
+      {
+        "period": "FY2024",
+        "ratio": "operating_margin",
+        "extracted": "ok",
+        "labelled": "ok"
+      },
+      {
+        "period": "FY2024",
+        "ratio": "current_ratio",
+        "extracted": "ok",
+        "labelled": "ok"
+      },
+      {
+        "period": "FY2024",
+        "ratio": "debt_to_equity",
+        "extracted": "ok",
+        "labelled": "ok"
+      },
+      {
+        "period": "FY2024",
+        "ratio": "roce",
+        "extracted": "ok",
+        "labelled": "ok"
+      },
+      {
+        "period": "FY2023",
+        "ratio": "operating_margin",
+        "extracted": "ok",
+        "labelled": "ok"
+      },
+      {
+        "period": "FY2023",
+        "ratio": "current_ratio",
+        "extracted": "ok",
+        "labelled": "ok"
+      },
+      {
+        "period": "FY2023",
+        "ratio": "debt_to_equity",
+        "extracted": "ok",
+        "labelled": "ok"
+      },
+      {
+        "period": "FY2023",
+        "ratio": "roce",
+        "extracted": "ok",
+        "labelled": "ok"
+      }
+    ]
+  },
+  "e3": {
+    "queries": 5,
+    "hits": 4,
+    "hit_at_8": 0.8,
+    "page_basis": "pdf",
+    "folio_offset": 3,
+    "models": {
+      "embedding": "BAAI/bge-m3",
+      "reranker": "none (RRF order)",
+      "backend": "memory"
+    },
+    "cells": [
+      {
+        "q": "What are the principal risks?",
+        "expected_labelled": [
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62
+        ],
+        "expected_pdf_pages": [
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62
+        ],
+        "retrieved": [
+          {
+            "chunk_id": "6288149a145ad8fe",
+            "pdf_pages": [
+              55,
+              55
+            ],
+            "section": "principal_risks",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Our Principal Risks",
+              "Principal Risks"
+            ]
+          },
+          {
+            "chunk_id": "8b1d69ce7c5a6de0",
+            "pdf_pages": [
+              55,
+              55
+            ],
+            "section": "principal_risks",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Our Principal Risks",
+              "Principal Risks"
+            ]
+          },
+          {
+            "chunk_id": "e3e0f20699df2afe",
+            "pdf_pages": [
+              129,
+              129
+            ],
+            "section": "principal_risks",
+            "heading_path": [
+              "KPMG\u2019s Independent Auditor\u2019s Report",
+              "KPMG LLP\u2019s Independent Auditor\u2019s Report",
+              "3. Going concern, viability and principal risks and uncertainties (continued)"
+            ]
+          },
+          {
+            "chunk_id": "3913b75cab10b14f",
+            "pdf_pages": [
+              63,
+              63
+            ],
+            "section": "viability_statement",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Our Principal Risks",
+              "Viability statement",
+              "ASSESSMENT"
+            ]
+          },
+          {
+            "chunk_id": "0759fcc4374654cd",
+            "pdf_pages": [
+              39,
+              39
+            ],
+            "section": "sustainability_tcfd",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Sustainability Review",
+              "NATURE"
+            ]
+          },
+          {
+            "chunk_id": "fa2f5d0d5b0519f6",
+            "pdf_pages": [
+              186,
+              186
+            ],
+            "section": "notes_other",
+            "heading_path": [
+              "Notes to the Fin Statements UL Group",
+              "17B. CREDIT RISK"
+            ]
+          },
+          {
+            "chunk_id": "fd312c59b61fef5a",
+            "pdf_pages": [
+              290,
+              290
+            ],
+            "section": "corporate_governance_report",
+            "heading_path": [
+              "ESRS divider 1",
+              "ESRS Governance Disclosures",
+              "Business Conduct",
+              "IMPACT, RISK AND OPPORTUNITY MANAGEMENT",
+              "Description of the processes to identify and assess material impacts, risks and opportunities"
+            ]
+          },
+          {
+            "chunk_id": "f352d9df94c14a35",
+            "pdf_pages": [
+              257,
+              257
+            ],
+            "section": "business_model",
+            "heading_path": [
+              "ESRS divider 1",
+              "ESRS Biodiversity and Ecosystems",
+              "Biodiversity and Ecosystems",
+              "STRATEGY",
+              "Interaction of material impacts and risks with strategy and business model"
+            ]
+          }
+        ],
+        "hit": true
+      },
+      {
+        "q": "How does Unilever describe its strategy?",
+        "expected_labelled": [
+          7,
+          8
+        ],
+        "expected_pdf_pages": [
+          7,
+          8
+        ],
+        "retrieved": [
+          {
+            "chunk_id": "ff4a038c5495868a",
+            "pdf_pages": [
+              38,
+              38
+            ],
+            "section": "narrative_other",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Our People & Culture",
+              "HIGHLIGHTS",
+              "TALENT POWERHOUSE",
+              "REVIEW OF THE YEAR"
+            ]
+          },
+          {
+            "chunk_id": "b4b6aa06b079410e",
+            "pdf_pages": [
+              229,
+              229
+            ],
+            "section": "business_model",
+            "heading_path": [
+              "ESRS divider 1",
+              "ESRS General Information",
+              "General Information",
+              "STRATEGY AND BUSINESS MODEL"
+            ]
+          },
+          {
+            "chunk_id": "ac09fb4f9c8a9f68",
+            "pdf_pages": [
+              9,
+              9
+            ],
+            "section": "strategy",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Chair's statement",
+              "STRATEGY"
+            ]
+          },
+          {
+            "chunk_id": "fe4ab04b9bbb2fb9",
+            "pdf_pages": [
+              73,
+              73
+            ],
+            "section": "corporate_governance_report",
+            "heading_path": [
+              "GOVERNANCE REPORT divider page 1",
+              "Operation of the Board",
+              "RELATIONSHIP WITH UNILEVER LEADERSHIP EXECUTIVE"
+            ]
+          },
+          {
+            "chunk_id": "ed6c87b5aaff5b91",
+            "pdf_pages": [
+              220,
+              220
+            ],
+            "section": "principal_risks",
+            "heading_path": [
+              "Additional Information for US Listing Purposes",
+              "OTHER INFORMATION ON THE COMPANY",
+              "Risk management and strategy"
+            ]
+          },
+          {
+            "chunk_id": "23aa6c0e8bf0c9bd",
+            "pdf_pages": [
+              104,
+              104
+            ],
+            "section": "narrative_other",
+            "heading_path": [
+              "DRR - Letter and Policy",
+              "DRR",
+              "At a glance summary of 2025 remuneration",
+              "2025 performance measures and link to strategy"
+            ]
+          },
+          {
+            "chunk_id": "91d1b99e2ada2a7b",
+            "pdf_pages": [
+              38,
+              38
+            ],
+            "section": "narrative_other",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Our People & Culture",
+              "HIGHLIGHTS",
+              "ENHANCING OUR CAPABILITIES"
+            ]
+          },
+          {
+            "chunk_id": "b60f1db53c784ba7",
+            "pdf_pages": [
+              96,
+              96
+            ],
+            "section": "sustainability_tcfd",
+            "heading_path": [
+              "GOVERNANCE REPORT divider page 1",
+              "Report of the CRC",
+              "Report of the Corporate Responsibility Committee",
+              "HOW THE COMMITTEE HAS DISCHARGED ITS RESPONSIBILITIES",
+              "Delivering ambitious new sustainability goals"
+            ]
+          }
+        ],
+        "hit": false
+      },
+      {
+        "q": "What did the Chief Executive say about performance?",
+        "expected_labelled": [
+          11,
+          12
+        ],
+        "expected_pdf_pages": [
+          11,
+          12
+        ],
+        "retrieved": [
+          {
+            "chunk_id": "78cb025739d57319",
+            "pdf_pages": [
+              11,
+              12
+            ],
+            "section": "chair_statement",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Chair's statement",
+              "Chief Executive Officer's statement",
+              "RESULTS AND PERFORMANCE 2024",
+              "REVIEW OF THE YEAR"
+            ]
+          },
+          {
+            "chunk_id": "0cc6091e2dd0bab7",
+            "pdf_pages": [
+              12,
+              12
+            ],
+            "section": "chair_statement",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Chair's statement",
+              "Chief Executive Officer's statement",
+              "LOOKING AHEAD"
+            ]
+          },
+          {
+            "chunk_id": "dae4f7d62003e6b0",
+            "pdf_pages": [
+              11,
+              11
+            ],
+            "section": "chair_statement",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Chair's statement",
+              "Chief Executive Officer's statement",
+              "OVERVIEW"
+            ]
+          },
+          {
+            "chunk_id": "d3dd9310ceffc445",
+            "pdf_pages": [
+              98,
+              98
+            ],
+            "section": "narrative_other",
+            "heading_path": [
+              "DRR - Letter and Policy",
+              "INCENTIVE OUTCOMES FOR THE EXECUTIVE DIRECTORS",
+              "2022\u20132024 Performance Share Plan (PSP)"
+            ]
+          },
+          {
+            "chunk_id": "627f3c5f2ce4dbd5",
+            "pdf_pages": [
+              98,
+              98
+            ],
+            "section": "narrative_other",
+            "heading_path": [
+              "DRR - Letter and Policy",
+              "INCENTIVE OUTCOMES FOR THE EXECUTIVE DIRECTORS",
+              "2024 annual bonus"
+            ]
+          },
+          {
+            "chunk_id": "7e5d88aaa6e6def9",
+            "pdf_pages": [
+              101,
+              101
+            ],
+            "section": "narrative_other",
+            "heading_path": [
+              "DRR - Letter and Policy",
+              "DRR",
+              "COMMITTEE MEMBERS AND ATTENDANCE"
+            ]
+          },
+          {
+            "chunk_id": "0ad1658d17569295",
+            "pdf_pages": [
+              97,
+              97
+            ],
+            "section": "corporate_governance_report",
+            "heading_path": [
+              "GOVERNANCE REPORT divider page 1",
+              "Report of the CRC",
+              "Report of the Corporate Responsibility Committee",
+              "EVALUATION OF THE CORPORATE RESPONSIBILITY COMMITTEE"
+            ]
+          },
+          {
+            "chunk_id": "8b7b983261d1a8c5",
+            "pdf_pages": [
+              84,
+              84
+            ],
+            "section": "corporate_governance_report",
+            "heading_path": [
+              "GOVERNANCE REPORT divider page 1",
+              "Report of the NCGC"
+            ]
+          }
+        ],
+        "hit": true
+      },
+      {
+        "q": "What is the viability statement?",
+        "expected_labelled": [
+          63,
+          64
+        ],
+        "expected_pdf_pages": [
+          63,
+          64
+        ],
+        "retrieved": [
+          {
+            "chunk_id": "e3e0f20699df2afe",
+            "pdf_pages": [
+              129,
+              129
+            ],
+            "section": "principal_risks",
+            "heading_path": [
+              "KPMG\u2019s Independent Auditor\u2019s Report",
+              "KPMG LLP\u2019s Independent Auditor\u2019s Report",
+              "3. Going concern, viability and principal risks and uncertainties (continued)"
+            ]
+          },
+          {
+            "chunk_id": "ae63370437ba314d",
+            "pdf_pages": [
+              64,
+              64
+            ],
+            "section": "viability_statement",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Our Principal Risks",
+              "Viability statement",
+              "FINDINGS"
+            ]
+          },
+          {
+            "chunk_id": "3913b75cab10b14f",
+            "pdf_pages": [
+              63,
+              63
+            ],
+            "section": "viability_statement",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Our Principal Risks",
+              "Viability statement",
+              "ASSESSMENT"
+            ]
+          },
+          {
+            "chunk_id": "33deeffd2740e60f",
+            "pdf_pages": [
+              63,
+              63
+            ],
+            "section": "viability_statement",
+            "heading_path": [
+              "STRATEGIC REPORT - Front cover",
+              "Our Principal Risks",
+              "Viability statement"
+            ]
+          },
+          {
+            "chunk_id": "a1c2b84753af1bd9",
+            "pdf_pages": [
+              123,
+              123
+            ],
+            "section": "going_concern",
+            "heading_path": [
+              "Statement of directors' responsibilities",
+              "GOING CONCERN"
+            ]
+          },
+          {
+            "chunk_id": "ff6366a7f188406a",
+            "pdf_pages": [
+              128,
+              128
+            ],
+            "section": "principal_risks",
+            "heading_path": [
+              "KPMG\u2019s Independent Auditor\u2019s Report",
+              "KPMG LLP\u2019s Independent Auditor\u2019s Report",
+              "3. Going concern, viability and principal risks and uncertainties"
+            ]
+          },
+          {
+            "chunk_id": "cb2fb9dbe050ddf5",
+            "pdf_pages": [
+              230,
+              230
+            ],
+            "section": "business_model",
+            "heading_path": [
+              "ESRS divider 1",
+              "ESRS General Information",
+              "General Information",
+              "DOUBLE MATERIALITY",
+              "Interaction with strategy and business model"
+            ]
+          },
+          {
+            "chunk_id": "f2653a70adc45c6d",
+            "pdf_pages": [
+              128,
+              128
+            ],
+            "section": "principal_risks",
+            "heading_path": [
+              "KPMG\u2019s Independent Auditor\u2019s Report",
+              "KPMG LLP\u2019s Independent Auditor\u2019s Report",
+              "3. Going concern, viability and principal risks and uncertainties"
+            ]
+          }
+        ],
+        "hit": true
+      },
+      {
+        "q": "What did the directors say about going concern?",
+        "expected_labelled": [
+          123,
+          145
+        ],
+        "expected_pdf_pages": [
+          123,
+          145
+        ],
+        "retrieved": [
+          {
+            "chunk_id": "ff6366a7f188406a",
+            "pdf_pages": [
+              128,
+              128
+            ],
+            "section": "principal_risks",
+            "heading_path": [
+              "KPMG\u2019s Independent Auditor\u2019s Report",
+              "KPMG LLP\u2019s Independent Auditor\u2019s Report",
+              "3. Going concern, viability and principal risks and uncertainties"
+            ]
+          },
+          {
+            "chunk_id": "a1c2b84753af1bd9",
+            "pdf_pages": [
+              123,
+              123
+            ],
+            "section": "going_concern",
+            "heading_path": [
+              "Statement of directors' responsibilities",
+              "GOING CONCERN"
+            ]
+          },
+          {
+            "chunk_id": "f2653a70adc45c6d",
+            "pdf_pages": [
+              128,
+              128
+            ],
+            "section": "principal_risks",
+            "heading_path": [
+              "KPMG\u2019s Independent Auditor\u2019s Report",
+              "KPMG LLP\u2019s Independent Auditor\u2019s Report",
+              "3. Going concern, viability and principal risks and uncertainties"
+            ]
+          },
+          {
+            "chunk_id": "baf45b211799b502",
+            "pdf_pages": [
+              145,
+              145
+            ],
+            "section": "going_concern",
+            "heading_path": [
+              "Notes to the Fin Statements UL Group",
+              "1. Accounting information and policies",
+              "GOING CONCERN"
+            ]
+          },
+          {
+            "chunk_id": "437a18318c1758ef",
+            "pdf_pages": [
+              76,
+              76
+            ],
+            "section": "corporate_governance_report",
+            "heading_path": [
+              "GOVERNANCE REPORT divider page 1",
+              "Operation of the Board",
+              "BOARD FOCUS",
+              "Governance and external reporting"
+            ]
+          },
+          {
+            "chunk_id": "e3e0f20699df2afe",
+            "pdf_pages": [
+              129,
+              129
+            ],
+            "section": "principal_risks",
+            "heading_path": [
+              "KPMG\u2019s Independent Auditor\u2019s Report",
+              "KPMG LLP\u2019s Independent Auditor\u2019s Report",
+              "3. Going concern, viability and principal risks and uncertainties (continued)"
+            ]
+          },
+          {
+            "chunk_id": "d3bbf32010a0d628",
+            "pdf_pages": [
+              140,
+              140
+            ],
+            "section": "auditors_report",
+            "heading_path": [
+              "KPMG\u2019s Independent Auditor\u2019s Report",
+              "KPMG LLP\u2019s Independent Auditor\u2019s Report",
+              "9. Respective responsibilities"
+            ]
+          },
+          {
+            "chunk_id": "b1b3538d25ec3f16",
+            "pdf_pages": [
+              91,
+              91
+            ],
+            "section": "audit_committee_report",
+            "heading_path": [
+              "GOVERNANCE REPORT divider page 1",
+              "Report of the AC",
+              "Report of the Audit Committee",
+              "REPORTING AND FINANCIAL STATEMENTS"
+            ]
+          }
+        ],
+        "hit": true
+      }
+    ]
+  },
+  "commentary": {
+    "mode": "generated",
+    "provider": "gemini",
+    "model_id": "gemini-3.5-flash-lite",
+    "fallback_reason": null
+  },
+  "e4": {
+    "displayed_paragraphs": 29,
+    "displayed_unverified_citations": 0,
+    "displayed_naked_numbers": 0,
+    "displayed_advice": 0,
+    "displayed_unknown_placeholders": 0,
+    "displayed_direction_violations": 0,
+    "displayed_mismatched_placeholders": 0,
+    "displayed_figures_without_source": 0,
+    "displayed_unverified_quotes": 0,
+    "displayed_without_citation": 0,
+    "pre_validation": {
+      "calls": 4,
+      "fabricated_or_out_of_set_quotes": 1,
+      "naked_number_violations": 2,
+      "advice_violations": 0,
+      "direction_violations": 0,
+      "unknown_placeholders": 0,
+      "schema_violations": 0,
+      "figure_violations": 0,
+      "unverified_quote_violations": 1,
+      "placeholder_meaning_violations": 0,
+      "out_of_order_bullets": 0,
+      "paragraphs_without_citation": 1
+    }
+  },
+  "e8": {
+    "risk_recall": 0.9285714285714286,
+    "kam_recall": 1.0,
+    "risks": {
+      "total": 14,
+      "found": 13,
+      "missing": [
+        "Customer and channel"
+      ],
+      "recall": 0.9285714285714286
+    },
+    "kams": {
+      "total": 3,
+      "found": 3,
+      "missing": [],
+      "recall": 1.0
+    },
+    "going_concern_correct": true,
+    "going_concern_claims_against_label": []
+  },
+  "qa": {
+    "total": 20,
+    "passed": 18,
+    "failed": [
+      "v2",
+      "v3"
+    ],
+    "mix_errors": [],
+    "answers": {
+      "n1": {
+        "status": "ok",
+        "pages": [
+          141
+        ],
+        "text": [
+          "\u20ac60.8bn"
+        ],
+        "error": null
+      },
+      "n2": {
+        "status": "ok",
+        "pages": [
+          141
+        ],
+        "text": [
+          "\u20ac9.4bn"
+        ],
+        "error": null
+      },
+      "n3": {
+        "status": "ok",
+        "pages": [
+          141
+        ],
+        "text": [
+          "\u20ac6.4bn"
+        ],
+        "error": null
+      },
+      "n4": {
+        "status": "ok",
+        "pages": [
+          141,
+          162
+        ],
+        "text": [
+          "\u20ac2.30"
+        ],
+        "error": null
+      },
+      "n5": {
+        "status": "ok",
+        "pages": [
+          41,
+          43,
+          49
+        ],
+        "text": [
+          "\u20ac6.9bn"
+        ],
+        "error": null
+      },
+      "n6": {
+        "status": "ok",
+        "pages": [
+          47
+        ],
+        "text": [
+          "\u20ac11.2bn"
+        ],
+        "error": null
+      },
+      "v1": {
+        "status": "ok",
+        "pages": [
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62
+        ],
+        "text": [
+          "Consumer preference: The report notes that consumer tastes, preferences and behaviours are changing rapidly, requiring the business to innovate and remain competitive. \"Consumer tastes, preferences and behaviours are changing more rapidly than ever before.\"",
+          "Portfolio management: Strategic investment choices regarding Business Groups, geographies and channels affect the long-term growth and profits of the business. \"Unilever\u2019s growth and profitability are determined by our portfolio of Business Groups, geographies and channels and how these evolve over time.\"",
+          "Climate and nature: Tackling climate change physical and transitional risks alongside the loss of nature is described as important for resilience and future-proofing. \"Tackling climate change-related physical and transitional risks and loss of nature is important to increase our resilience and future-proof our business.\"",
+          "Plastic packaging: The significant use of plastic requires solutions to reduce virgin material and increase recyclability in response to environmental impacts and emerging regulations. \"Both consumer and customer responses to the environmental impact of plastic waste and emerging regulations by governments to tax or ban the use of certain plastics requires us to find solutions to reduce the amount of plastic we use and increase the amount of packaging which is recyclable.\"",
+          "Talent: A skilled workforce and agile ways of working are highlighted as essential due to the rapidly changing nature of work and skills. \"With the rapidly changing nature of work and skills, there is a risk that our workforce is not equipped with the skills required for the new environment.\"",
+          "Business operations: The supply chain network is exposed to potentially adverse events such as geopolitical sanctions, physical disruptions, trade restrictions and tariffs. \"Our supply chain network is exposed to potentially adverse events such as geopolitical sanctions, physical disruptions, trade restrictions and tariffs or disruptions at a key supplier, which could impact our ability to deliver orders to our customers.\"",
+          "Safe and high-quality products: Product quality and safety are of paramount importance, where increasing laws and regulations can lead to litigation and impact financial performance and reputation. \"The quality and safety of our products are of paramount importance for our brands and our reputation.\"",
+          "Systems and information: Operations are increasingly dependent on IT systems alongside the need to safeguard data confidentiality and integrity against rising cyber threats. \"The cyber-attack threat of unauthorised access and misuse of sensitive information or disruption to operations continues to increase.\"",
+          "Business transformation: Successful execution of transformation projects is key to delivering business benefits and avoiding operational disruption, particularly following the announced separation of the Ice Cream business. \"In 2024, we announced the separation of our Ice Cream business and the launch of a major productivity programme to accelerate our Growth Action Plan (GAP).\"",
+          "Economic and political instability: Adverse economic conditions and political instability can impact consumer demand, disrupt sales operations and affect profitability. \"Economic and political instability impacts consumer demand for our products, disrupts sales operations and/or impacts the profitability of our operations.\"",
+          "Treasury and tax: The business is exposed to external financial risks regarding exchange rate fluctuations, cash flow shortfalls, counter-parties and evolving tax laws. \"Unilever is exposed to a variety of external financial risks in relation to Treasury and Tax.\"",
+          "Ethical: Operating in an ethical manner consistent with stakeholder expectations is essential to protect the reputation of the business and its brands. \"Acting in an ethical manner, consistent with the expectations of customers, consumers and other stakeholders, is essential for the protection of the reputation of Unilever and its brands.\"",
+          "Legal and regulatory: Compliance with diverse national and regional laws and regulations forms an essential part of business operations. \"Compliance with laws and regulations is an essential part of Unilever\u2019s business operations.\""
+        ],
+        "error": null
+      },
+      "v2": {
+        "status": "validation_failed",
+        "pages": [],
+        "text": [],
+        "error": null
+      },
+      "v3": {
+        "status": "ok",
+        "pages": [
+          11
+        ],
+        "text": [
+          "The Chief Executive stated that \"the benefits of which were evident in our results for 2024\", highlighting solid progress made under the Growth Action Plan."
+        ],
+        "error": null
+      },
+      "v4": {
+        "status": "ok",
+        "pages": [
+          63,
+          64
+        ],
+        "text": [
+          "The viability assessment considers a period appropriate for this viability assessment because \"it is the period covered by the strategic plan\". Furthermore, the assessment considers \"the separation of the Ice Cream business in 2025 and also a possibility that the existing business continues over the assessment period\"."
+        ],
+        "error": null
+      },
+      "v5": {
+        "status": "ok",
+        "pages": [
+          123,
+          145
+        ],
+        "text": [
+          "Going concern: \u201cThe activities of the Group, together with the factors likely to affect its future development, performance, the financial position of the Group, its cash flows, liquidity position and borrowing facilities are described on pages 1 to 47.\u201d",
+          "Going concern: \u201cThese financial statements have been prepared on a going concern basis.\u201d"
+        ],
+        "error": null
+      },
+      "v6": {
+        "status": "ok",
+        "pages": [
+          130,
+          131,
+          132
+        ],
+        "text": [
+          "Key audit matter: Revenue recognition \u2013 Rebates (Group). \u201cCertain discounts for goods sold in the year are only finalised when the precise amounts are known and revenue therefore includes an estimate of variable consideration.\u201d",
+          "Key audit matter: Indirect tax contingent liabilities in Brazil (Group). \u201cThe total amount of the tax assessments received in respect of this matter is \u20ac3,230 million as of 31 December 2024.\u201d",
+          "Key audit matter: Investments and subsidiaries (Parent company). \u201cWe do not consider the recoverability of these investments to be at a high risk of significant misstatement, or to be subject to a significant level of judgement.\u201d"
+        ],
+        "error": null
+      },
+      "v7": {
+        "status": "ok",
+        "pages": [
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62
+        ],
+        "text": [
+          "Consumer preference: The report notes that consumer tastes, preferences and behaviours are changing rapidly, requiring the business to innovate and remain competitive. \"Consumer tastes, preferences and behaviours are changing more rapidly than ever before.\"",
+          "Portfolio management: Strategic investment choices regarding Business Groups, geographies and channels affect the long-term growth and profits of the business. \"Unilever\u2019s growth and profitability are determined by our portfolio of Business Groups, geographies and channels and how these evolve over time.\"",
+          "Climate and nature: Tackling climate change physical and transitional risks alongside the loss of nature is described as important for resilience and future-proofing. \"Tackling climate change-related physical and transitional risks and loss of nature is important to increase our resilience and future-proof our business.\"",
+          "Plastic packaging: The significant use of plastic requires solutions to reduce virgin material and increase recyclability in response to environmental impacts and emerging regulations. \"Both consumer and customer responses to the environmental impact of plastic waste and emerging regulations by governments to tax or ban the use of certain plastics requires us to find solutions to reduce the amount of plastic we use and increase the amount of packaging which is recyclable.\"",
+          "Talent: A skilled workforce and agile ways of working are highlighted as essential due to the rapidly changing nature of work and skills. \"With the rapidly changing nature of work and skills, there is a risk that our workforce is not equipped with the skills required for the new environment.\"",
+          "Business operations: The supply chain network is exposed to potentially adverse events such as geopolitical sanctions, physical disruptions, trade restrictions and tariffs. \"Our supply chain network is exposed to potentially adverse events such as geopolitical sanctions, physical disruptions, trade restrictions and tariffs or disruptions at a key supplier, which could impact our ability to deliver orders to our customers.\"",
+          "Safe and high-quality products: Product quality and safety are of paramount importance, where increasing laws and regulations can lead to litigation and impact financial performance and reputation. \"The quality and safety of our products are of paramount importance for our brands and our reputation.\"",
+          "Systems and information: Operations are increasingly dependent on IT systems alongside the need to safeguard data confidentiality and integrity against rising cyber threats. \"The cyber-attack threat of unauthorised access and misuse of sensitive information or disruption to operations continues to increase.\"",
+          "Business transformation: Successful execution of transformation projects is key to delivering business benefits and avoiding operational disruption, particularly following the announced separation of the Ice Cream business. \"In 2024, we announced the separation of our Ice Cream business and the launch of a major productivity programme to accelerate our Growth Action Plan (GAP).\"",
+          "Economic and political instability: Adverse economic conditions and political instability can impact consumer demand, disrupt sales operations and affect profitability. \"Economic and political instability impacts consumer demand for our products, disrupts sales operations and/or impacts the profitability of our operations.\"",
+          "Treasury and tax: The business is exposed to external financial risks regarding exchange rate fluctuations, cash flow shortfalls, counter-parties and evolving tax laws. \"Unilever is exposed to a variety of external financial risks in relation to Treasury and Tax.\"",
+          "Ethical: Operating in an ethical manner consistent with stakeholder expectations is essential to protect the reputation of the business and its brands. \"Acting in an ethical manner, consistent with the expectations of customers, consumers and other stakeholders, is essential for the protection of the reputation of Unilever and its brands.\"",
+          "Legal and regulatory: Compliance with diverse national and regional laws and regulations forms an essential part of business operations. \"Compliance with laws and regulations is an essential part of Unilever\u2019s business operations.\""
+        ],
+        "error": null
+      },
+      "v8": {
+        "status": "ok",
+        "pages": [
+          131
+        ],
+        "text": [
+          "Key audit matter: Indirect tax contingent liabilities in Brazil (Group). \u201cThe total amount of the tax assessments received in respect of this matter is \u20ac3,230 million as of 31 December 2024.\u201d"
+        ],
+        "error": null
+      },
+      "a1": {
+        "status": "insufficient_evidence",
+        "pages": [],
+        "text": [],
+        "error": "evidence_floor"
+      },
+      "a2": {
+        "status": "insufficient_evidence",
+        "pages": [],
+        "text": [],
+        "error": "evidence_floor"
+      },
+      "a3": {
+        "status": "insufficient_evidence",
+        "pages": [],
+        "text": [],
+        "error": "evidence_floor"
+      },
+      "t1": {
+        "status": "ok",
+        "pages": [
+          141
+        ],
+        "text": [
+          "\u20ac9.4bn"
+        ],
+        "error": null
+      },
+      "t2": {
+        "status": "ok",
+        "pages": [
+          149
+        ],
+        "text": [
+          "\u20ac571.0m"
+        ],
+        "error": null
+      },
+      "t3": {
+        "status": "ok",
+        "pages": [
+          132,
+          197
+        ],
+        "text": [
+          "\u20ac88.0bn"
+        ],
+        "error": null
+      }
+    }
+  },
+  "ratings": {
+    "complete": true,
+    "stale": false,
+    "total": 29,
+    "supported": 0.9310344827586207,
+    "supported_count": 27,
+    "unsupported_count": 2,
+    "unsupported": [
+      "executive_summary:1",
+      "executive_summary:3"
+    ],
+    "contradicted": 0,
+    "unrated": []
+  }
+}

@@ -7,6 +7,21 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M8.3 — 2026-10-03 — honesty layer: four items pass; held-out run and sign-off open
+
+| Command | Result |
+|---|---|
+| `python scripts/check_results.py` | exit 0 (runs `company_a-20261003T011619Z-01552f5`, `company_b-20261003T011630Z-01552f5`, snapshots in docs/results/) |
+| `make e2e` | 45 passed (+1: limitations page from the report footer) |
+| fresh clone + `env -i make dev` (no keys, no .env, no company_a.pdf) | exit 0: the committed excerpt, six stages, ready |
+| `make ci` (before RESULTS.md) | 971 passed |
+
+Open: company_c is not in fixtures/holdout/ (the tech lead provides and labels it; `make eval COMPANY=company_c` once);
+the tech lead's sign-off on RESULTS.md. The checker caught three uncited numbers in the first draft, and the QA failure
+descriptions were corrected against company_a.qa.json before commit.
+
+---
+
 ## M8.2 — 2026-10-03 — bank ratios and reported metrics: gate PASSES
 
 The tech lead's definitions (CLAUDE.md, applied verbatim from CLAUDE_final.md, commit 9049eb7; OQ-4 = B):

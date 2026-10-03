@@ -424,11 +424,12 @@ These checks are created in M0 and run in CI.
 **Gate:**
 - [ ] G1–G6 pass.
 - [ ] Held-out run: `company_c` moved from `fixtures/holdout/` and labelled by you; `make eval COMPANY=company_c` run **once**; its `run_id` recorded in `RESULTS.md`.
-- [ ] `python scripts/check_results.py` exits 0: every number in `docs/RESULTS.md` equals a field in a cited eval `report.json`.
-- [ ] Playwright: the limitations page is reachable from the report screen.
-- [ ] `README.md` contains the architecture diagram, a "What fails" section and local-run steps.
-- [ ] Fresh-clone test: `git clone` into a temporary directory, then `make dev` with **no API keys**, completes `company_a` (exit 0).
+- [x] `python scripts/check_results.py` exits 0: every number in `docs/RESULTS.md` equals a field in a cited eval `report.json`.
+- [x] Playwright: the limitations page is reachable from the report screen.
+- [x] `README.md` contains the architecture diagram, a "What fails" section and local-run steps.
+- [x] Fresh-clone test: `git clone` into a temporary directory, then `make dev` with **no API keys**, completes `company_a` (exit 0).
 - [ ] *Sign-off:* you would say every sentence in `RESULTS.md` in an interview (yes/no).
+*2026-10-03: four items pass (see docs/STATUS.md). Open: G1–G6 sign-off with the held-out run; company_c is not in `fixtures/holdout/`; the tech lead's RESULTS.md sign-off.*
 
 ---
 

@@ -1,0 +1,303 @@
+{
+  "company": "company_b",
+  "engines": "local",
+  "e1": {
+    "labelled": 28,
+    "matched": 28,
+    "honest_null": 0,
+    "silent_wrong": 0,
+    "unit_errors": 0,
+    "cells": [
+      {
+        "item": "net_interest_income",
+        "period": "2024",
+        "status": "matched",
+        "expected": 12277.0,
+        "got": 12277.0,
+        "page": 216
+      },
+      {
+        "item": "net_interest_income",
+        "period": "2023",
+        "status": "matched",
+        "expected": 13298.0,
+        "got": 13298.0,
+        "page": 216
+      },
+      {
+        "item": "total_income",
+        "period": "2024",
+        "status": "matched",
+        "expected": 34281.0,
+        "got": 34281.0,
+        "page": 216
+      },
+      {
+        "item": "total_income",
+        "period": "2023",
+        "status": "matched",
+        "expected": 35405.0,
+        "got": 35405.0,
+        "page": 216
+      },
+      {
+        "item": "total_income_after_insurance_finance",
+        "period": "2024",
+        "status": "matched",
+        "expected": 18003.0,
+        "got": 18003.0,
+        "page": 216
+      },
+      {
+        "item": "total_income_after_insurance_finance",
+        "period": "2023",
+        "status": "matched",
+        "expected": 18629.0,
+        "got": 18629.0,
+        "page": 216
+      },
+      {
+        "item": "operating_expenses",
+        "period": "2024",
+        "status": "matched",
+        "expected": -11601.0,
+        "got": -11601.0,
+        "page": 216
+      },
+      {
+        "item": "operating_expenses",
+        "period": "2023",
+        "status": "matched",
+        "expected": -10823.0,
+        "got": -10823.0,
+        "page": 216
+      },
+      {
+        "item": "impairment",
+        "period": "2024",
+        "status": "matched",
+        "expected": -431.0,
+        "got": -431.0,
+        "page": 216
+      },
+      {
+        "item": "impairment",
+        "period": "2023",
+        "status": "matched",
+        "expected": -303.0,
+        "got": -303.0,
+        "page": 216
+      },
+      {
+        "item": "profit_before_tax",
+        "period": "2024",
+        "status": "matched",
+        "expected": 5971.0,
+        "got": 5971.0,
+        "page": 216
+      },
+      {
+        "item": "profit_before_tax",
+        "period": "2023",
+        "status": "matched",
+        "expected": 7503.0,
+        "got": 7503.0,
+        "page": 216
+      },
+      {
+        "item": "profit_for_the_year",
+        "period": "2024",
+        "status": "matched",
+        "expected": 4477.0,
+        "got": 4477.0,
+        "page": 216
+      },
+      {
+        "item": "profit_for_the_year",
+        "period": "2023",
+        "status": "matched",
+        "expected": 5518.0,
+        "got": 5518.0,
+        "page": 216
+      },
+      {
+        "item": "loans_and_advances_to_customers",
+        "period": "2024",
+        "status": "matched",
+        "expected": 459857.0,
+        "got": 459857.0,
+        "page": 218
+      },
+      {
+        "item": "loans_and_advances_to_customers",
+        "period": "2023",
+        "status": "matched",
+        "expected": 449745.0,
+        "got": 449745.0,
+        "page": 218
+      },
+      {
+        "item": "customer_deposits",
+        "period": "2024",
+        "status": "matched",
+        "expected": 482745.0,
+        "got": 482745.0,
+        "page": 218
+      },
+      {
+        "item": "customer_deposits",
+        "period": "2023",
+        "status": "matched",
+        "expected": 471396.0,
+        "got": 471396.0,
+        "page": 218
+      },
+      {
+        "item": "total_assets",
+        "period": "2024",
+        "status": "matched",
+        "expected": 906697.0,
+        "got": 906697.0,
+        "page": 218
+      },
+      {
+        "item": "total_assets",
+        "period": "2023",
+        "status": "matched",
+        "expected": 881453.0,
+        "got": 881453.0,
+        "page": 218
+      },
+      {
+        "item": "total_liabilities",
+        "period": "2024",
+        "status": "matched",
+        "expected": 860809.0,
+        "got": 860809.0,
+        "page": 218
+      },
+      {
+        "item": "total_liabilities",
+        "period": "2023",
+        "status": "matched",
+        "expected": 834088.0,
+        "got": 834088.0,
+        "page": 218
+      },
+      {
+        "item": "total_equity",
+        "period": "2024",
+        "status": "matched",
+        "expected": 45888.0,
+        "got": 45888.0,
+        "page": 218
+      },
+      {
+        "item": "total_equity",
+        "period": "2023",
+        "status": "matched",
+        "expected": 47365.0,
+        "got": 47365.0,
+        "page": 218
+      },
+      {
+        "item": "debt_securities_in_issue",
+        "period": "2024",
+        "status": "matched",
+        "expected": 70834.0,
+        "got": 70834.0,
+        "page": 218
+      },
+      {
+        "item": "debt_securities_in_issue",
+        "period": "2023",
+        "status": "matched",
+        "expected": 75592.0,
+        "got": 75592.0,
+        "page": 218
+      },
+      {
+        "item": "subordinated_liabilities",
+        "period": "2024",
+        "status": "matched",
+        "expected": 10089.0,
+        "got": 10089.0,
+        "page": 218
+      },
+      {
+        "item": "subordinated_liabilities",
+        "period": "2023",
+        "status": "matched",
+        "expected": 10253.0,
+        "got": 10253.0,
+        "page": 218
+      }
+    ]
+  },
+  "e6": {
+    "published_llm_pointer": 0,
+    "published_vision_only": 0
+  },
+  "run_id": "company_b-20261003T011630Z-01552f5",
+  "schema_errors": [],
+  "azure": {
+    "ran": false,
+    "skipped": null
+  },
+  "ratios": {
+    "not_applicable": 4,
+    "computed": 0,
+    "applicability": {
+      "operating_margin": [
+        "not_applicable"
+      ],
+      "current_ratio": [
+        "not_applicable"
+      ],
+      "debt_to_equity": [
+        "not_applicable"
+      ],
+      "roce": [
+        "not_applicable"
+      ]
+    }
+  },
+  "absent": {
+    "labelled": 5,
+    "published": 0,
+    "items": []
+  },
+  "e2": {
+    "expected": 4,
+    "matched": 4,
+    "matched_extracted": 4,
+    "matched_labelled": 4,
+    "tolerance": 1e-09,
+    "cells": [
+      {
+        "period": "2024",
+        "ratio": "cost_to_income",
+        "extracted": "ok",
+        "labelled": "ok"
+      },
+      {
+        "period": "2024",
+        "ratio": "loan_to_deposit",
+        "extracted": "ok",
+        "labelled": "ok"
+      },
+      {
+        "period": "2023",
+        "ratio": "cost_to_income",
+        "extracted": "ok",
+        "labelled": "ok"
+      },
+      {
+        "period": "2023",
+        "ratio": "loan_to_deposit",
+        "extracted": "ok",
+        "labelled": "ok"
+      }
+    ]
+  }
+}
