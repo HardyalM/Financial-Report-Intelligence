@@ -94,9 +94,11 @@ migrate:
 inspect:
 	$(RUN) finintel inspect --fixtures
 
-eval:  # E1 then E2 for COMPANY (M8.1 gate: company_a E1 and E2 unchanged)
+eval:  # E1, then E2 when hand-computed ratios exist (EVAL section 4: n/a for the held-out report)
 	$(RUN) finintel eval-e1 $(COMPANY) --engines $(ENGINES)
-	$(RUN) finintel eval-e2 $(COMPANY)
+	@if [ -f fixtures/expected/$(COMPANY).ratios.json ]; then \
+		$(RUN) finintel eval-e2 $(COMPANY); \
+	else echo "E2 skipped: fixtures/expected/$(COMPANY).ratios.json does not exist"; fi
 
 # STAGE=commentary: local Ollama by default, else extractive; exits 0 either way.
 eval-live:
