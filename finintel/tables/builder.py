@@ -52,7 +52,17 @@ def build_statement_table(
             )
             continue
         column_of = {id(band): f"v{i}" for i, band in enumerate(grid.value_bands, start=1)}
-        drafts.extend(page_drafts(view, grid, column_of))
+        region_drafts = page_drafts(view, grid, column_of)
+        if region.half == "right" and drafts:
+            # A right-hand panel's labels start mid-page: indent is measured from each panel's own
+            # left edge, so its rows line up with the left panel's, not deeply indented under them.
+            shift = min((d.label_x0 for d in drafts if d.label_x0 is not None), default=0.0) - min(
+                (d.label_x0 for d in region_drafts if d.label_x0 is not None), default=0.0
+            )
+            for d in region_drafts:
+                if d.label_x0 is not None:
+                    d.label_x0 += shift
+        drafts.extend(region_drafts)
     if len(location.pages) > 1:
         notes.append(f"merged pages {list(location.pages)}; section headings carried across")
     return StatementTable(

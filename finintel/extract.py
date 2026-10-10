@@ -170,6 +170,16 @@ def extract_pack(
     doc_type = located.profile.document_type.value
     map_name = {"corporate": "corporate", "other": "corporate", "bank": "bank"}.get(doc_type)
     specs = load_aliases(map_name) if map_name else {}
+    # A year left without figures on a statement says so on every line of that statement, so an
+    # empty cell is never unexplained (company_c: the reason sat on the statement only).
+    for hw in first.warnings:
+        if hw.code == "period_ambiguous" and hw.period_id and hw.statement is not None:
+            for item, spec in specs.items():
+                if spec.statement is hw.statement and not spec.internal:
+                    notes.append({
+                        "code": "period_ambiguous", "item": item, "page": hw.page,
+                        "message": f"{item} has no figure for {hw.period_id}: {hw.message}",
+                    })  # fmt: skip
     assembly: Assembly = assemble(
         views,
         specs=specs,

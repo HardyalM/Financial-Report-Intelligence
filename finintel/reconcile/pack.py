@@ -461,18 +461,22 @@ def assemble(
         kind = specs[item].statement if item in specs else StatementType.BALANCE_SHEET
         periods = statement_periods.get(kind) or [p.id for p in header.periods]
         kind_name = located.profile.document_type.value
-        reason = (
-            f"is null by design for a bank: {BANK_NULL[item]}"
-            if bank and item in BANK_NULL
-            else f"not extracted: no alias map for document type {kind_name} yet"
-        )
+        if item in specs:
+            # The map has the item; its statement simply had no usable period. That was already
+            # said for this item above, so the line is emitted null without a second, false reason.
+            reason = None
+        elif bank and item in BANK_NULL:
+            reason = f"is null by design for a bank: {BANK_NULL[item]}"
+        else:
+            reason = f"not extracted: no alias map for document type {kind_name} yet"
         items[item] = {
             "id": item, "label_found": None, "statement": STATEMENT_OF[kind], "note_ref": None,
             "values": [{"period_id": p, "value": None, "confidence": 0.0} for p in periods],
         }  # fmt: skip
-        warnings.append(
-            {"code": "missing_item", "message": f"{item} {reason}", "item": item, "page": None}
-        )
+        if reason is not None:
+            warnings.append(
+                {"code": "missing_item", "message": f"{item} {reason}", "item": item, "page": None}
+            )
     pack: dict[str, Any] = {
         "schema_version": "1.1.0",
         "company_name": None,

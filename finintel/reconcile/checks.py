@@ -131,7 +131,9 @@ def run_checks(table: StatementTable, mapped: Mapping[str, ItemMapping]) -> list
                     ("total_assets", "total_liabilities", "total_equity"),
                     period,
                     te,
-                    [(ta[0] - tl[0], 0)],
+                    # Liabilities count as a magnitude however printed (SCHEMA 4.2): Tesco prints
+                    # total liabilities in brackets, which made 650 - (-350) look 700 out.
+                    [(ta[0] - abs(tl[0]), 0)],
                     "total assets - total liabilities",
                 )
             )

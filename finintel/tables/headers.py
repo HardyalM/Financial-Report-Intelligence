@@ -13,7 +13,8 @@ From the print only:
 - Restatement: "Restated" on a column, or a footnote marker on its year when the page says
   "restated". The restated column is used (it is the current basis) and flagged.
 - Columnar income statements: when a period has several columns, only the one headed "Total" or
-  "Statutory" is used; otherwise that period is ambiguous and its figures stay null.
+  "Statutory" is used; otherwise that period is ambiguous and its figures stay null. A row of dates
+  over equal groups of columns dates each whole group (`_period_group`).
 - Entity columns: when Group and Company columns sit side by side, only Group columns are used.
 
 Headers spanning a group of columns (a year centred over three) apply to every column in the group.
@@ -94,6 +95,7 @@ class HeaderWarning(_Frozen):
     message: str
     page: int | None = None
     statement: StatementType | None = None
+    period_id: str | None = None  # the year a period_ambiguous warning leaves without figures
 
 
 class UnitDecision(_Frozen):
@@ -497,6 +499,7 @@ def _one_column_per_period(
                 f"(p.{page}) and no single Total or Statutory column: {headers}; figures stay null",
                 page=page,
                 statement=kind,
+                period_id=period,
             )
         )
         for cid in ids:
@@ -528,6 +531,8 @@ def _columns_for(phrase: _Phrase, values: Sequence[Column], row: Sequence[_Phras
     ]
     if len(row) >= len(values):
         return overlapping
+    if (group := _period_group(phrase, values, row)) is not None:
+        return group
     aligned = [
         c.column_id for c in values if c.column_id in overlapping and abs(phrase.x1 - c.x1) <= 3
     ]
@@ -540,6 +545,29 @@ def _columns_for(phrase: _Phrase, values: Sequence[Column], row: Sequence[_Phras
         if spanning and min(spanning, key=lambda p: abs(p.centre - centre)) is phrase:
             near.append(column.column_id)
     return near
+
+
+def _period_group(
+    phrase: _Phrase, values: Sequence[Column], row: Sequence[_Phrase]
+) -> list[str] | None:
+    """A row of dates over equal groups of columns ("22 February 2025" over three columns, "24
+    February 2024" over the next three) dates each whole group, left to right, even when a date
+    happens to end level with one column of its group (company_c: it ended within 3 pt of the
+    middle, adjusting-items column, which then became "the year"). Applies only when every phrase
+    in the row names a year, the columns divide evenly among them, and each phrase lies over its
+    own group; otherwise None and the general rule decides."""
+    phrases = sorted(row, key=lambda p: p.x0)
+    if len(phrases) < 2 or len(values) % len(phrases) or len(values) == len(phrases):
+        return None
+    if not all(_YEAR.search(normalise(p.text)) for p in phrases):
+        return None
+    ordered = sorted(values, key=lambda c: c.x0)
+    size = len(values) // len(phrases)
+    groups = [ordered[i * size : (i + 1) * size] for i in range(len(phrases))]
+    for p, group in zip(phrases, groups, strict=True):
+        if not (group[0].x0 - 3 <= p.centre <= group[-1].x1 + 3):
+            return None  # a date that is not over its group: not this layout
+    return [c.column_id for c in groups[phrases.index(phrase)]]
 
 
 def _aligned_to_one(phrase: _Phrase, values: Sequence[Column]) -> bool:
