@@ -7,6 +7,26 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M8.3 fixes — 2026-10-11 — company_c failures fixed; now a development golden (9/14, 4 honest null, 1 open)
+
+Four fixes, each with a regression test that fails without it (commit 147093e): dates over equal column groups
+(`_period_group`); two-panel landscape statements read as two stacked regions; the net-assets identity uses the
+liability magnitude; an ambiguous year is explained on every line, and the false "no alias map" reason is gone.
+
+| Command | Result |
+|---|---|
+| `make ci` | 979 passed |
+| `make eval COMPANY=company_a` / `company_b` | E1 22/22, E2 8/8 / E1 28/28, E2 4/4; packs byte-identical (23728ccd…, 225dd386…) |
+| `make eval COMPANY=company_c` (post-fix, development golden) | run `company_c-20261010T230758Z-147093e`: matched 9, honest null 4, silent wrong 1 |
+| `python scripts/check_results.py` | exit 0 |
+
+Open for the tech lead: (1) total debt FY2024: the text layer on p.139 prints the 2024 non-current borrowings as (5,683)
+and lease liabilities as (7,038); the label has (5,883) and (7,338). (2) current assets: two unlabelled subtotals around
+the assets held for sale; the label includes the disposal-group assets in current assets but excludes the disposal-group
+liabilities from current liabilities. RESULTS.md sign-off: still pending.
+
+---
+
 ## M8.3 held-out run — 2026-10-10 — company_c (Tesco) scored once: 0/14 matched, 4 silent wrong
 
 | Command | Result |

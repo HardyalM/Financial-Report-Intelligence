@@ -159,9 +159,29 @@ per year share a heading. The arithmetic checks did not catch the wrong column, 
 covers revenue or a lone operating-profit figure. These are the first things to fix, each with a
 regression test, after which company_c counts as a development golden.
 
+## After the held-out run: company_c as a development golden
+
+The four causes above were fixed, each with a regression test that fails without its fix (commit
+`147093e`). From here company_c is a **development golden**, not a held-out test: the code was
+changed after looking at it. company_a and company_b were re-run and are unchanged.
+
+| Labelled cells | Matched exactly | Honest null | Silent wrong | Unit errors | Cited |
+|---|---|---|---|---|---|
+| 14 | 9 | 4 | 1 | 0 | `company_c-20261010T230758Z-147093e`: e1.labelled, e1.matched, e1.honest_null, e1.silent_wrong, e1.unit_errors |
+
+Revenue, operating profit, current liabilities and total equity now match in both years, and total
+debt for FY2025. What is still not matched:
+
+| Line | Year | Labelled | Shown | Why | Cited |
+|---|---|---|---|---|---|
+| Total debt | FY2024 | 15,341 | 14,841 | **Open: label or code.** Shown is the sum of the four printed lines as the page's text layer has them; the label's two non-current lines differ from that text. The tech lead is checking the label; until then this counts as silent wrong. | `company_c-20261010T230758Z-147093e`: e1.cells.13.expected, e1.cells.13.got |
+| Current assets | both | 8,856 / 16,606 | empty | Honest null. The section closes with two unlabelled subtotals, before and after the assets held for sale, and the pipeline does not choose between them: which one is "current assets" is an accounting decision for the tech lead. | `company_c-20261010T230758Z-147093e`: e1.cells.4.expected, e1.cells.5.expected |
+| Total assets | both | 38,890 / 47,039 | empty | Honest null. Not printed; it is derived from current assets, which is null. | `company_c-20261010T230758Z-147093e`: e1.cells.8.expected, e1.cells.9.expected |
+
 ## What these results do not show
 
-- How the pipeline does on reports it was not built against: that is what the held-out run is for.
+- How the pipeline does on reports it was not built against beyond the one held-out run, which it
+  failed; after the fixes, company_c is a development golden like the others.
 - Agreement between two independent table engines: only one engine family ran.
 - Commentary quality beyond one company, one model and one rater.
 - Anything about NHS trusts, insurers or scanned PDFs, which are not supported.

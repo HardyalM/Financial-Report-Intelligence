@@ -103,8 +103,10 @@ Known failures and limits, without spin. The counts behind them are in
 - **It failed the held-out report.** On Tesco, scored once, it read no labelled figure correctly
   and showed two confident wrong numbers: the income statement prints adjusting items as separate
   columns, and the year was given to the adjusting-items column (revenue shown as zero). The
-  balance sheet, with two columns per year under one heading, stayed empty with warnings. Every
-  miss is listed in `docs/RESULTS.md`.
+  balance sheet, printed in two side-by-side panels, stayed empty. Those causes are now fixed, each
+  with a regression test, and Tesco has become a development report; what still fails on it (a
+  disputed total-debt figure, current assets around assets held for sale) is in
+  `docs/RESULTS.md`.
 - **Small evidence base.** Two development reports, labelled by hand (one corporate, one bank),
   plus synthetic layouts, and one held-out report. Results are case studies, not an accuracy rate
   for annual reports in general.
