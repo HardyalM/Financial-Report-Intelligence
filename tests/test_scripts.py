@@ -332,3 +332,18 @@ def test_an_eval_run_is_written_under_its_run_id(tmp_path: Path) -> None:
     latest = tmp_path / "eval" / "latest" / "report.json"
     write_report({"run_id": run, "company": "company_x"}, latest)
     assert latest.is_file() and (tmp_path / "eval" / run / "report.json").is_file()
+
+
+def test_check_results_can_cite_one_labelled_cell(tmp_path: Path) -> None:
+    from scripts import check_results
+
+    run = "company_x-20261010T101500Z-abc1234"
+    snaps = tmp_path / "results"
+    snaps.mkdir()
+    cells = [{"item": "revenue", "expected": 69916.0, "got": 0.0}]
+    (snaps / f"{run}.json").write_text(json.dumps({"run_id": run, "e1": {"cells": cells}}))
+    doc = tmp_path / "RESULTS.md"
+    doc.write_text(f"| Revenue | 69,916 | 0 | `{run}`: e1.cells.0.expected, e1.cells.0.got |\n")
+    assert check_results.check(doc, snaps) == []
+    doc.write_text(f"| Revenue | 69,916 | `{run}`: e1.cells.1.expected |\n")  # no such cell
+    assert check_results.check(doc, snaps)

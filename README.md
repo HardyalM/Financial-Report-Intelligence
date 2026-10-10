@@ -100,9 +100,14 @@ make e2e-live           # Playwright against the real API and worker
 Known failures and limits, without spin. The counts behind them are in
 [`docs/RESULTS.md`](docs/RESULTS.md).
 
+- **It failed the held-out report.** On Tesco, scored once, it read no labelled figure correctly
+  and showed two confident wrong numbers: the income statement prints adjusting items as separate
+  columns, and the year was given to the adjusting-items column (revenue shown as zero). The
+  balance sheet, with two columns per year under one heading, stayed empty with warnings. Every
+  miss is listed in `docs/RESULTS.md`.
 - **Small evidence base.** Two development reports, labelled by hand (one corporate, one bank),
-  plus synthetic layouts. The held-out report has not been scored yet. Results are case studies,
-  not an accuracy rate for annual reports in general.
+  plus synthetic layouts, and one held-out report. Results are case studies, not an accuracy rate
+  for annual reports in general.
 - **One table-engine family in practice.** Azure Document Intelligence is supported but has not
   run on the golden reports (no key), so figures are cross-checked by arithmetic, not by a second
   independent reader. Every report says "Reduced verification".

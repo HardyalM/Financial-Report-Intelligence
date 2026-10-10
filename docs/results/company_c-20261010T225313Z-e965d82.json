@@ -1,0 +1,158 @@
+{
+  "company": "company_c",
+  "engines": "local",
+  "e1": {
+    "labelled": 14,
+    "matched": 0,
+    "honest_null": 10,
+    "silent_wrong": 4,
+    "unit_errors": 0,
+    "cells": [
+      {
+        "item": "revenue",
+        "period": "2025",
+        "status": "silent_wrong",
+        "expected": 69916.0,
+        "got": 0.0,
+        "page": 137
+      },
+      {
+        "item": "revenue",
+        "period": "2024",
+        "status": "silent_wrong",
+        "expected": 68187.0,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "operating_profit",
+        "period": "2025",
+        "status": "silent_wrong",
+        "expected": 2711.0,
+        "got": -417.0,
+        "page": 137
+      },
+      {
+        "item": "operating_profit",
+        "period": "2024",
+        "status": "silent_wrong",
+        "expected": 2821.0,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "current_assets",
+        "period": "2025",
+        "status": "honest_null",
+        "expected": 8856.0,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "current_assets",
+        "period": "2024",
+        "status": "honest_null",
+        "expected": 16606.0,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "current_liabilities",
+        "period": "2025",
+        "status": "honest_null",
+        "expected": 13820.0,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "current_liabilities",
+        "period": "2024",
+        "status": "honest_null",
+        "expected": 13350.0,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "total_assets",
+        "period": "2025",
+        "status": "honest_null",
+        "expected": 38890.0,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "total_assets",
+        "period": "2024",
+        "status": "honest_null",
+        "expected": 47039.0,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "total_equity",
+        "period": "2025",
+        "status": "honest_null",
+        "expected": 11662.0,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "total_equity",
+        "period": "2024",
+        "status": "honest_null",
+        "expected": 11665.0,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "total_debt",
+        "period": "2025",
+        "status": "honest_null",
+        "expected": 14666.0,
+        "got": null,
+        "page": null
+      },
+      {
+        "item": "total_debt",
+        "period": "2024",
+        "status": "honest_null",
+        "expected": 15341.0,
+        "got": null,
+        "page": null
+      }
+    ]
+  },
+  "e6": {
+    "published_llm_pointer": 0,
+    "published_vision_only": 0
+  },
+  "run_id": "company_c-20261010T225313Z-e965d82",
+  "schema_errors": [],
+  "azure": {
+    "ran": false,
+    "skipped": null
+  },
+  "ratios": {
+    "not_applicable": 0,
+    "computed": 0,
+    "applicability": {
+      "operating_margin": [
+        "applicable"
+      ],
+      "current_ratio": [
+        "applicable"
+      ],
+      "debt_to_equity": [
+        "applicable"
+      ],
+      "roce": [
+        "applicable"
+      ]
+    }
+  },
+  "absent": {
+    "labelled": 0,
+    "published": 0,
+    "items": []
+  }
+}

@@ -422,14 +422,14 @@ These checks are created in M0 and run in CI.
 *Amended 2026-10-03 in the M8.3 session: the gate needs `scripts/check_results.py` (written here, as the gate implies) and eval reports with run ids (the harness docstring promised `artifacts/eval/{run_id}/report.json`; `write_report` now writes it, E2 and E3 join the E1 run of the same company); `artifacts/` is git-ignored, so each cited run is snapshotted to `docs/results/{run_id}.json` and the checker reads those (a fresh clone can check them); the ratings report gains `supported_count` and `unsupported_count` so RESULTS.md can state counts, not only a rate (EVAL §1.3). `make dev` (Makefile, global) runs company_a with no keys, on the committed excerpt when the full PDF is absent.*
 
 **Gate:**
-- [ ] G1–G6 pass.
-- [ ] Held-out run: `company_c` moved from `fixtures/holdout/` and labelled by you; `make eval COMPANY=company_c` run **once**; its `run_id` recorded in `RESULTS.md`.
+- [x] G1–G6 pass. *2026-10-10: `make ci` 973 passed; scope check as before.*
+- [x] Held-out run: `company_c` moved from `fixtures/holdout/` and labelled by you; `make eval COMPANY=company_c` run **once**; its `run_id` recorded in `RESULTS.md`.
 - [x] `python scripts/check_results.py` exits 0: every number in `docs/RESULTS.md` equals a field in a cited eval `report.json`.
 - [x] Playwright: the limitations page is reachable from the report screen.
 - [x] `README.md` contains the architecture diagram, a "What fails" section and local-run steps.
 - [x] Fresh-clone test: `git clone` into a temporary directory, then `make dev` with **no API keys**, completes `company_a` (exit 0).
 - [ ] *Sign-off:* you would say every sentence in `RESULTS.md` in an interview (yes/no).
-*2026-10-03: four items pass (see docs/STATUS.md). Open: G1–G6 sign-off with the held-out run; company_c is not in `fixtures/holdout/`; the tech lead's RESULTS.md sign-off.*
+*2026-10-10: held-out run `company_c-20261010T225313Z-e965d82` scored once: 0 of 14 matched, 10 honest null, 4 silent wrong (recorded in RESULTS.md). Sign-off: the tech lead said no on the previous draft (ratings section, stale held-out paragraph); both rewritten; asked again.*
 
 ---
 

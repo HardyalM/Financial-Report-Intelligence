@@ -7,6 +7,28 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M8.3 held-out run — 2026-10-10 — company_c (Tesco) scored once: 0/14 matched, 4 silent wrong
+
+| Command | Result |
+|---|---|
+| `make eval COMPANY=company_c` (once) | run `company_c-20261010T225313Z-e965d82`: labelled 14, matched 0, honest null 10, silent wrong 4, unit errors 0; E2 skipped (no ratios file) |
+| `python scripts/check_results.py` | exit 0 (cells cited one by one: `e1.cells.N.expected/got`) |
+| `make ci` | 973 passed |
+
+Silent wrong: revenue FY2025 shown as 0 and operating profit FY2025 as -417, because the period header gave FY2025 to the
+"Adjusting items (Note 5)" column of a three-column-per-year income statement; revenue and operating profit FY2024 left null
+(five candidate columns) with the `period_ambiguous` warning on the statement, not the line, so E1 counts them as silent.
+Honest null: every balance-sheet line (two columns per year under one heading). Also wrong: a false "no alias map for document
+type corporate yet" warning on those lines. Nothing was tuned on company_c; fixing any of this makes it a development golden.
+
+Before the run: the tech lead's labels used ids the pipeline does not produce (`profit_for_the_year`, summed `borrowings` and
+`lease_liabilities`); the tech lead rewrote the labels (7 items, pipeline ids) before the single run. RESULTS.md sign-off was
+"no" (the ratings section described a four-level scale the file does not use; the held-out paragraph was stale): the ratings
+section now states exactly what the file records (two yes/no answers per paragraph; no "contradicted" count), and the
+held-out section lists every miss. Asked again.
+
+---
+
 ## M8.3 — 2026-10-03 — honesty layer: four items pass; held-out run and sign-off open
 
 | Command | Result |

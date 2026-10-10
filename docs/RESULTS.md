@@ -7,8 +7,8 @@ scripts/check_results.py` fails if any number here does not equal a cited field.
 
 These are **case studies, not accuracy rates** ([EVAL, Principles](EVAL.md)). company_a and company_b are
 **development goldens**: their labels were used while building, so they show the pipeline doing
-what it was built to do on them, not how it generalises. The held-out report has not been scored
-yet (below).
+what it was built to do on them, not how it generalises. The held-out report, scored once, is
+below, and it went badly.
 
 ## Runs cited
 
@@ -107,21 +107,57 @@ reported correctly. The two QA failures: `v2` (how the company describes its str
 answer that passed validation, and `v3` (what the chief executive said about the year's
 performance) was answered from the right page but did not mention underlying sales or volume.
 
-Human rating (the tech lead, one rater, each displayed paragraph against its cited quotes):
+Human rating: the tech lead, one rater, one judgement per displayed paragraph (not per atomic
+claim, as the [EVAL protocol](EVAL.md) proposes), recorded in `fixtures/expected/ratings.json` as two
+yes/no answers, "faithful" (the paragraph says what its cited quotes say) and "cited" (the
+citations point at the right place). The scorer counts a paragraph as supported only when both are
+yes. The file has no "contradicted" option, so no contradiction count is reported.
 
-| Rated | Supported | Unsupported | Contradicted | Cited |
-|---|---|---|---|---|
-| 29 | 27 | 2 | 0 | `company_a-20261003T011619Z-01552f5`: ratings.total, ratings.supported_count, ratings.unsupported_count, ratings.contradicted |
+| Paragraphs rated | Faithful and cited | Not | Cited |
+|---|---|---|---|
+| 29 | 27 | 2 | `company_a-20261003T011619Z-01552f5`: ratings.total, ratings.supported_count, ratings.unsupported_count |
 
-Both unsupported items are executive-summary bullets (`executive_summary:1` and
-`executive_summary:3`) whose sentences claim more than the quotes they cite.
+Both paragraphs answered no to both questions. They are executive-summary bullets
+(`executive_summary:1` and `executive_summary:3`) whose sentences claim more than the quotes they
+cite.
 
 ## Held-out report (company_c)
 
-**Not yet run.** The held-out report has not been provided in `fixtures/holdout/`. When it is,
-the tech lead labels it, `make eval COMPANY=company_c` is run once, and its run id and results are
-recorded here, including every miss. If anything is tuned on it afterwards, this section will say
-that it has become a development golden.
+Tesco PLC, its latest annual report (see `fixtures/pdfs/SOURCES.md`). Kept out of every test and
+inspector run, labelled by the tech lead, then scored **once**. Nothing was changed to improve
+this result; any fix made from now on makes company_c a development golden, and this section will
+say so. Local engines only; no hand-computed ratios, so E2 was not run (EVAL, Target scores).
+
+| Labelled cells | Matched exactly | Honest null | Silent wrong | Unit errors | Cited |
+|---|---|---|---|---|---|
+| 14 | 0 | 10 | 4 | 0 | `company_c-20261010T225313Z-e965d82`: e1.labelled, e1.matched, e1.honest_null, e1.silent_wrong, e1.unit_errors |
+
+**The pipeline failed this report.** It read no labelled figure correctly, and it showed two
+confident wrong numbers, which is the failure this project exists to prevent.
+
+Every miss:
+
+| Line | Year | Labelled | Shown | Why | Cited |
+|---|---|---|---|---|---|
+| Revenue | FY2025 | 69,916 | 0 | **Silent wrong.** The income statement has three columns per year (before adjusting items, adjusting items, total). The period header gave the year to the adjusting-items column, which prints "–" for revenue, read as zero. | `company_c-20261010T225313Z-e965d82`: e1.cells.0.expected, e1.cells.0.got |
+| Operating profit | FY2025 | 2,711 | -417 | **Silent wrong.** Same wrong column: the adjusting items, not the statutory total. | `company_c-20261010T225313Z-e965d82`: e1.cells.2.expected, e1.cells.2.got |
+| Revenue | FY2024 | 68,187 | empty | **Silent wrong as scored.** Five candidate columns and none clearly the total, so the year was correctly left empty, but the reason was recorded against the statement, not the line, so the line carries no warning. | `company_c-20261010T225313Z-e965d82`: e1.cells.1.expected |
+| Operating profit | FY2024 | 2,821 | empty | As revenue FY2024. | `company_c-20261010T225313Z-e965d82`: e1.cells.3.expected |
+| Current assets | both | 8,856 / 16,606 | empty | Honest null. The balance sheet has two columns per year with the same heading, so no column could be chosen; flagged. | `company_c-20261010T225313Z-e965d82`: e1.cells.4.expected, e1.cells.5.expected |
+| Current liabilities | both | 13,820 / 13,350 | empty | Honest null, same cause. | `company_c-20261010T225313Z-e965d82`: e1.cells.6.expected, e1.cells.7.expected |
+| Total assets | both | 38,890 / 47,039 | empty | Honest null, same cause. | `company_c-20261010T225313Z-e965d82`: e1.cells.8.expected, e1.cells.9.expected |
+| Total equity | both | 11,662 / 11,665 | empty | Honest null, same cause. | `company_c-20261010T225313Z-e965d82`: e1.cells.10.expected, e1.cells.11.expected |
+| Total debt | both | 14,666 / 15,341 | empty | Honest null, same cause. | `company_c-20261010T225313Z-e965d82`: e1.cells.12.expected, e1.cells.13.expected |
+
+Also wrong on this report: the balance-sheet lines carry a second warning, "no alias map for
+document type corporate yet", which is false (the corporate map exists; the statement had no
+usable period). Labelled lines not shown here were not labelled.
+
+What this says: the column and period logic was built against two layouts and does not yet handle
+a statement that prints adjusting items as separate columns, or a balance sheet whose two columns
+per year share a heading. The arithmetic checks did not catch the wrong column, because no check
+covers revenue or a lone operating-profit figure. These are the first things to fix, each with a
+regression test, after which company_c counts as a development golden.
 
 ## What these results do not show
 

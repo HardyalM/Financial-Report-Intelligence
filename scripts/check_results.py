@@ -43,6 +43,8 @@ def _value(report: Any, path: str) -> Any:
     for part in path.split("."):
         if isinstance(node, dict) and part in node:
             node = node[part]
+        elif isinstance(node, list) and part.isdigit() and int(part) < len(node):
+            node = node[int(part)]  # e1.cells.0.expected: one labelled cell
         else:
             raise KeyError(path)
     return node
