@@ -77,7 +77,7 @@ These checks are created in M0 and run in CI.
 - [x] `pytest tests/test_no_network.py` passes: opening a socket raises.
 - [x] `python scripts/check_imports.py --forbid fitz,pdfplumber,httpx,anthropic,voyageai` exits 0 (no parsing or LLM code yet).
 - [x] CI run for the commit is green (or `make ci` exits 0 if there is no remote yet). *No remote: `make ci` exit 0 with `uv.lock` committed.*
-- [ ] *Sign-off:* package layout matches ARCHITECTURE §2 (yes/no).
+- [x] *Sign-off:* package layout matches ARCHITECTURE §2 (yes/no). *2026-10-11: tech lead said "sign off" for this and four other sign-offs together; recorded as yes, not reviewed item by item in this session.*
 
 ---
 
@@ -98,7 +98,7 @@ These checks are created in M0 and run in CI.
 - [x] A second run prints `vendor_calls=0`. *Both PDFs; text layer and all 20 pdfplumber pages from cache.*
 - [x] Either `summary.json.parser_skipped` contains `azure_di`, or `azure/raw.json` exists. *`parser_skipped: ["azure_di"]` (no key) for both.*
 - [x] `pytest tests/inspect -k "holdout"` passes: a test asserts that `fixtures/holdout/` is excluded. *13 passed.*
-- [ ] *Sign-off:* the income statement and balance sheet pages appear among the top 10 keyword-hit pages of `pages.jsonl` (yes/no). *Evidence: company_a p.143 rank 2, p.141 rank 3 (company balance sheet p.197 rank 1); company_b p.218 rank 1, p.216 rank 2.*
+- [x] *Sign-off:* the income statement and balance sheet pages appear among the top 10 keyword-hit pages of `pages.jsonl` (yes/no). *Evidence: company_a p.143 rank 2, p.141 rank 3 (company balance sheet p.197 rank 1); company_b p.218 rank 1, p.216 rank 2.* *2026-10-11: tech lead said "sign off" for this and four other sign-offs together; recorded as yes, not reviewed item by item in this session.*
 
 ---
 
@@ -205,7 +205,7 @@ These checks are created in M0 and run in CI.
 - [x] Test: a scripted engine returning a "corrected" number produces an `unanchored_candidate` and nothing is published from it.
 - [x] With the Azure key unset: `silent_wrong == 0` and the pack contains a `reduced_verification` warning.
 - [x] `git diff main...HEAD -- docs/EXTRACTION.md` shows the §5.3 calibration note (or an explicit "τ unchanged, evidence: …"). *(Says calibration on the second family is pending.)*
-- [ ] *Sign-off:* you agree with the decision in one disputed cell's `ExtractionReport` (yes/no).
+- [x] *Sign-off:* you agree with the decision in one disputed cell's `ExtractionReport` (yes/no). *2026-10-11: tech lead said "sign off" for this and four other sign-offs together; recorded as yes, not reviewed item by item in this session.*
 
 ## M2.6 — Vision family *(optional)*
 
@@ -259,7 +259,7 @@ These checks are created in M0 and run in CI.
   - a note spanning two pages keeps its `note_number`
   - changing `chunker_version` changes `chunk_id`
   - a synthetic KPI-table page yields no prose chunk containing table text (T18).
-- [ ] *Sign-off:* 10 random chunks have correct `heading_path` values (yes/no).
+- [x] *Sign-off:* 10 random chunks have correct `heading_path` values (yes/no). *2026-10-11: tech lead said "sign off" for this and four other sign-offs together; recorded as yes, not reviewed item by item in this session.*
 
 ## M4.2 — Index and retrieval
 
@@ -275,7 +275,7 @@ These checks are created in M0 and run in CI.
 - [ ] `make eval-e3 COMPANY=company_a` followed by `python scripts/gate.py M4.2` exits 0: `e3.hit_at_8 >= 0.8`. The report records which embedding model was used.
   - If `company_a.retrieval.json` is missing, the session **prints** the file format in its output (it never writes into `fixtures/expected/`) and stops. G3 passes.
 - [ ] Test: query variants are selected by `document_type`.
-- [ ] *Sign-off:* the top 8 for "principal risks" are on-topic (yes/no).
+- [x] *Sign-off:* the top 8 for "principal risks" are on-topic (yes/no). *2026-10-11: tech lead said "sign off" for this and four other sign-offs together; recorded as yes, not reviewed item by item in this session.*
 
 ---
 
