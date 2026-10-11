@@ -3,7 +3,8 @@
 Applied in order; the first rule that yields a unique candidate wins:
 1. exact alias, in the right section context  (method `exact_alias`)
 2. regex alias                                 (`regex_alias`)
-3. structural: an unlabelled subtotal or total row that closes a named section  (`structural`)
+3. structural: an unlabelled subtotal or total row that closes a named section  (`structural`).
+   For an item marked `before_held_for_sale`, the subtotal before a held-for-sale line is taken.
 The exclusion filter removes a row whatever rule produced it. Two candidates at one precedence: the
 total-styled row wins if it is unique; rows that print the same text in every column are the same
 figure printed twice (a bank repeats "Profit for the year" under its attribution lines), so the
@@ -22,6 +23,7 @@ from finintel.tables.models import Row, RowStyle, StatementTable
 
 METHOD_BASE = {"exact_alias": 0.95, "regex_alias": 0.90, "structural": 0.85}
 _COLON_HEADER = re.compile(r":\s*$")
+_HELD_FOR_SALE = re.compile(r"\bheld for sale\b")
 
 
 @dataclass(frozen=True)
@@ -62,6 +64,24 @@ def _unique(candidates: list[Row]) -> tuple[Row | None, tuple[Row, ...]]:
     if first and all(_printed(r) == first for r in candidates[1:]):
         return candidates[0], ()  # one figure printed twice, not a choice between figures
     return None, tuple(candidates)
+
+
+def _before_held_for_sale(rows: Sequence[Row], found: list[Row]) -> list[Row]:
+    """Held for sale is excluded from current assets and current liabilities (tech lead,
+    2026-10-11). When a section closes with a subtotal, then a held-for-sale line, then another
+    subtotal, the subtotal printed before the first held-for-sale line is the one. Without such a
+    line between the candidates nothing is filtered and the tie stays a tie (`alias_weak`)."""
+    position = {id(r): i for i, r in enumerate(rows)}
+    held = [
+        i
+        for i, r in enumerate(rows)
+        if r.cells and _HELD_FOR_SALE.search(normalise_label(r.label_text))
+    ]
+    if not held:
+        return found
+    before = [r for r in found if position[id(r)] < held[0]]
+    after = [r for r in found if position[id(r)] > held[0]]
+    return before if before and after else found
 
 
 def map_item(table: StatementTable, spec: AliasSpec) -> ItemMapping:
@@ -110,6 +130,8 @@ def map_item(table: StatementTable, spec: AliasSpec) -> ItemMapping:
         found = [r for r in found if not _excluded(normalise_label(r.label_text), spec)]
         if not found:
             continue
+        if method == "structural" and spec.before_held_for_sale and len(found) > 1:
+            found = _before_held_for_sale(rows, found)
         row, rivals = _unique(found)
         if row is not None:
             return ItemMapping(spec.item, method, row)

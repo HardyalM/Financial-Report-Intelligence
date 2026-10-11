@@ -6,7 +6,11 @@
 # exclude_any:   substrings that veto a row whatever rule produced it (APM contamination)
 # sections:      the heading the row must sit under (nearest preceding heading without a colon)
 # structural:    an unlabelled subtotal/total row closing one of these sections
-# internal:      used for arithmetic checks only; not emitted into the pack
+# internal:      used for arithmetic checks only; not emitted into the pack unless another item's
+#                derived_from names it
+# before_held_for_sale: of two closing subtotals around a held-for-sale line, take the first.
+#                Held for sale is excluded from current assets and current liabilities (tech lead,
+#                2026-10-11); total assets includes it (`assets_held_for_sale`).
 _apm: &apm [adjusted, underlying, "before adjusting items", "before exceptional", pre-exceptional,
             "trading profit", headline, ebitda, "core", "constant currency", "like-for-like"]
 
@@ -39,11 +43,19 @@ current_assets:
   statement: balance_sheet
   include_exact: ["total current assets"]
   structural: ["current assets"]
+  before_held_for_sale: true
+assets_held_for_sale:
+  statement: balance_sheet
+  internal: true  # emitted only when total_assets is derived from it
+  sections: ["current assets"]
+  include_regex: ["^(assets|non-current assets|assets of (the )?disposal groups?).*held for sale$"]
+  exclude_any: [liabilities]
 current_liabilities:
   statement: balance_sheet
   include_exact: ["total current liabilities",
                   "creditors: amounts falling due within one year"]
   structural: ["current liabilities", "creditors: amounts falling due within one year"]
+  before_held_for_sale: true
 non_current_assets:
   statement: balance_sheet
   include_exact: ["total non-current assets", "total fixed assets"]

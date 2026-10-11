@@ -96,15 +96,25 @@ def run_checks(table: StatementTable, mapped: Mapping[str, ItemMapping]) -> list
                 )
 
         ta, nca, ca = val("total_assets"), val("non_current_assets"), val("current_assets")
-        if ta and nca and ca:
+        # Held for sale printed after the current-assets subtotal is outside it and inside total
+        # assets (tech lead, 2026-10-11); printed above the subtotal it is already in it.
+        held, ca_map = mapped.get("assets_held_for_sale"), mapped.get("current_assets")
+        outside = (
+            held is not None and held.row is not None and ca_map is not None
+            and ca_map.row is not None and index[held.row.row_id] > index[ca_map.row.row_id]
+        )  # fmt: skip
+        hfs = val("assets_held_for_sale") if outside else None
+        if ta and nca and ca and (hfs or not outside):
             results.append(
                 _compare(
                     "total_assets_sum",
                     ("total_assets", "non_current_assets", "current_assets"),
                     period,
                     ta,
-                    [nca, ca],
-                    "non-current + current assets",
+                    [nca, ca, hfs] if hfs else [nca, ca],
+                    "non-current + current assets + held for sale"
+                    if hfs
+                    else "non-current + current assets",
                 )
             )
         tl, cl, ncl = (

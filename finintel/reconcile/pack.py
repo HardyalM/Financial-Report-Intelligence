@@ -101,6 +101,13 @@ class Assembly:
     report: dict[str, Any]
 
 
+_PART_NAMES = {
+    "non_current_assets": "non-current assets",
+    "current_assets": "current assets",
+    "assets_held_for_sale": "assets held for sale",
+}
+
+
 def _signed(item: str, value: Decimal) -> float:
     return float(abs(value) if item in LIABILITY_ITEMS else value)
 
@@ -371,7 +378,13 @@ def assemble(
             continue  # total_debt is null by design for a bank (BANK_NULL); never derived
         res[("total_debt", period)] = _total_debt(period, views, res)
         ta = res.get(("total_assets", period))
-        parts = [res.get(("non_current_assets", period)), res.get(("current_assets", period))]
+        names = ["non_current_assets", "current_assets"]
+        # Current assets exclude held for sale; total assets include it (tech lead, 2026-10-11).
+        # A held-for-sale line that is printed but not read blocks the derivation.
+        held = res.get(("assets_held_for_sale", period))
+        if held is not None and held.record.get("decision") != "no_candidate":
+            names.append("assets_held_for_sale")
+        parts = [res.get((i, period)) for i in names]
         if (
             ta is not None
             and ta.record.get("decision") == "no_candidate"
@@ -379,20 +392,20 @@ def assemble(
         ):
             ta.value = float(sum(Decimal(str(p.value)) for p in parts if p))
             ta.engine = ta.method = "derived"
-            ta.derived_from = [
-                {"item": i, "period_id": period} for i in ("non_current_assets", "current_assets")
-            ]
+            ta.derived_from = [{"item": i, "period_id": period} for i in names]
             ta.confidence = min(p.confidence for p in parts if p)
             ta.record["decision"] = "published_derived"
             ta.warn(
-                "derived_value", f"total_assets is non-current assets + current assets ({period})"
+                "derived_value",
+                f"total_assets is {' + '.join(_PART_NAMES[i] for i in names)} ({period})",
             )
 
     items: dict[str, Any] = {}
     warnings: list[dict[str, Any]] = [dict(w) for w in extra_warnings]
     order = [*specs, "total_debt"]
+    sources = {d["item"] for r in res.values() for d in (r.derived_from or [])}
     for item in order:
-        if item != "total_debt" and specs[item].internal:
+        if item != "total_debt" and specs[item].internal and item not in sources:
             continue
         kind = specs[item].statement if item != "total_debt" else StatementType.BALANCE_SHEET
         periods = statement_periods.get(kind, [])

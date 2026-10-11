@@ -40,6 +40,7 @@ class AliasSpec:
     sections: frozenset[str] | None
     structural: frozenset[str]
     internal: bool
+    before_held_for_sale: bool = False  # see mapper._before_held_for_sale
 
 
 @cache
@@ -60,5 +61,6 @@ def load_aliases(document_type: str = "corporate") -> dict[str, AliasSpec]:
             else None,
             structural=frozenset(normalise_label(x) for x in body.get("structural", [])),
             internal=bool(body.get("internal", False)),
+            before_held_for_sale=bool(body.get("before_held_for_sale", False)),
         )
     return specs
