@@ -7,6 +7,19 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M8.3 label decisions — 2026-10-11 — company_c re-scored after two tech-lead decisions (9/14, 4 honest null, 1 code bug)
+
+| Check | Result |
+|---|---|
+| `make eval COMPANY=company_c` (labels after the decisions, no code change) | run `company_c-20261011T184255Z-d4450c7`: matched 9, honest null 4, silent wrong 1, unit errors 0 |
+| `python scripts/check_results.py` | PASS |
+
+Decisions recorded in docs/RESULTS.md (development-golden section; held-out section unchanged):
+total debt FY2024 label is right, the text layer misreads p.139, so 14,841 is a code bug (not
+fixed, not retuned); current assets exclude held for sale (option B), current-assets labels
+changed to 8,806 / 8,823. Open: the text-layer misread; applying option B in extraction; RESULTS
+sign-off (unticked until the tech lead says yes).
+
 ## M8.3 fixes — 2026-10-11 — company_c failures fixed; now a development golden (9/14, 4 honest null, 1 open)
 
 Four fixes, each with a regression test that fails without it (commit 147093e): dates over equal column groups
