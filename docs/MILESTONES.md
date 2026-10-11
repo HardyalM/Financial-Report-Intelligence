@@ -429,8 +429,9 @@ These checks are created in M0 and run in CI.
 - [x] Playwright: the limitations page is reachable from the report screen.
 - [x] `README.md` contains the architecture diagram, a "What fails" section and local-run steps.
 - [x] Fresh-clone test: `git clone` into a temporary directory, then `make dev` with **no API keys**, completes `company_a` (exit 0).
-- [ ] *Sign-off:* you would say every sentence in `RESULTS.md` in an interview (yes/no).
+- [x] *Sign-off:* you would say every sentence in `RESULTS.md` in an interview (yes/no).
 *2026-10-10: held-out run `company_c-20261010T225313Z-e965d82` scored once: 0 of 14 matched, 10 honest null, 4 silent wrong (recorded in RESULTS.md). Sign-off: the tech lead said no on the previous draft (ratings section, stale held-out paragraph); both rewritten; asked again.*
+*2026-10-11: sign-off **yes** from the tech lead, on RESULTS.md at commit `60ce8d5` (company_c re-scored after the two label decisions, run `company_c-20261011T184255Z-d4450c7`).*
 
 ---
 

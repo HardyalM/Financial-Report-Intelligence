@@ -7,6 +7,14 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M8.3 sign-off — 2026-10-11 — tech lead: yes; M8.3 gate complete
+
+The tech lead signed off RESULTS.md (as of commit 60ce8d5): every sentence would be said in an interview. All M8.3
+gate boxes are ticked. Still open, not part of the gate: the p.139 text-layer misread (total debt FY2024) and applying
+the held-for-sale decision in extraction; both wait for the tech lead's go-ahead.
+
+---
+
 ## M8.3 label decisions — 2026-10-11 — company_c re-scored after two tech-lead decisions (9/14, 4 honest null, 1 code bug)
 
 | Check | Result |
