@@ -165,31 +165,31 @@ The four causes above were fixed, each with a regression test that fails without
 `147093e`). From here company_c is a **development golden**, not a held-out test: the code was
 changed after looking at it. company_a and company_b were re-run and are unchanged.
 
-Two accounting decisions by the tech lead, after the first post-fix run, changed one label and
-settled another. No code changed after them and nothing was retuned:
+After the first post-fix run, two label questions were settled. Both are recorded here because
+they changed what the pipeline is scored against:
 
-- **Debt decision. Total debt, FY2024: the label is right; the shown value is a code bug.**
-  The balance sheet (`p.139`) prints non-current borrowings `(5,883)` and lease liabilities `(7,338)`. The PDF's text layer has
-  `(5,683)` and `(7,038)`, and the pipeline reads the text layer, so its sum is wrong. It stays
-  counted as silent wrong until the extraction is fixed; the label was not changed to match it.
-- **Held-for-sale decision. Current assets: held for sale is excluded** (option B). Assets and
-  liabilities held for sale are left out of both current assets and current liabilities; total assets includes them. The
-  current-assets labels were changed to the subtotal before held for sale.
+- **Total debt, FY2024: the label was wrong, not the code.** The label first had non-current
+  borrowings `(5,883)` and lease liabilities `(7,338)`, and this file briefly called the pipeline's
+  figure a text-layer bug. Checked on the page: the balance sheet (`p.139`) prints `(5,683)` and
+  `(7,038)`, the rendered page shows the same, and the printed non-current liabilities total
+  `(14,902)` adds up only with those figures. The label was corrected to this PDF; the code was
+  not changed for it.
+- **Held for sale is excluded from current assets and current liabilities** (tech lead, option B);
+  total assets includes it. company_c closes its current-assets section with a subtotal, a
+  held-for-sale line, and a second subtotal. Extraction now takes the subtotal before the
+  held-for-sale line and adds held for sale back when it derives total assets (commit `30dbd9e`,
+  with regression tests). A held-for-sale line printed inside a company's only subtotal is not
+  subtracted: company_a prints it that way, and its current assets include it, as its label does.
 
-Scored against the labels after those decisions:
+Scored after both:
 
 | Labelled cells | Matched exactly | Honest null | Silent wrong | Unit errors | Cited |
 |---|---|---|---|---|---|
-| 14 | 9 | 4 | 1 | 0 | `company_c-20261011T184255Z-d4450c7`: e1.labelled, e1.matched, e1.honest_null, e1.silent_wrong, e1.unit_errors |
+| 14 | 14 | 0 | 0 | 0 | `company_c-20261011T195348Z-5df81c0`: e1.labelled, e1.matched, e1.honest_null, e1.silent_wrong, e1.unit_errors |
 
-Revenue, operating profit, current liabilities and total equity match in both years, and total
-debt for FY2025. What is still not matched:
-
-| Line | Year | Labelled | Shown | Why | Cited |
-|---|---|---|---|---|---|
-| Total debt | FY2024 | 15,341 | 14,841 | **Silent wrong, code bug** (the debt decision): the sum of the four lines as the text layer misprints them. | `company_c-20261011T184255Z-d4450c7`: e1.cells.13.expected, e1.cells.13.got |
-| Current assets | FY2025 / FY2024 | 8,806 / 8,823 | empty | Honest null. The section closes with two unlabelled subtotals, before and after held for sale, and the pipeline does not choose between them. The held-for-sale decision settles which is right, but the pipeline was not changed to apply it. | `company_c-20261011T184255Z-d4450c7`: e1.cells.4.expected, e1.cells.5.expected |
-| Total assets | FY2025 / FY2024 | 38,890 / 47,039 | empty | Honest null. Not printed; it is derived from current assets, which is null. | `company_c-20261011T184255Z-d4450c7`: e1.cells.8.expected, e1.cells.9.expected |
+This is a development-golden score: the code and one label changed after looking at this report,
+so it says the fixes work here, not that the pipeline generalises. The held-out score is the one
+above.
 
 ## What these results do not show
 

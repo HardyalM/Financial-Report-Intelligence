@@ -7,6 +7,22 @@ binary at `~/Library/Python/3.9/bin/uv`), CPython 3.12.14 via `uv python install
 
 ---
 
+## M8.3 held for sale + total debt relabel — 2026-10-11 — company_c development golden 14/14
+
+| Command | Result |
+|---|---|
+| `make ci` | 983 passed |
+| `make eval COMPANY=company_a` / `company_b` | E1 22/22, E2 8/8 / E1 28/28, E2 4/4; packs byte-identical (23728ccd…, 225dd386…) |
+| `make eval COMPANY=company_c` | run `company_c-20261011T195348Z-5df81c0`: matched 14 of 14 |
+| `python scripts/check_results.py` | PASS |
+
+Correction to the entry below: total debt FY2024 was a label error, not a code bug. p.139 prints (5,683) and (7,038),
+confirmed by the rendered page and the printed non-current liabilities total (14,902); the tech lead relabelled to
+14,841. Held for sale option B implemented in 30dbd9e. Not done (outside M8.3 paths): docs/SCHEMA.md §5 still defines
+derived total assets as non-current + current assets. RESULTS.md changed after the sign-off; re-confirmation asked.
+
+---
+
 ## M8.3 sign-off — 2026-10-11 — tech lead: yes; M8.3 gate complete
 
 The tech lead signed off RESULTS.md (as of commit 60ce8d5): every sentence would be said in an interview. All M8.3
