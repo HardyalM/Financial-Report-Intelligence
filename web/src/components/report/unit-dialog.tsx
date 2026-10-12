@@ -77,22 +77,22 @@ export function UnitDialog() {
             <span className="inline-flex size-8 items-center justify-center rounded-lg bg-review-soft">
               <Lock aria-hidden className="size-4 text-review" />
             </span>
-            <h2 id="unit-title" className="mt-2 text-[16px] font-semibold text-ink">
+            <h2 id="unit-title" className="mt-2 text-[1rem] font-semibold text-ink">
               Confirm the unit and currency
             </h2>
-            <p className="mt-1 text-[12.5px] leading-relaxed text-ink-2">
+            <p className="mt-1 text-[0.78125rem] leading-relaxed text-ink-2">
               No unit was found in the statement headers, so no figure is shown. Read it off the page
               (for example “£m” or “£000” above the figures column) and confirm it here.
             </p>
           </div>
-          <label className="space-y-1 text-[12.5px] font-medium text-ink-2">
+          <label className="space-y-1 text-[0.78125rem] font-medium text-ink-2">
             Currency
             <select
               ref={first}
               data-testid="unit-currency"
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
-              className="mt-1 h-9 w-full rounded-md border border-line-strong bg-surface px-2 text-[13px] text-ink"
+              className="mt-1 h-9 w-full rounded-md border border-line-strong bg-surface px-2 text-[0.8125rem] text-ink"
             >
               {CURRENCIES.map((c) => (
                 <option key={c.code} value={c.code}>
@@ -102,9 +102,9 @@ export function UnitDialog() {
             </select>
           </label>
           <fieldset className="space-y-1.5">
-            <legend className="text-[12.5px] font-medium text-ink-2">Figures are in</legend>
+            <legend className="text-[0.78125rem] font-medium text-ink-2">Figures are in</legend>
             {SCALES.map((s) => (
-              <label key={s.value} className="flex items-center gap-2 text-[13px] text-ink">
+              <label key={s.value} className="flex items-center gap-2 text-[0.8125rem] text-ink">
                 <input
                   type="radio"
                   name="unit-scale"
@@ -117,11 +117,11 @@ export function UnitDialog() {
               </label>
             ))}
           </fieldset>
-          <p className="text-[12.5px] text-ink-2" data-testid="unit-evidence">
+          <p className="text-[0.78125rem] text-ink-2" data-testid="unit-evidence">
             Evidence page: <span className="num font-medium text-ink">PDF p.&nbsp;{page}</span>, the page on screen.
           </p>
           {error ? (
-            <p role="alert" className="rounded-md border border-missing-line bg-missing-soft px-3 py-2 text-[12.5px] text-missing">
+            <p role="alert" className="rounded-md border border-missing-line bg-missing-soft px-3 py-2 text-[0.78125rem] text-missing">
               {error}
             </p>
           ) : null}

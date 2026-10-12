@@ -33,7 +33,7 @@ export function ReviewPanel({ item, period }: { item: string; period: string }) 
       data-testid="review-panel"
       className="hidden space-y-4 border-t border-line px-5 py-4 md:block"
     >
-      <h4 id="review-heading" className="text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-3">
+      <h4 id="review-heading" className="text-[0.6875rem] font-semibold uppercase tracking-[0.07em] text-ink-3">
         Your decision
       </h4>
 
@@ -46,7 +46,7 @@ export function ReviewPanel({ item, period }: { item: string; period: string }) 
       ) : null}
 
       {info.state === "R7" && info.suggestion ? (
-        <div className="rounded-lg border border-suggested-line bg-suggested-soft/60 px-3 py-2.5 text-[12.5px] text-ink-2" data-testid="review-suggestion">
+        <div className="rounded-lg border border-suggested-line bg-suggested-soft/60 px-3 py-2.5 text-[0.78125rem] text-ink-2" data-testid="review-suggestion">
           <p className="flex items-center gap-1.5 font-medium text-suggested">
             <Bot aria-hidden className="size-4" /> Suggested by model
           </p>
@@ -128,16 +128,16 @@ function AcceptCandidates({ item, period, candidates }: { item: string; period: 
   };
   return (
     <div className="space-y-2" data-testid="review-candidates">
-      <p className="text-[12.5px] text-ink-2">
+      <p className="text-[0.78125rem] text-ink-2">
         {candidates.length > 1 ? "The engines read different figures. Choose the one printed on the page:" : "The figure read from the page, withheld for review:"}
       </p>
       <ul className="space-y-1.5">
         {candidates.map((c) => (
           <li key={c.id} className="flex items-center justify-between gap-2 rounded-lg border border-line px-3 py-2">
-            <span className="flex items-center gap-2 text-[13px]">
+            <span className="flex items-center gap-2 text-[0.8125rem]">
               <span className="num font-mono text-ink">{c.raw_text}</span>
               <PageChip page={c.page} />
-              {c.source ? <span className="text-[11.5px] text-ink-3">{c.source}</span> : null}
+              {c.source ? <span className="text-[0.71875rem] text-ink-3">{c.source}</span> : null}
             </span>
             <Button size="sm" onClick={() => use(c)} disabled={busy !== null} data-testid="use-candidate">
               {busy === c.id ? "Saving…" : "Use this"}
@@ -154,7 +154,7 @@ function AcceptCandidates({ item, period, candidates }: { item: string; period: 
 function Withheld({ info, onUse }: { info: CellInfo; onUse: (page: string, raw: string) => void }) {
   const c = info.candidate!;
   return (
-    <div className="rounded-lg border border-review-line bg-review-soft/50 px-3 py-2.5 text-[12.5px] text-ink-2" data-testid="review-withheld">
+    <div className="rounded-lg border border-review-line bg-review-soft/50 px-3 py-2.5 text-[0.78125rem] text-ink-2" data-testid="review-withheld">
       <p className="flex items-center gap-1.5 font-medium text-review">
         <CircleAlert aria-hidden className="size-4" /> Withheld candidate
       </p>
@@ -229,7 +229,7 @@ function EnterFromPage({ item, period, initial }: { item: string; period: string
   }
   return (
     <form onSubmit={submit} className="space-y-2.5 rounded-lg border border-line px-3 py-3" data-testid="enter-form" aria-label={`Enter ${itemLabel(item)} ${period} from a page`}>
-      <p className="text-[12.5px] font-medium text-ink">Enter {itemLabel(item).toLowerCase()} for {period} from a page</p>
+      <p className="text-[0.78125rem] font-medium text-ink">Enter {itemLabel(item).toLowerCase()} for {period} from a page</p>
       <div className="grid grid-cols-[88px_minmax(0,1fr)] gap-2">
         <Field label="Page" id="enter-page">
           <input id="enter-page" inputMode="numeric" value={page} onChange={(e) => setPage(e.target.value)} className={INPUT} data-testid="enter-page" />
@@ -241,7 +241,7 @@ function EnterFromPage({ item, period, initial }: { item: string; period: string
       <Field label={`Value in the pack’s unit (liabilities as positive amounts)`} id="enter-value">
         <input id="enter-value" inputMode="decimal" value={value} onChange={(e) => setValue(e.target.value)} className={cn(INPUT, "num")} data-testid="enter-value" />
       </Field>
-      <label className="flex items-center gap-2 text-[12.5px] text-ink-2">
+      <label className="flex items-center gap-2 text-[0.78125rem] text-ink-2">
         <input type="checkbox" checked={forcing} onChange={(e) => setForcing(e.target.checked)} data-testid="enter-force" />
         It isn’t printed on the page: force it, with a reason
       </label>
@@ -296,11 +296,11 @@ export function PointToPage({ statement }: { statement: string }) {
   };
   return (
     <form onSubmit={submit} className="space-y-2 rounded-lg border border-line px-3 py-3" data-testid="point-to-page">
-      <p className="flex items-center gap-1.5 text-[12.5px] font-medium text-ink">
+      <p className="flex items-center gap-1.5 text-[0.78125rem] font-medium text-ink">
         <FileSearch aria-hidden className="size-4 text-ink-3" />
         Point to the {STATEMENT_NAMES[statement] ?? statement.replace(/_/g, " ")}
       </p>
-      <p className="text-[12px] leading-relaxed text-ink-3">Extraction runs again on that page; the figures and ratios follow.</p>
+      <p className="text-[0.75rem] leading-relaxed text-ink-3">Extraction runs again on that page; the figures and ratios follow.</p>
       <div className="flex items-end gap-2">
         <Field label="Page" id="point-page">
           <input id="point-page" inputMode="numeric" value={page} onChange={(e) => setPage(e.target.value)} className={cn(INPUT, "w-24")} data-testid="point-page" />
@@ -321,7 +321,7 @@ function LeaveEmpty({ item, period }: { item: string; period: string }) {
   const [error, setError] = React.useState<string | null>(null);
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="text-[12px] text-ink-3 underline-offset-2 hover:text-ink hover:underline">
+      <button type="button" onClick={() => setOpen(true)} className="text-[0.75rem] text-ink-3 underline-offset-2 hover:text-ink hover:underline">
         Leave it empty, with a reason
       </button>
     );
@@ -352,12 +352,12 @@ function LeaveEmpty({ item, period }: { item: string; period: string }) {
   );
 }
 
-const INPUT = "h-8 w-full rounded-md border border-line-strong bg-surface px-2 text-[13px] text-ink";
+const INPUT = "h-8 w-full rounded-md border border-line-strong bg-surface px-2 text-[0.8125rem] text-ink";
 
 function Field({ label, id, children }: { label: string; id: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1">
-      <label htmlFor={id} className="block text-[11.5px] font-medium text-ink-3">
+      <label htmlFor={id} className="block text-[0.71875rem] font-medium text-ink-3">
         {label}
       </label>
       {children}
@@ -367,7 +367,7 @@ function Field({ label, id, children }: { label: string; id: string; children: R
 
 function Refusal({ text }: { text: string }) {
   return (
-    <p role="alert" data-testid="review-refusal" className="rounded-md border border-missing-line bg-missing-soft px-3 py-2 text-[12.5px] leading-relaxed text-missing">
+    <p role="alert" data-testid="review-refusal" className="rounded-md border border-missing-line bg-missing-soft px-3 py-2 text-[0.78125rem] leading-relaxed text-missing">
       {text}
     </p>
   );

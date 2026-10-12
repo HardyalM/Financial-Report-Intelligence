@@ -2,11 +2,13 @@
 
 import { ChevronLeft, ChevronRight, FileWarning, Maximize2, ZoomIn, ZoomOut } from "lucide-react";
 import type { PDFDocumentProxy } from "pdfjs-dist";
+import { AnimatePresence } from "motion/react";
 import * as React from "react";
 import { PageView } from "@/components/pdf/page-view";
 import { PdfReader } from "@/components/pdf/reader";
+import { CloseButton } from "@/components/ui/close-button";
 import { GlassToolbar, ToolButton, ToolDivider } from "@/components/pdf/toolbar";
-import { clampZoom, useDragPan, useHotkeys, useIdle, usePinchZoom } from "@/components/pdf/use-viewer-input";
+import { useDragPan, useHotkeys, useIdle, usePinchZoom } from "@/components/pdf/use-viewer-input";
 import { loadDocument, type PageBox } from "@/lib/pdf";
 import { renderMode } from "@/lib/pdf-renderer";
 import { usePageTheme } from "@/lib/pdf-theme";
@@ -31,6 +33,7 @@ export function PdfViewer({
   folio,
   onPageChange,
   title = "Original report",
+  onClose,
 }: {
   url: string;
   page: number;
@@ -39,6 +42,8 @@ export function PdfViewer({
   /** Told whenever the page on screen changes (the unit dialog uses it as the evidence page). */
   onPageChange?: (page: number) => void;
   title?: string;
+  /** Close the source (the evidence panel's selection); shown as an × beside "Open document". */
+  onClose?: () => void;
 }) {
   const [doc, setDoc] = React.useState<PDFDocumentProxy | null>(null);
   const [error, setError] = React.useState<string | null>(null);
@@ -53,7 +58,11 @@ export function PdfViewer({
   const theme = usePageTheme();
   const [idle, poke] = useIdle(2600);
 
-  React.useEffect(() => setCurrent(page), [page, highlights]);
+  // A new selection (a different page or different boxes) brings the viewer to its page. Compared
+  // by content: a background refresh rebuilds the same highlights, and must not undo the pages a
+  // person turned since.
+  const selectionKey = `${page}|${JSON.stringify(highlights)}`;
+  React.useEffect(() => setCurrent(page), [selectionKey]); // eslint-disable-line react-hooks/exhaustive-deps
   React.useEffect(() => onPageChange?.(current), [current, onPageChange]);
 
   React.useEffect(() => {
@@ -112,9 +121,17 @@ export function PdfViewer({
     frame.current?.querySelector<HTMLElement>("[data-testid=highlight-box]")?.scrollIntoView({ block: "center", inline: "nearest" });
   }, [rendered?.page, onPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const setZoomClamped = React.useCallback((z: number) => setZoom(clampZoom(z)), []);
-  const zoomAt = usePinchZoom(frame, zoom, setZoomClamped);
+  // The hook keeps zoom inside its limits (and rubber-bands a pinch past them).
+  const zoomAt = usePinchZoom(frame, zoom, setZoom);
   const panning = useDragPan(frame);
+  /** Zoom to a level, anchored at the middle of the page view so the place being read stays. */
+  const zoomTo = (target: number) => {
+    const el = frame.current;
+    if (!el) return setZoom(target);
+    const box = el.getBoundingClientRect();
+    zoomAt(target, box.left + box.width / 2, box.top + box.height / 2);
+    poke();
+  };
   const step = (dir: 1 | -1) => {
     const stops = dir > 0 ? ZOOMS.filter((z) => z > zoom + 0.01) : ZOOMS.filter((z) => z < zoom - 0.01).reverse();
     const next = stops[0] ?? (dir > 0 ? ZOOMS.at(-1)! : ZOOMS[0]!);
@@ -133,7 +150,7 @@ export function PdfViewer({
     { combo: "arrowright", run: () => go(current + 1) },
     { combo: "mod+=", run: () => step(1) },
     { combo: "mod+-", run: () => step(-1) },
-    { combo: "mod+0", run: () => setZoom(1) },
+    { combo: "mod+0", run: () => zoomTo(1) },
     { combo: "mod+f", run: () => setReader({ query: "", search: true }) },
   ]);
 
@@ -153,21 +170,24 @@ export function PdfViewer({
       onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node) && setHot(false)}
     >
       <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-2.5">
-        <span className="num min-w-0 truncate text-[12px] text-ink-2" data-testid="viewer-page-label" aria-live="polite">
+        <span className="num min-w-0 truncate text-[0.75rem] text-ink-2" data-testid="viewer-page-label" aria-live="polite">
           PDF p.&nbsp;{current}
           {printed ? ` · printed p. ${printed}` : ""}
           {total ? <span className="text-ink-3"> / {total}</span> : null}
         </span>
+        <div className="flex shrink-0 items-center gap-0.5">
         <button
           type="button"
           disabled={!doc}
           onClick={() => setReader({ query: "", search: false })}
           data-testid="open-reader"
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 text-[12px] font-medium text-ink-2 transition-colors hover:bg-surface-sunk hover:text-ink disabled:opacity-40"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 text-[0.75rem] font-medium text-ink-2 transition-colors hover:bg-surface-sunk hover:text-ink disabled:opacity-40"
         >
           <Maximize2 aria-hidden className="size-3.5" />
           Open document
         </button>
+        {onClose ? <CloseButton onClose={onClose} /> : null}
+        </div>
       </div>
       <div className="pdf-stage relative" onPointerMove={poke}>
         <div
@@ -177,7 +197,7 @@ export function PdfViewer({
           {error ? (
             <div className="flex min-h-48 flex-col items-center justify-center gap-2 px-6 py-10 text-center" data-testid="viewer-error">
               <FileWarning aria-hidden className="size-5 text-ink-3" />
-              <p className="text-[12.5px] text-ink-2">{error}</p>
+              <p className="text-[0.78125rem] text-ink-2">{error}</p>
             </div>
           ) : doc && size && scale ? (
             <div className="mx-auto w-fit min-w-full pb-16">
@@ -210,15 +230,17 @@ export function PdfViewer({
             <ToolButton label="Zoom out" shortcut="mod+-" disabled={zoom <= ZOOMS[0]! + 0.001} onClick={() => step(-1)}>
               <ZoomOut aria-hidden />
             </ToolButton>
-            <span className="num w-11 text-center text-[11.5px] font-medium text-ink-2">{shownZoom}%</span>
+            <span className="num w-11 text-center text-[0.71875rem] font-medium text-ink-2">{shownZoom}%</span>
             <ToolButton label="Zoom in" shortcut="mod+=" disabled={zoom >= ZOOMS.at(-1)! - 0.001} onClick={() => step(1)}>
               <ZoomIn aria-hidden />
             </ToolButton>
           </GlassToolbar>
         ) : null}
       </div>
+      <AnimatePresence>
       {reader && doc ? (
         <PdfReader
+          key="reader"
           url={url}
           doc={doc}
           title={title}
@@ -233,6 +255,7 @@ export function PdfViewer({
           }}
         />
       ) : null}
+      </AnimatePresence>
     </div>
   );
 }

@@ -109,11 +109,11 @@ function StageStatus({ report }: { report: Report }) {
       data-testid="report-failed"
       className="mb-6 rounded-xl border border-missing-line bg-missing-soft px-5 py-4"
     >
-      <p className="text-[14px] font-semibold text-ink">{failure?.text ?? "Processing stopped."}</p>
-      <p className="mt-1 text-[12.5px] leading-relaxed text-ink-2">
+      <p className="text-[0.875rem] font-semibold text-ink">{failure?.text ?? "Processing stopped."}</p>
+      <p className="mt-1 text-[0.78125rem] leading-relaxed text-ink-2">
         It stopped at “{failure?.stage}” after its retries. Uploading the same file again shows this
         report; a different file starts afresh.{" "}
-        <span className="font-mono text-[11.5px] text-ink-3">
+        <span className="font-mono text-[0.71875rem] text-ink-3">
           report {report.id} · {failure?.code}
         </span>
       </p>

@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
 
 /** Every badge carries an icon and text: status never relies on colour alone (UI.md 10). */
 export const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11.5px] font-medium leading-4 whitespace-nowrap [&_svg]:size-3.5 [&_svg]:shrink-0",
+  "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[0.71875rem] font-medium leading-4 whitespace-nowrap [&_svg]:size-3.5 [&_svg]:shrink-0",
   {
     variants: {
       tone: {

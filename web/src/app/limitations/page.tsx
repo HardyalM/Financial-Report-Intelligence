@@ -9,11 +9,11 @@ export default function Limitations() {
   return (
     <div className="flex min-h-screen flex-col">
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-12 sm:px-6" data-testid="limitations">
-        <Link href="/" className="text-[13px] text-accent hover:underline">
+        <Link href="/" className="text-[0.8125rem] text-accent hover:underline">
           ← Financial Report Intelligence
         </Link>
-        <h1 className="mt-4 text-[34px] font-semibold tracking-[-0.03em]">Limitations</h1>
-        <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
+        <h1 className="mt-4 text-[2.125rem] font-semibold tracking-[-0.03em]">Limitations</h1>
+        <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
           A research aid for reading UK annual reports, not investment advice. It is built to say
           when it cannot do something rather than guess. These are the things it does not do.
         </p>
@@ -53,8 +53,8 @@ export default function Limitations() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-6 rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
-      <h2 className="text-[16px] font-semibold tracking-[-0.015em] text-ink">{title}</h2>
-      <ul className="mt-3 list-disc space-y-2 pl-5 text-[14px] leading-relaxed text-ink-2 marker:text-ink-3">{children}</ul>
+      <h2 className="text-[1rem] font-semibold tracking-[-0.015em] text-ink">{title}</h2>
+      <ul className="mt-3 list-disc space-y-2 pl-5 text-[0.875rem] leading-relaxed text-ink-2 marker:text-ink-3">{children}</ul>
     </section>
   );
 }

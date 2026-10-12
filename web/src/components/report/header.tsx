@@ -44,12 +44,12 @@ export function ReportHeader() {
           <div className="min-w-0 space-y-2">
             <p className="eyebrow">{current ? `Annual report ${current.label}` : "Annual report"}</p>
             <h1
-              className="truncate text-[30px] font-semibold leading-[1.1] tracking-[-0.03em] text-ink sm:text-[34px]"
+              className="truncate text-[1.875rem] font-semibold leading-[1.1] tracking-[-0.03em] text-ink sm:text-[2.125rem]"
               data-testid="report-title"
             >
               {name}
             </h1>
-            <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-ink-2">
+            <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8125rem] text-ink-2">
               {yearEnd ? (
                 <span className="inline-flex items-center gap-1.5">
                   <CalendarDays aria-hidden className="size-3.5 text-ink-3" />
@@ -57,7 +57,7 @@ export function ReportHeader() {
                 </span>
               ) : null}
               {pack?.basis ? <span>{BASIS[pack.basis] ?? pack.basis} statements</span> : null}
-              <span className="inline-flex items-center gap-1.5 font-mono text-[11.5px] text-ink-3">
+              <span className="inline-flex items-center gap-1.5 font-mono text-[0.71875rem] text-ink-3">
                 <FileText aria-hidden className="size-3.5" />
                 {report.filename} · {report.page_count} pages
               </span>

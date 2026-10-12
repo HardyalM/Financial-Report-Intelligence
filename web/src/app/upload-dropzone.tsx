@@ -1,22 +1,27 @@
 "use client";
 
 import { FileUp, Loader2 } from "lucide-react";
+import { motion } from "motion/react";
 import * as React from "react";
 import { useUpload } from "@/components/shell/upload";
 import { Kbd } from "@/components/pdf/toolbar";
 import { shortcutLabel } from "@/components/pdf/use-viewer-input";
 import { cn } from "@/lib/cn";
+import { spring, useSafeMotion } from "@/lib/motion";
 
 /** The empty state (UI.md section 3): drop a PDF, then follow it through the stages. */
 export function UploadDropzone({ compact = false }: { compact?: boolean }) {
   const { send, busy, error } = useUpload();
   const input = React.useRef<HTMLInputElement>(null);
   const [over, setOver] = React.useState(false);
+  const safe = useSafeMotion(); // reduced motion: these fade instead of moving
 
   return (
     <div className="space-y-2">
-      <div
+      <motion.div
         data-testid="upload-dropzone"
+        animate={safe({ scale: over ? 1.01 : 1 }, 1)}
+        transition={spring.snappy}
         onDragOver={(e) => {
           e.preventDefault();
           setOver(true);
@@ -28,15 +33,15 @@ export function UploadDropzone({ compact = false }: { compact?: boolean }) {
           void send(e.dataTransfer.files[0]);
         }}
         className={cn(
-          "flex flex-col items-center rounded-2xl border border-dashed text-center transition-[background-color,border-color,transform] duration-200",
+          "flex flex-col items-center rounded-2xl border border-dashed text-center transition-colors duration-150",
           compact ? "gap-2 px-5 py-6" : "gap-3 px-6 py-10",
-          over ? "scale-[1.01] border-accent bg-accent-soft" : "border-line-strong bg-surface-sunk/60 hover:border-ink-3",
+          over ? "border-accent bg-accent-soft" : "border-line-strong bg-surface-sunk/60 hover:border-ink-3",
         )}
       >
         {busy ? (
           <>
             <Loader2 aria-hidden className="size-6 animate-spin text-accent motion-reduce:animate-none" />
-            <p className="text-[14px] font-medium text-ink" aria-live="polite">
+            <p className="text-[0.875rem] font-medium text-ink" aria-live="polite">
               Uploading {busy}…
             </p>
           </>
@@ -45,18 +50,18 @@ export function UploadDropzone({ compact = false }: { compact?: boolean }) {
             <span className="flex size-11 items-center justify-center rounded-xl border border-line bg-surface shadow-[var(--shadow-card)]">
               <FileUp aria-hidden className="size-5 text-accent" />
             </span>
-            <p className="text-[14px] font-medium text-ink">
+            <p className="text-[0.875rem] font-medium text-ink">
               Drop an annual report PDF (up to 50&nbsp;MB). Digitally born PDFs work best.
             </p>
             <button
               type="button"
               onClick={() => input.current?.click()}
-              className="rounded-lg bg-ink px-3.5 py-2 text-[13px] font-medium text-ink-inverse shadow-[var(--shadow-card)] transition-opacity hover:opacity-90"
+              className="rounded-lg bg-ink px-3.5 py-2 text-[0.8125rem] font-medium text-ink-inverse shadow-[var(--shadow-card)] transition-opacity hover:opacity-90"
             >
               Choose a file
             </button>
             {!compact ? (
-              <p className="text-[11.5px] text-ink-3">
+              <p className="text-[0.71875rem] text-ink-3">
                 Or drop it anywhere in the app · <Kbd>{shortcutLabel("mod+k")}</Kbd> for everything else
               </p>
             ) : null}
@@ -74,9 +79,9 @@ export function UploadDropzone({ compact = false }: { compact?: boolean }) {
             e.target.value = "";
           }}
         />
-      </div>
+      </motion.div>
       {error ? (
-        <p role="alert" data-testid="upload-error" className="text-[13px] text-missing">
+        <p role="alert" data-testid="upload-error" className="text-[0.8125rem] text-missing">
           {error}
         </p>
       ) : null}

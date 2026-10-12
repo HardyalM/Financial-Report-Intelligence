@@ -49,7 +49,7 @@ export function FiguresTable() {
         </>
       }
       aside={
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-[11.5px] font-medium text-ink-2">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-[0.71875rem] font-medium text-ink-2">
           <span className="num">{unit}</span> {pack.currency}
         </span>
       }
@@ -59,7 +59,7 @@ export function FiguresTable() {
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <caption className="sr-only">Key figures with their source pages and verification state</caption>
           <thead>
-            <tr className="border-b border-line bg-surface-sunk/60 text-[10.5px] uppercase tracking-[0.08em] text-ink-3">
+            <tr className="border-b border-line bg-surface-sunk/60 text-[0.65625rem] uppercase tracking-[0.08em] text-ink-3">
               <th scope="col" className="px-5 py-2 text-left font-medium">
                 Line item
               </th>
@@ -76,7 +76,7 @@ export function FiguresTable() {
                 <th
                   colSpan={prior ? 4 : 3}
                   scope="colgroup"
-                  className="border-y border-line bg-surface-sunk/70 px-5 pb-1.5 pt-4 text-left text-[10.5px] font-semibold uppercase tracking-[0.09em] text-ink-2"
+                  className="border-y border-line bg-surface-sunk/70 px-5 pb-1.5 pt-4 text-left text-[0.65625rem] font-semibold uppercase tracking-[0.09em] text-ink-2"
                 >
                   {GROUP_TITLES[group]}
                 </th>
@@ -152,7 +152,7 @@ function FigureRow({ item }: { item: ItemDef }) {
         </th>
         <ValueCell info={now} period={current!.id} item={item.id} />
         {prior && before ? <ValueCell info={before} period={prior.id} item={item.id} secondary /> : null}
-        <td className="num px-5 py-2.5 text-right text-[13px] text-ink-2">
+        <td className="num px-5 py-2.5 text-right text-[0.8125rem] text-ink-2">
           {change === null ? (
             <span aria-label="not available" className="text-ink-3">—</span>
           ) : (
@@ -202,7 +202,7 @@ function ValueCell({
   const v = info.value?.value;
   return (
     <td
-      className={cn("num px-3 py-2.5 text-right text-[14px]", secondary ? "text-ink-3" : "font-semibold text-ink")}
+      className={cn("num px-3 py-2.5 text-right text-[0.875rem]", secondary ? "text-ink-3" : "font-semibold text-ink")}
       data-period={period}
     >
       <div className="flex items-center justify-end gap-1.5">
@@ -210,7 +210,7 @@ function ValueCell({
           <StateBadge
             state={info.state}
             label={info.state === "R3" ? "Derived" : undefined}
-            className="px-1.5 text-[10.5px]"
+            className="px-1.5 text-[0.65625rem]"
           />
         ) : null}
         {v === null || v === undefined ? (
@@ -271,7 +271,7 @@ function RowDetail({
             onClick={onToggle}
             aria-expanded={open}
             data-testid="derived-expander"
-            className="inline-flex items-center gap-1 rounded-full text-[12px] text-derived hover:underline"
+            className="inline-flex items-center gap-1 rounded-full text-[0.75rem] text-derived hover:underline"
           >
             <ChevronRight aria-hidden className={cn("size-3.5 transition-transform", open && "rotate-90")} />
             <StateBadge state="R3" label={`Derived: sum of ${n} line${n === 1 ? "" : "s"}`} />
@@ -330,7 +330,7 @@ function RowDetail({
             <ReviewButton onOpen={onOpen} />
           </div>
           {info.suggestion ? (
-            <p className="text-[12.5px] leading-relaxed text-ink-2">
+            <p className="text-[0.78125rem] leading-relaxed text-ink-2">
               The model points at the row{" "}
               <span className="font-medium text-ink">“{info.suggestion.label}”</span>
               {info.suggestion.page ? ` on p. ${info.suggestion.page}` : ""}. No figure is taken from it
@@ -352,7 +352,7 @@ function RowDetail({
       );
     case "R9":
       return (
-        <p className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[12.5px] text-ink-2">
+        <p className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[0.78125rem] text-ink-2">
           <StateBadge state="R9" />
           <span>Not applicable: {info.notApplicable}</span>
         </p>
@@ -374,7 +374,7 @@ function ReviewButton({ onOpen }: { onOpen: () => void }) {
       type="button"
       onClick={onOpen}
       data-testid="open-review"
-      className="ml-1 inline-flex h-5 items-center rounded border border-accent/40 px-1.5 text-[11px] font-medium text-accent hover:bg-accent-soft"
+      className="ml-1 inline-flex h-5 items-center rounded border border-accent/40 px-1.5 text-[0.6875rem] font-medium text-accent hover:bg-accent-soft"
     >
       Review
     </button>
@@ -393,7 +393,7 @@ function WarningList({ warnings, fallbackText = null }: { warnings: PackWarning[
     .filter((l) => (seen.has(l.text) ? false : (seen.add(l.text), true)));
   if (!lines.length && !fallbackText) return null;
   return (
-    <ul className="space-y-0.5 text-[12.5px] leading-relaxed text-ink-2">
+    <ul className="space-y-0.5 text-[0.78125rem] leading-relaxed text-ink-2">
       {lines.map((l) => (
         <li key={l.text}>
           <Tooltip content={<CodeHint code={l.code} />}>
@@ -419,7 +419,7 @@ function WhereWeLooked({ item }: { item: string }) {
   const extra = decision && DECISION_SENTENCES[decision] && item !== "total_debt" ? ` ${DECISION_SENTENCES[decision]}` : "";
   if (where.components.length) {
     return (
-      <p data-testid="where-we-looked" className="text-[12.5px] leading-relaxed text-ink-2">
+      <p data-testid="where-we-looked" className="text-[0.78125rem] leading-relaxed text-ink-2">
         Searched the {statement}
         {pages} for its components:{" "}
         <Tooltip content={where.labels.length ? `Labels tried: ${where.labels.join(", ")}` : null}>
@@ -433,7 +433,7 @@ function WhereWeLooked({ item }: { item: string }) {
   }
   const labels = where.labels.length ? ` for ${where.labels.join(", ")}` : "";
   return (
-    <p data-testid="where-we-looked" className="text-[12.5px] leading-relaxed text-ink-2">
+    <p data-testid="where-we-looked" className="text-[0.78125rem] leading-relaxed text-ink-2">
       Searched the {statement}
       {pages}
       {labels}.{extra}
@@ -445,12 +445,12 @@ function ComponentRow({ component, colSpan }: { component: DerivedComponent; col
   const { report, select } = useReportContext();
   const v = report.pack?.items[component.item]?.values.find((x) => x.period_id === component.period_id);
   return (
-    <tr data-testid="derived-component" className="border-b border-line bg-derived-soft/30 text-[13px]">
+    <tr data-testid="derived-component" className="border-b border-line bg-derived-soft/30 text-[0.8125rem]">
       <th scope="row" className="py-2 pl-11 pr-5 text-left font-normal text-ink-2">
         <span>{itemLabel(component.item)}</span>
         <span className="ml-2 inline-flex items-center gap-1.5 align-middle">
           {component.assumed_zero ? (
-            <span className="text-[12px] text-ink-3">Not presented (section fully checked)</span>
+            <span className="text-[0.75rem] text-ink-3">Not presented (section fully checked)</span>
           ) : v?.page ? (
             <PageChip
               page={v.page}
@@ -474,8 +474,8 @@ function PendingTable() {
   const { report } = useReportContext();
   return (
     <Card className="px-5 py-4" data-testid="figures-pending">
-      <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Key figures</h2>
-      <p className="mt-1 text-[13px] text-ink-2">
+      <h2 className="text-[0.9375rem] font-semibold tracking-[-0.01em]">Key figures</h2>
+      <p className="mt-1 text-[0.8125rem] text-ink-2">
         {report.status === "failed"
           ? "No figures: extraction did not finish."
           : "Figures appear here as soon as the statements have been read and checked."}
@@ -490,7 +490,7 @@ function BlockedTable() {
   return (
     <Card className="relative overflow-hidden" data-testid="figures-table">
       <div className="border-b border-line px-5 py-3.5">
-        <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Key figures</h2>
+        <h2 className="text-[0.9375rem] font-semibold tracking-[-0.01em]">Key figures</h2>
       </div>
       <div aria-hidden className="pointer-events-none select-none opacity-40 grayscale">
         <table className="w-full text-sm">
@@ -515,11 +515,11 @@ function BlockedTable() {
         <div className="flex max-w-sm flex-col items-center gap-2 rounded-xl border border-line bg-surface/95 px-6 py-5 text-center shadow-[var(--shadow-pop)] backdrop-blur">
           <Lock aria-hidden className="size-5 text-ink-3" />
           <p className="text-sm font-semibold text-ink">Confirm the unit to see figures</p>
-          <p className="text-[12.5px] leading-relaxed text-ink-2">
+          <p className="text-[0.78125rem] leading-relaxed text-ink-2">
             The statement headers don’t say whether figures are in units, thousands or millions, so
             none are shown until a person confirms it.
           </p>
-          <a href="#banner-unit" className="text-[12.5px] font-medium text-accent hover:underline">
+          <a href="#banner-unit" className="text-[0.78125rem] font-medium text-accent hover:underline">
             Why is this blocked?
           </a>
         </div>

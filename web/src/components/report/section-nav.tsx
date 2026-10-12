@@ -1,7 +1,9 @@
 "use client";
 
+import { motion } from "motion/react";
 import * as React from "react";
 import { cn } from "@/lib/cn";
+import { spring } from "@/lib/motion";
 
 const SECTIONS = [
   { id: "figures", label: "Key figures" },
@@ -33,18 +35,19 @@ export function SectionNav() {
           href={`#${s.id}`}
           aria-current={active === s.id ? "true" : undefined}
           className={cn(
-            "relative whitespace-nowrap px-3 py-2.5 text-[13px] font-medium transition-colors",
+            "relative whitespace-nowrap px-3 py-2.5 text-[0.8125rem] font-medium transition-colors",
             active === s.id ? "text-ink" : "text-ink-3 hover:text-ink-2",
           )}
         >
           {s.label}
-          <span
-            aria-hidden
-            className={cn(
-              "absolute inset-x-3 -bottom-px h-[2px] rounded-full bg-ink transition-opacity",
-              active === s.id ? "opacity-100" : "opacity-0",
-            )}
-          />
+          {active === s.id ? (
+            <motion.span
+              aria-hidden
+              layoutId="section-underline"
+              transition={spring.snappy}
+              className="absolute inset-x-3 -bottom-px h-[2px] rounded-full bg-ink"
+            />
+          ) : null}
         </a>
       ))}
     </nav>

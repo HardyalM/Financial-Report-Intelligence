@@ -28,7 +28,7 @@ import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
 import { unitLabel } from "@/lib/format";
 import { DOCUMENT_TYPES } from "@/lib/items";
-import { spring } from "@/lib/motion";
+import { spring, useSafeMotion } from "@/lib/motion";
 import { type ReportSummary, usePrefetchReport, useReports } from "@/lib/queries";
 import { OpenReport } from "./open-report";
 import { UploadDropzone } from "./upload-dropzone";
@@ -90,8 +90,8 @@ function ReportList({ reports }: { reports: ReportSummary[] }) {
         <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
           <div className="space-y-1.5">
             <p className="eyebrow">Workspace</p>
-            <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.03em] text-ink">Reports</h1>
-            <p className="text-[13.5px] text-ink-3">
+            <h1 className="text-[1.75rem] font-semibold leading-tight tracking-[-0.03em] text-ink">Reports</h1>
+            <p className="text-[0.84375rem] text-ink-3">
               {counts.all} report{counts.all === 1 ? "" : "s"} read
               {counts.waiting ? ` · ${counts.waiting} waiting for you` : ""}
               {counts.moving ? ` · ${counts.moving} in progress` : ""}
@@ -100,7 +100,7 @@ function ReportList({ reports }: { reports: ReportSummary[] }) {
           <button
             type="button"
             onClick={() => palette.open()}
-            className="inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-surface px-3 text-[13px] text-ink-2 shadow-[var(--shadow-card)] transition-colors hover:text-ink"
+            className="inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-surface px-3 text-[0.8125rem] text-ink-2 shadow-[var(--shadow-card)] transition-colors hover:text-ink"
           >
             <Sparkles aria-hidden className="size-4 text-accent" />
             Everything else
@@ -132,7 +132,7 @@ function ReportList({ reports }: { reports: ReportSummary[] }) {
                   )}
                 >
                   <span className="eyebrow">{label}</span>
-                  <span className={cn("display-figure text-[24px]", id === "waiting" && counts.waiting ? "text-review" : "text-ink")}>{counts[id]}</span>
+                  <span className={cn("display-figure text-[1.5rem]", id === "waiting" && counts.waiting ? "text-review" : "text-ink")}>{counts[id]}</span>
                   {filter === id ? (
                     <motion.span layoutId="filter-underline" transition={spring.snappy} className="absolute inset-x-0 bottom-0 h-[2px] bg-ink" />
                   ) : null}
@@ -156,7 +156,7 @@ function ReportList({ reports }: { reports: ReportSummary[] }) {
                 placeholder="Filter by company, file or number"
                 aria-label="Filter reports"
                 data-testid="dashboard-filter"
-                className="h-10 flex-1 bg-transparent text-[13.5px] text-ink outline-none placeholder:text-ink-3"
+                className="h-10 flex-1 bg-transparent text-[0.84375rem] text-ink outline-none placeholder:text-ink-3"
               />
               <Kbd>/</Kbd>
             </div>
@@ -166,12 +166,12 @@ function ReportList({ reports }: { reports: ReportSummary[] }) {
             ) : (
               <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-line-strong bg-surface/60 px-6 py-14 text-center" data-testid="dashboard-no-match">
                 <Search aria-hidden className="size-5 text-ink-3" />
-                <p className="text-[14px] font-medium text-ink">No reports match</p>
-                <p className="text-[12.5px] text-ink-3">Clear the filter to see all {counts.all}.</p>
+                <p className="text-[0.875rem] font-medium text-ink">No reports match</p>
+                <p className="text-[0.78125rem] text-ink-3">Clear the filter to see all {counts.all}.</p>
                 <button
                   type="button"
                   onClick={() => (setQuery(""), setFilter("all"))}
-                  className="mt-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-[12.5px] font-medium text-ink hover:bg-surface-sunk"
+                  className="mt-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-[0.78125rem] font-medium text-ink hover:bg-surface-sunk"
                 >
                   Show all reports
                 </button>
@@ -183,15 +183,15 @@ function ReportList({ reports }: { reports: ReportSummary[] }) {
             <div className="space-y-4 rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
               <div className="space-y-1">
                 <p className="eyebrow">Add</p>
-                <h2 className="text-[16px] font-semibold tracking-[-0.015em] text-ink">Analyse a report</h2>
+                <h2 className="text-[1rem] font-semibold tracking-[-0.015em] text-ink">Analyse a report</h2>
               </div>
               <UploadDropzone compact />
               <div className="space-y-2 border-t border-line pt-4">
-                <p className="text-[12.5px] text-ink-3">Or open a report already read:</p>
+                <p className="text-[0.78125rem] text-ink-3">Or open a report already read:</p>
                 <OpenReport />
               </div>
             </div>
-            <p className="px-1 text-[12px] leading-relaxed text-ink-3">
+            <p className="px-1 text-[0.75rem] leading-relaxed text-ink-3">
               Drop a PDF anywhere in the app to add it. Figures and ratios are computed locally; commentary uses the
               model provider you configured, if any.
             </p>
@@ -204,6 +204,7 @@ function ReportList({ reports }: { reports: ReportSummary[] }) {
 }
 
 function ReportTable({ reports }: { reports: ReportSummary[] }) {
+  const safe = useSafeMotion(); // reduced motion: these fade instead of moving
   // Arrow keys move between rows; Enter opens (the row is a link).
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
@@ -228,9 +229,9 @@ function ReportTable({ reports }: { reports: ReportSummary[] }) {
           <motion.li
             key={r.id}
             layout="position"
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...spring.snappy, delay: Math.min(i, 12) * 0.018 }}
+            initial={safe({ opacity: 0, y: 4 })}
+            animate={safe({ opacity: 1, y: 0 })}
+            transition={spring.snappy}
             className="border-b border-line last:border-b-0"
           >
             <ReportRowLink report={r} />
@@ -280,21 +281,21 @@ function ReportRowLink({ report }: { report: ReportSummary }) {
           e.preventDefault();
           setMenu({ x: e.clientX, y: e.clientY });
         }}
-        className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-3 outline-none transition-colors duration-100 hover:bg-surface-sunk/70 focus-visible:bg-accent-soft/60 md:grid-cols-[minmax(0,1fr)_64px_92px_minmax(150px,190px)_56px_96px]"
+        className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-3 outline-none transition-colors duration-100 hover:bg-surface-sunk/70 active:bg-surface-sunk active:duration-0 focus-visible:bg-accent-soft/60 md:grid-cols-[minmax(0,1fr)_64px_92px_minmax(150px,190px)_56px_96px]"
       >
         <span className="flex min-w-0 items-center gap-3">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-line bg-surface-sunk text-[13px] font-semibold uppercase text-ink-2">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-line bg-surface-sunk text-[0.8125rem] font-semibold uppercase text-ink-2">
             {title.charAt(0)}
           </span>
           <span className="min-w-0">
-            <span className="block truncate text-[14px] font-medium tracking-[-0.01em] text-ink">{title}</span>
-            <span className="block truncate font-mono text-[11.5px] text-ink-3">
+            <span className="block truncate text-[0.875rem] font-medium tracking-[-0.01em] text-ink">{title}</span>
+            <span className="block truncate font-mono text-[0.71875rem] text-ink-3">
               {report.filename}
               {report.currency ? ` · ${unitLabel(report.currency, report.unit_scale)} ${report.currency}` : ""}
             </span>
           </span>
         </span>
-        <span className="num hidden text-right text-[13px] text-ink-2 md:block">{report.period_label ?? "—"}</span>
+        <span className="num hidden text-right text-[0.8125rem] text-ink-2 md:block">{report.period_label ?? "—"}</span>
         <span className="hidden md:block">
           <Badge tone="neutral">{DOCUMENT_TYPES[report.document_type] ?? report.document_type}</Badge>
         </span>
@@ -310,8 +311,8 @@ function ReportRowLink({ report }: { report: ReportSummary }) {
             </Badge>
           ) : null}
         </span>
-        <span className="num hidden text-right text-[13px] text-ink-3 md:block">{report.page_count || "—"}</span>
-        <span className="hidden items-center justify-between text-[12.5px] text-ink-3 md:flex">
+        <span className="num hidden text-right text-[0.8125rem] text-ink-3 md:block">{report.page_count || "—"}</span>
+        <span className="hidden items-center justify-between text-[0.78125rem] text-ink-3 md:flex">
           {whenAdded(report.created_at)}
           <ArrowRight aria-hidden className="size-4 -translate-x-1 opacity-0 transition-[opacity,transform] duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:opacity-100" />
         </span>
@@ -339,14 +340,14 @@ function Onboarding({ unavailable }: { unavailable: boolean }) {
         <div className="relative mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-12 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_460px] lg:px-8 lg:pt-16">
           <div className="space-y-9">
             <div className="space-y-5">
-              <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-[12px] font-medium text-ink-2 shadow-[var(--shadow-card)]">
+              <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-[0.75rem] font-medium text-ink-2 shadow-[var(--shadow-card)]">
                 <span aria-hidden className="size-1.5 rounded-full bg-ok" />
                 UK annual reports · digitally born PDFs
               </p>
-              <h1 className="max-w-xl text-[40px] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[50px]">
+              <h1 className="max-w-xl text-[2.5rem] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[3.125rem]">
                 Financial Report Intelligence
               </h1>
-              <p className="max-w-xl text-[16px] leading-relaxed text-ink-2">
+              <p className="max-w-xl text-[1rem] leading-relaxed text-ink-2">
                 Figures read from the statements and checked by arithmetic, ratios computed in code, and commentary that
                 cites the page it comes from. When a figure can’t be verified, it stays empty and says why.
               </p>
@@ -354,7 +355,7 @@ function Onboarding({ unavailable }: { unavailable: boolean }) {
                 <button
                   type="button"
                   onClick={upload.pick}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-ink px-4 text-[14px] font-medium text-ink-inverse shadow-[var(--shadow-raised)] transition-[opacity,transform] hover:opacity-90 active:scale-[0.98]"
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-ink px-4 text-[0.875rem] font-medium text-ink-inverse shadow-[var(--shadow-raised)] transition-[opacity,transform] hover:opacity-90 active:scale-[0.98]"
                 >
                   <Plus aria-hidden className="size-4" />
                   Analyse your first report
@@ -362,7 +363,7 @@ function Onboarding({ unavailable }: { unavailable: boolean }) {
                 <button
                   type="button"
                   onClick={() => palette.open()}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-line bg-surface px-3.5 text-[13.5px] text-ink-2 hover:text-ink"
+                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-line bg-surface px-3.5 text-[0.84375rem] text-ink-2 hover:text-ink"
                 >
                   Command menu <Kbd>{shortcutLabel("mod+k")}</Kbd>
                 </button>
@@ -374,8 +375,8 @@ function Onboarding({ unavailable }: { unavailable: boolean }) {
                   <span className="inline-flex size-8 items-center justify-center rounded-lg bg-accent-soft">
                     <Icon aria-hidden className="size-4 text-accent" />
                   </span>
-                  <p className="text-[13.5px] font-semibold tracking-[-0.01em] text-ink">{title}</p>
-                  <p className="text-[12.5px] leading-relaxed text-ink-3">{body}</p>
+                  <p className="text-[0.84375rem] font-semibold tracking-[-0.01em] text-ink">{title}</p>
+                  <p className="text-[0.78125rem] leading-relaxed text-ink-3">{body}</p>
                 </li>
               ))}
             </ul>
@@ -385,14 +386,14 @@ function Onboarding({ unavailable }: { unavailable: boolean }) {
             <EmptyIllustration />
             <div className="space-y-5 rounded-3xl border border-line bg-surface p-5 shadow-[var(--shadow-pop)] sm:p-6">
               {unavailable ? (
-                <p role="status" className="flex items-start gap-2 rounded-xl border border-review-line bg-review-soft px-3 py-2.5 text-[12.5px] leading-relaxed text-ink-2" data-testid="reports-unavailable">
+                <p role="status" className="flex items-start gap-2 rounded-xl border border-review-line bg-review-soft px-3 py-2.5 text-[0.78125rem] leading-relaxed text-ink-2" data-testid="reports-unavailable">
                   <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0 text-review" />
                   Your reports couldn’t be listed just now. You can still add one, or open one by its number.
                 </p>
               ) : null}
               <UploadDropzone />
               <div className="space-y-2 border-t border-line pt-5">
-                <p className="text-[12.5px] text-ink-3">Or open a report already read:</p>
+                <p className="text-[0.78125rem] text-ink-3">Or open a report already read:</p>
                 <OpenReport />
               </div>
             </div>

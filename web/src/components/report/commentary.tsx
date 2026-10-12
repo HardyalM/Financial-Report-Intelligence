@@ -25,8 +25,8 @@ export function CommentaryPanel() {
     if (commentaryNote) {
       return (
         <Card className="px-5 py-4" data-testid="commentary-outdated">
-          <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Commentary</h2>
-          <p className="mt-1 text-[13px] text-ink-2">
+          <h2 className="text-[0.9375rem] font-semibold tracking-[-0.01em]">Commentary</h2>
+          <p className="mt-1 text-[0.8125rem] text-ink-2">
             The stored commentary was written by an earlier version of this tool and can’t be shown.
             It is rewritten when the commentary stage runs again. Figures and ratios above are current.
           </p>
@@ -35,8 +35,8 @@ export function CommentaryPanel() {
     }
     return (
       <Card className="px-5 py-4" data-testid="commentary-pending">
-        <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Commentary</h2>
-        <p className="mt-1 text-[13px] text-ink-2">
+        <h2 className="text-[0.9375rem] font-semibold tracking-[-0.01em]">Commentary</h2>
+        <p className="mt-1 text-[0.8125rem] text-ink-2">
           {job?.status === "failed"
             ? "Commentary could not be written for this report."
             : report.status === "ready"
@@ -77,8 +77,8 @@ export function CommentaryPanel() {
           className="flex items-start gap-2.5 rounded-xl border border-amber-line bg-amber-soft px-4 py-3"
         >
           <RefreshCw aria-hidden className="mt-0.5 size-4 shrink-0 text-amber" />
-          <div className="text-[12.5px] leading-relaxed text-ink-2">
-            <p className="text-[13px] font-semibold text-ink">Figures changed since this commentary was written</p>
+          <div className="text-[0.78125rem] leading-relaxed text-ink-2">
+            <p className="text-[0.8125rem] font-semibold text-ink">Figures changed since this commentary was written</p>
             It describes an earlier version of the figures (pack {output.statement_pack_sha.slice(0, 12)}; now{" "}
             {report.pack_sha?.slice(0, 12)}). Figures in the table and the ratio cards are current.
           </div>
@@ -87,10 +87,10 @@ export function CommentaryPanel() {
 
       {summary.status === "ok" && summary.bullets.length ? (
         <Card className="px-5 py-4" data-testid="executive-summary">
-          <h3 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-3">Executive summary</h3>
+          <h3 className="text-[0.6875rem] font-semibold uppercase tracking-[0.07em] text-ink-3">Executive summary</h3>
           <ul className="mt-2 space-y-2">
             {summary.bullets.map((b, i) => (
-              <li key={i} className="flex gap-2.5 text-[13.5px] leading-relaxed text-ink">
+              <li key={i} className="flex gap-2.5 text-[0.84375rem] leading-relaxed text-ink">
                 <span aria-hidden className="mt-[9px] size-1 shrink-0 rounded-full bg-ink-3" />
                 <ParagraphText paragraph={b} />
               </li>
@@ -116,27 +116,27 @@ function TopicPanel({ topic }: { topic: Topic }) {
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          className="flex w-full items-center gap-1.5 text-left text-[13px] text-ink-2"
+          className="flex w-full items-center gap-1.5 text-left text-[0.8125rem] text-ink-2"
         >
           <ChevronRight aria-hidden className={cn("size-3.5 transition-transform", open && "rotate-90")} />
           <span className="font-medium text-ink">{title}</span>
           <span className="text-ink-3">· No liquidity or capital evidence retrieved.</span>
         </button>
-        {open && topic.reason ? <p className="mt-1 pl-5 text-[12.5px] text-ink-3">{topic.reason}</p> : null}
+        {open && topic.reason ? <p className="mt-1 pl-5 text-[0.78125rem] text-ink-3">{topic.reason}</p> : null}
       </Card>
     );
   }
   return (
     <Card className="px-5 py-4" data-testid={`topic-state-${topic.status}`} data-topic={topic.topic}>
-      <h3 className="text-[13px] font-semibold text-ink">{title}</h3>
+      <h3 className="text-[0.8125rem] font-semibold text-ink">{title}</h3>
       {topic.status === "insufficient_evidence" ? (
-        <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-ink-2">
+        <p className="mt-1.5 flex items-center gap-1.5 text-[0.8125rem] text-ink-2">
           <Info aria-hidden className="size-4 text-ink-3" />
           There isn’t enough in the report to comment on this topic.
         </p>
       ) : topic.status === "validation_failed" ? (
         <Tooltip content={topic.reason ? `Why: ${topic.reason.split(": ").slice(1).join(": ") || topic.reason}.` : null}>
-          <p tabIndex={0} className="mt-1.5 flex items-center gap-1.5 text-[13px] text-ink-2" data-testid="validation-failed-text">
+          <p tabIndex={0} className="mt-1.5 flex items-center gap-1.5 text-[0.8125rem] text-ink-2" data-testid="validation-failed-text">
             <ShieldAlert aria-hidden className="size-4 shrink-0 text-review" />
             Commentary withheld: it failed evidence checks{removedText(topic)}.
           </p>
@@ -144,7 +144,7 @@ function TopicPanel({ topic }: { topic: Topic }) {
       ) : (
         <div className="mt-2 space-y-3">
           {topic.paragraphs.map((p, i) => (
-            <p key={i} className="text-[13.5px] leading-relaxed text-ink">
+            <p key={i} className="text-[0.84375rem] leading-relaxed text-ink">
               <ParagraphText paragraph={p} />
             </p>
           ))}
@@ -272,7 +272,7 @@ function CitationMarker({ citation, n }: { citation: Citation; n: number }) {
         aria-pressed={active}
         onClick={() => select({ kind: "citation", citation, n })}
         className={cn(
-          "num ml-0.5 inline-flex h-4 min-w-4 -translate-y-1.5 items-center justify-center rounded border px-1 align-baseline text-[10px] font-semibold",
+          "num ml-0.5 inline-flex h-4 min-w-4 -translate-y-1.5 items-center justify-center rounded border px-1 align-baseline text-[0.625rem] font-semibold",
           active ? "border-accent bg-accent text-ink-inverse" : "border-line bg-surface text-accent hover:border-accent",
         )}
         aria-label={`Citation ${n}: PDF page ${citation.page}`}

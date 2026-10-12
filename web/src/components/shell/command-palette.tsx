@@ -30,7 +30,7 @@ import { useTheme } from "@/components/shell/theme";
 import { useUpload } from "@/components/shell/upload";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
-import { spring } from "@/lib/motion";
+import { spring, useSafeMotion } from "@/lib/motion";
 import { usePrefetchReport, useReports } from "@/lib/queries";
 
 interface Command {
@@ -118,6 +118,7 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
   const upload = useUpload();
   const toast = useToast();
   const [query, setQuery] = React.useState(initial);
+  const safe = useSafeMotion(); // reduced motion: these fade instead of moving
   const [active, setActive] = React.useState(0);
   const list = React.useRef<HTMLDivElement>(null);
   const restore = React.useRef<HTMLElement | null>(null);
@@ -241,8 +242,8 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
       className="fixed inset-0 z-[75] flex items-start justify-center px-4 pt-[12vh]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.12 } }}
-      transition={{ duration: 0.14 }}
+      exit={{ opacity: 0 }}
+      transition={spring.snappy}
     >
       <div aria-hidden className="absolute inset-0 bg-[oklch(0.15_0.02_262/0.28)] backdrop-blur-[3px]" onClick={onClose} />
       <motion.div
@@ -250,9 +251,9 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
         aria-modal="true"
         aria-label="Command palette"
         data-testid="command-palette"
-        initial={{ opacity: 0, scale: 0.97, y: -8 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.98, y: -4, transition: { duration: 0.12 } }}
+        initial={safe({ opacity: 0, scale: 0.97, y: -8 })}
+        animate={safe({ opacity: 1, scale: 1, y: 0 })}
+        exit={safe({ opacity: 0, scale: 0.97, y: -8 })}
         transition={spring.modal}
         className="relative flex max-h-[min(560px,70vh)] w-full max-w-[640px] flex-col overflow-hidden rounded-2xl border border-line-strong/70 bg-surface-raised/95 shadow-[var(--shadow-pop)] backdrop-blur-2xl"
       >
@@ -286,7 +287,7 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
             aria-controls="palette-list"
             aria-activedescendant={results[active] ? `palette-${results[active]!.c.id}` : undefined}
             data-testid="palette-input"
-            className="h-14 flex-1 bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-3"
+            className="h-14 flex-1 bg-transparent text-[0.9375rem] text-ink outline-none placeholder:text-ink-3"
           />
           <Kbd>Esc</Kbd>
         </div>
@@ -294,12 +295,12 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
           {groups.length === 0 ? (
             <div className="flex flex-col items-center gap-2 px-6 py-12 text-center" data-testid="palette-empty">
               <Search aria-hidden className="size-5 text-ink-3" />
-              <p className="text-[13.5px] font-medium text-ink">Nothing matches “{query}”</p>
-              <p className="text-[12.5px] text-ink-3">Try a company name, a report number, or a command like “theme”.</p>
+              <p className="text-[0.84375rem] font-medium text-ink">Nothing matches “{query}”</p>
+              <p className="text-[0.78125rem] text-ink-3">Try a company name, a report number, or a command like “theme”.</p>
               <button
                 type="button"
                 onClick={() => (onClose(), upload.pick())}
-                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-[12.5px] font-medium text-ink hover:bg-surface-sunk"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-[0.78125rem] font-medium text-ink hover:bg-surface-sunk"
               >
                 <Upload aria-hidden className="size-3.5" />
                 Analyse a new report
@@ -320,7 +321,7 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
                     onPointerMove={() => index !== active && setActive(index)}
                     onClick={() => run(index)}
                     className={cn(
-                      "flex cursor-pointer items-center gap-3 rounded-xl px-2.5 py-2 text-[13.5px] transition-colors duration-75",
+                      "flex cursor-pointer items-center gap-3 rounded-xl px-2.5 py-2 text-[0.84375rem] transition-colors duration-75 active:scale-[0.99] active:duration-0",
                       index === active ? "bg-accent-soft text-ink" : "text-ink-2",
                     )}
                   >
@@ -334,7 +335,7 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
                     </span>
                     <span className="min-w-0 flex-1 truncate">
                       <Highlighted text={c.label} hits={hits} />
-                      {c.detail ? <span className="ml-2 text-[12px] text-ink-3">{c.detail}</span> : null}
+                      {c.detail ? <span className="ml-2 text-[0.75rem] text-ink-3">{c.detail}</span> : null}
                     </span>
                     {c.shortcut ? <Kbd>{c.shortcut.includes("+") ? shortcutLabel(c.shortcut) : c.shortcut}</Kbd> : null}
                     {index === active ? <CornerDownLeft aria-hidden className="size-3.5 text-ink-3" /> : null}
@@ -344,7 +345,7 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
             ))
           )}
         </div>
-        <div className="flex items-center gap-4 border-t border-line bg-surface-sunk/60 px-4 py-2 text-[11.5px] text-ink-3">
+        <div className="flex items-center gap-4 border-t border-line bg-surface-sunk/60 px-4 py-2 text-[0.71875rem] text-ink-3">
           <span className="inline-flex items-center gap-1.5">
             <Kbd>↑</Kbd>
             <Kbd>↓</Kbd> move

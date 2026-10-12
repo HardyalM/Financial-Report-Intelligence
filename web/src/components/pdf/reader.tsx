@@ -16,15 +16,17 @@ import {
 } from "lucide-react";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import * as React from "react";
+import { motion } from "motion/react";
 import { createPortal } from "react-dom";
 import { ContextMenu, type MenuItem } from "@/components/ui/context-menu";
 import { cn } from "@/lib/cn";
+import { spring, useSafeMotion } from "@/lib/motion";
 import type { PageBox } from "@/lib/pdf";
 import { renderMode, renderPage } from "@/lib/pdf-renderer";
 import { usePageTheme } from "@/lib/pdf-theme";
 import { PageView } from "./page-view";
 import { GlassToolbar, Kbd, PageJump, ToolButton, ToolDivider } from "./toolbar";
-import { clampZoom, shortcutLabel, useDragPan, useHotkeys, useIdle, usePinchZoom } from "./use-viewer-input";
+import { shortcutLabel, useDragPan, useHotkeys, useIdle, usePinchZoom } from "./use-viewer-input";
 
 export interface ReaderHighlight extends PageBox {
   page: number;
@@ -78,6 +80,8 @@ export function PdfReader({
   const [current, setCurrent] = React.useState(initialPage);
   const [idle, poke] = useIdle(2400);
   const [menu, setMenu] = React.useState<{ x: number; y: number; selection: string } | null>(null);
+  const deskPress = React.useRef<{ x: number; y: number } | null>(null);
+  const safe = useSafeMotion(); // reduced motion: these fade instead of moving
 
   // ---------------------------------------------------------------- page sizes, then layout
   const sizes = React.useRef<Size[]>([]);
@@ -179,11 +183,16 @@ export function PdfReader({
   }, []);
 
   // ---------------------------------------------------------------- navigation
+  // A page you navigate to (keys, thumbnails, search, page jump) stays the current page until you
+  // scroll yourself, even if it is too short to reach the reading line. Zooming and other scrolls
+  // made by the reader keep it.
+  const pinned = React.useRef<number | null>(null);
   const goTo = React.useCallback(
     (page: number, opts: { smooth?: boolean; y?: number } = {}) => {
       const el = scroller.current;
       if (!el) return;
       const p = Math.min(total, Math.max(1, page));
+      pinned.current = p;
       const top = layout.offsets[p - 1]! - 16 + (opts.y ?? 0);
       const far = Math.abs(top - el.scrollTop) > el.clientHeight * 3;
       el.scrollTo({ top, behavior: opts.smooth && !far ? "smooth" : "instant" });
@@ -208,9 +217,32 @@ export function PdfReader({
     const el = scroller.current;
     if (!el) return;
     setScrollTop(el.scrollTop);
-    setCurrent(pageAt(el.scrollTop + el.clientHeight * 0.4));
+    // At the very end the last page is the one being read, even when it is too short to reach
+    // the reading line (and at the very top, the first): as in native readers.
+    const atEnd = el.scrollTop + el.clientHeight >= el.scrollHeight - 2;
+    setCurrent(
+      pinned.current ?? (atEnd ? total : el.scrollTop <= 0 ? 1 : pageAt(el.scrollTop + el.clientHeight * 0.4)),
+    );
     poke();
   };
+
+  React.useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    const release = () => {
+      pinned.current = null;
+    };
+    const onWheel = (e: WheelEvent) => !e.ctrlKey && release(); // ctrl+wheel is a pinch, not a scroll
+    const onKey = (e: KeyboardEvent) => ["ArrowUp", "ArrowDown", " "].includes(e.key) && release();
+    el.addEventListener("wheel", onWheel, { passive: true });
+    el.addEventListener("pointerdown", release);
+    el.addEventListener("keydown", onKey);
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      el.removeEventListener("pointerdown", release);
+      el.removeEventListener("keydown", onKey);
+    };
+  }, []);
 
   // ---------------------------------------------------------------- what is drawn
   const first = pageAt(Math.max(0, scrollTop - viewport.height * 0.5));
@@ -230,16 +262,18 @@ export function PdfReader({
   }, [first, last, scale, theme, url, total]);
 
   // ---------------------------------------------------------------- zoom
-  const setZoomClamped = React.useCallback((z: number) => setZoom(clampZoom(z)), []);
-  const zoomAt = usePinchZoom(scroller, zoom, setZoomClamped);
+  // The hook keeps zoom inside its limits (and rubber-bands a pinch past them).
+  const zoomAt = usePinchZoom(scroller, zoom, setZoom);
   const panning = useDragPan(scroller);
-  const zoomBy = (factor: number) => {
+  // Every zoom (keys, buttons, menu, fit width) is anchored, so the page being read stays put.
+  const zoomTo = (target: number) => {
     const el = scroller.current;
     if (!el) return;
     const box = el.getBoundingClientRect();
-    zoomAt(zoom * factor, box.left + box.width / 2, box.top + box.height / 3);
+    zoomAt(target, box.left + box.width / 2, box.top + box.height / 3);
     poke();
   };
+  const zoomBy = (factor: number) => zoomTo(zoom * factor);
 
   // ---------------------------------------------------------------- search
   const [query, setQuery] = React.useState(initialQuery);
@@ -322,7 +356,7 @@ export function PdfReader({
     { combo: "end", run: () => goTo(total) },
     { combo: "mod+=", run: () => zoomBy(1.2) },
     { combo: "mod+-", run: () => zoomBy(1 / 1.2) },
-    { combo: "mod+0", run: () => setZoom(1) },
+    { combo: "mod+0", run: () => zoomTo(1) },
     { combo: "s", run: () => setSidebar((s) => (s ? null : "pages")) },
   ]);
 
@@ -345,30 +379,32 @@ export function PdfReader({
     },
     { label: "Zoom in", hint: shortcutLabel("mod+="), icon: <ZoomIn aria-hidden />, run: () => zoomBy(1.2) },
     { label: "Zoom out", hint: shortcutLabel("mod+-"), icon: <ZoomOut aria-hidden />, run: () => zoomBy(1 / 1.2) },
-    { label: "Fit width", hint: shortcutLabel("mod+0"), icon: <Maximize aria-hidden />, run: () => setZoom(1) },
+    { label: "Fit width", hint: shortcutLabel("mod+0"), icon: <Maximize aria-hidden />, run: () => zoomTo(1) },
   ];
 
   const printed = folio(current);
   const content = (
-    <div
+    <motion.div
       role="dialog"
       aria-modal="true"
       aria-label={`${title}: document reader`}
       data-testid="pdf-reader"
       data-current-page={current}
       data-render-mode={renderMode()}
-      className={cn(
-        "fixed inset-0 z-[60] flex flex-col bg-[var(--pdf-desk)] transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",
-        shown ? "opacity-100" : "scale-[0.985] opacity-0",
-      )}
+      // Opens once it is on the right page (shown); leaves the way it came. Reduced motion: fade.
+      initial={safe({ opacity: 0, scale: 0.985 })}
+      animate={safe(shown ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.985 })}
+      exit={safe({ opacity: 0, scale: 0.985 })}
+      transition={spring.modal}
+      className="fixed inset-0 z-[60] flex flex-col bg-[var(--pdf-desk)]"
     >
       <header className="absolute inset-x-0 top-0 z-30 flex h-14 items-center gap-2 border-b border-line bg-glass px-3 backdrop-blur-xl backdrop-saturate-150">
         <ToolButton label={sidebar ? "Hide sidebar" : "Show sidebar"} shortcut="s" pressed={!!sidebar} onClick={() => setSidebar((s) => (s ? null : "pages"))}>
           <PanelLeft aria-hidden />
         </ToolButton>
         <div className="min-w-0">
-          <p className="truncate text-[13.5px] font-semibold tracking-[-0.01em] text-ink">{title}</p>
-          <p className="num text-[11.5px] text-ink-3" data-testid="reader-page-label" aria-live="polite">
+          <p className="truncate text-[0.84375rem] font-semibold tracking-[-0.01em] text-ink">{title}</p>
+          <p className="num text-[0.71875rem] text-ink-3" data-testid="reader-page-label" aria-live="polite">
             PDF p. {current}
             {printed ? ` · printed p. ${printed}` : ""} of {total}
           </p>
@@ -402,8 +438,8 @@ export function PdfReader({
         <aside
           aria-label="Document navigation"
           className={cn(
-            "z-20 mt-14 flex shrink-0 flex-col overflow-hidden border-r border-line bg-surface/80 backdrop-blur-xl transition-[width,opacity] duration-300 ease-out motion-reduce:transition-none",
-            sidebar ? "w-[220px] opacity-100" : "w-0 opacity-0",
+            "z-20 mt-14 flex shrink-0 flex-col overflow-hidden border-r border-line bg-surface/80 backdrop-blur-xl",
+            sidebar ? "w-[220px] animate-[fade-in_180ms_ease-out] motion-reduce:animate-none" : "w-0 border-r-0",
           )}
         >
           <div className="flex shrink-0 gap-1 border-b border-line p-1.5" role="tablist" aria-label="Sidebar">
@@ -424,7 +460,7 @@ export function PdfReader({
                   if (id === "search") openSearch();
                 }}
                 className={cn(
-                  "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-[12px] font-medium transition-colors",
+                  "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-[0.75rem] font-medium transition-colors",
                   sidebar === id ? "bg-ink/[0.07] text-ink" : "text-ink-3 hover:text-ink-2",
                 )}
               >
@@ -457,6 +493,22 @@ export function PdfReader({
           tabIndex={-1}
           onScroll={onScroll}
           onPointerMove={poke}
+          // Click off the document: a plain click on the desk around the pages closes the reader
+          // (not a drag, a pan, a text selection, or a click on a page).
+          onPointerDown={(e) => {
+            deskPress.current = e.target === e.currentTarget || e.target === e.currentTarget.firstElementChild
+              ? { x: e.clientX, y: e.clientY }
+              : null;
+          }}
+          onClick={(e) => {
+            const press = deskPress.current;
+            deskPress.current = null;
+            if (!press || panning || e.button !== 0) return;
+            if (Math.hypot(e.clientX - press.x, e.clientY - press.y) > 5) return;
+            if (window.getSelection()?.toString()) return;
+            close();
+          }}
+          data-click-off="close"
           onContextMenu={(e) => {
             e.preventDefault();
             setMenu({ x: e.clientX, y: e.clientY, selection: window.getSelection()?.toString() ?? "" });
@@ -508,9 +560,9 @@ export function PdfReader({
           </ToolButton>
           <button
             type="button"
-            onClick={() => setZoom(1)}
+            onClick={() => zoomTo(1)}
             aria-label="Fit width"
-            className="num h-8 w-12 rounded-xl text-[12px] font-medium text-ink-2 hover:bg-ink/[0.06] hover:text-ink"
+            className="num h-8 w-12 rounded-xl text-[0.75rem] font-medium text-ink-2 hover:bg-ink/[0.06] hover:text-ink"
           >
             {Math.round(zoom * 100)}%
           </button>
@@ -520,7 +572,7 @@ export function PdfReader({
         </GlassToolbar>
       </div>
       <ContextMenu at={menu} items={menuItems} onClose={() => setMenu(null)} />
-    </div>
+    </motion.div>
   );
   return typeof document === "undefined" ? null : createPortal(content, document.body);
 }
@@ -626,7 +678,7 @@ function Thumbnails({
                   className="rounded-[3px] shadow-none"
                 />
               </span>
-              <span className={cn("num flex items-center gap-1 text-[11px]", on ? "font-semibold text-ink" : "text-ink-3")}>
+              <span className={cn("num flex items-center gap-1 text-[0.6875rem]", on ? "font-semibold text-ink" : "text-ink-3")}>
                 {cited.has(p) ? <span aria-label="cited" className="size-1.5 rounded-full bg-amber" /> : null}
                 {p}
                 {folio(p) ? <span className="text-ink-3">· {folio(p)}</span> : null}
@@ -673,10 +725,10 @@ function Outline({ doc, current, onPick }: { doc: PDFDocumentProxy; current: num
     };
   }, [doc]);
 
-  if (nodes === null) return <p className="p-4 text-[12px] text-ink-3">Reading the outline…</p>;
+  if (nodes === null) return <p className="p-4 text-[0.75rem] text-ink-3">Reading the outline…</p>;
   if (!nodes.length) {
     return (
-      <p className="p-4 text-[12px] leading-relaxed text-ink-3" data-testid="reader-outline-empty">
+      <p className="p-4 text-[0.75rem] leading-relaxed text-ink-3" data-testid="reader-outline-empty">
         This PDF has no outline (bookmarks). Use the page thumbnails or search instead.
       </p>
     );
@@ -687,7 +739,7 @@ function Outline({ doc, current, onPick }: { doc: PDFDocumentProxy; current: num
   collect(nodes);
   const here = flat.filter((n) => n.page !== null && n.page <= current).at(-1) ?? null;
   return (
-    <ul className="min-h-0 flex-1 overflow-y-auto p-1.5 text-[12.5px]" data-testid="reader-outline">
+    <ul className="min-h-0 flex-1 overflow-y-auto p-1.5 text-[0.78125rem]" data-testid="reader-outline">
       {nodes.map((n, i) => (
         <OutlineItem key={i} node={n} depth={0} here={here} onPick={onPick} />
       ))}
@@ -715,7 +767,7 @@ function OutlineItem({ node, depth, here, onPick }: { node: OutlineNode; depth: 
           className="flex min-w-0 flex-1 items-baseline justify-between gap-2 py-1.5 pr-2 text-left"
         >
           <span className="truncate">{node.title}</span>
-          {node.page ? <span className="num shrink-0 text-[11px] text-ink-3">{node.page}</span> : null}
+          {node.page ? <span className="num shrink-0 text-[0.6875rem] text-ink-3">{node.page}</span> : null}
         </button>
       </div>
       {open && node.items.length ? (
@@ -786,7 +838,7 @@ function useDocumentSearch(doc: PDFDocumentProxy, query: string): SearchStatus {
           await new Promise((r) => setTimeout(r, 0));
         }
       }
-    }, 160);
+    }, 0);
     return () => {
       live = false;
       window.clearTimeout(t);
@@ -822,9 +874,9 @@ const SearchBox = React.forwardRef<
         placeholder="Search the document"
         aria-label="Search the document"
         data-testid="reader-search"
-        className="h-full w-52 bg-transparent text-[13px] text-ink outline-none placeholder:text-ink-3"
+        className="h-full w-52 bg-transparent text-[0.8125rem] text-ink outline-none placeholder:text-ink-3"
       />
-      <span className="num min-w-14 text-right text-[11.5px] text-ink-3" aria-live="polite" data-testid="reader-search-count">
+      <span className="num min-w-14 text-right text-[0.71875rem] text-ink-3" aria-live="polite" data-testid="reader-search-count">
         {query.trim().length < 2 ? "" : status.hits.length ? `${index} of ${status.hits.length}${status.done ? "" : "+"}` : status.done ? "No matches" : "Searching…"}
       </span>
       <ToolButton label="Previous match" shortcut="mod+shift+g" onClick={() => onStep(-1)} disabled={!status.hits.length} className="size-7">
@@ -853,14 +905,14 @@ function SearchResults({
 }) {
   if (query.trim().length < 2) {
     return (
-      <p className="p-4 text-[12px] leading-relaxed text-ink-3">
+      <p className="p-4 text-[0.75rem] leading-relaxed text-ink-3">
         Type at least two characters. <Kbd>{shortcutLabel("mod+f")}</Kbd> opens search from anywhere in the reader.
       </p>
     );
   }
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <p className="num shrink-0 border-b border-line px-3 py-2 text-[11.5px] text-ink-3">
+      <p className="num shrink-0 border-b border-line px-3 py-2 text-[0.71875rem] text-ink-3">
         {status.hits.length} match{status.hits.length === 1 ? "" : "es"}
         {status.done ? "" : ` · reading p. ${status.searched} of ${status.total}`}
       </p>
@@ -871,11 +923,11 @@ function SearchResults({
               type="button"
               onClick={() => onPick(i)}
               className={cn(
-                "w-full rounded-lg px-2.5 py-2 text-left text-[12px] leading-snug",
+                "w-full rounded-lg px-2.5 py-2 text-left text-[0.75rem] leading-snug",
                 active === h ? "bg-accent-soft text-ink" : "text-ink-2 hover:bg-ink/[0.05]",
               )}
             >
-              <span className="num mb-0.5 block text-[10.5px] font-semibold uppercase tracking-[0.06em] text-ink-3">Page {h.page}</span>
+              <span className="num mb-0.5 block text-[0.65625rem] font-semibold uppercase tracking-[0.06em] text-ink-3">Page {h.page}</span>
               {h.snippet}
             </button>
           </li>

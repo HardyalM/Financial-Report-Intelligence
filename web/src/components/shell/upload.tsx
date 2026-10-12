@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { useToast } from "@/components/ui/toast";
 import { ApiError, uploadPdf } from "@/lib/api";
-import { spring } from "@/lib/motion";
+import { spring, useSafeMotion } from "@/lib/motion";
 import { useAddUploaded } from "@/lib/queries";
 
 export const UPLOAD_LIMIT = 50 * 1024 * 1024; // ingest.MAX_UPLOAD_BYTES; the API refuses anything larger too
@@ -41,6 +41,7 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
   const [busy, setBusy] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [dragging, setDragging] = React.useState(false);
+  const safe = useSafeMotion(); // reduced motion: these fade instead of moving
 
   const send = React.useCallback(
     async (file: File | undefined) => {
@@ -131,14 +132,14 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
             className="pointer-events-none fixed inset-0 z-[90] flex items-center justify-center bg-bg/70 backdrop-blur-sm"
           >
             <motion.div
-              initial={{ scale: 0.96, y: 8 }}
-              animate={{ scale: 1, y: 0 }}
+              initial={safe({ scale: 0.96, y: 8 })}
+              animate={safe({ scale: 1, y: 0 }, 1)}
               transition={spring.modal}
               className="flex flex-col items-center gap-3 rounded-3xl border-2 border-dashed border-accent bg-surface px-14 py-12 text-center shadow-[var(--shadow-pop)]"
             >
               <FileUp aria-hidden className="size-7 text-accent" />
-              <p className="text-[16px] font-semibold tracking-[-0.01em] text-ink">Drop to analyse this report</p>
-              <p className="text-[13px] text-ink-3">PDF up to 50 MB · digitally born works best</p>
+              <p className="text-[1rem] font-semibold tracking-[-0.01em] text-ink">Drop to analyse this report</p>
+              <p className="text-[0.8125rem] text-ink-3">PDF up to 50 MB · digitally born works best</p>
             </motion.div>
           </motion.div>
         ) : null}

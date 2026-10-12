@@ -105,18 +105,18 @@ function Tile({
       </span>
       {value === null ? (
         <span className="flex min-h-[30px] items-end gap-2">
-          <span className="display-figure text-[26px] text-ink-3" aria-label="not available">
+          <span className="display-figure text-[1.625rem] text-ink-3" aria-label="not available">
             —
           </span>
-          <span className="pb-0.5 text-[11.5px] font-medium text-ink-3">{note}</span>
+          <span className="pb-0.5 text-[0.71875rem] font-medium text-ink-3">{note}</span>
         </span>
       ) : (
         <span className="flex min-h-[30px] items-baseline gap-1">
-          <span className="display-figure text-[26px] text-ink">{value}</span>
-          {unit ? <span className="text-[12px] font-medium text-ink-3">{unit}</span> : null}
+          <span className="display-figure text-[1.625rem] text-ink">{value}</span>
+          {unit ? <span className="text-[0.75rem] font-medium text-ink-3">{unit}</span> : null}
         </span>
       )}
-      <span className="num flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11.5px] text-ink-3">
+      <span className="num flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[0.71875rem] text-ink-3">
         {change ? (
           <span className="inline-flex items-center gap-0.5 font-medium text-ink-2">
             <Arrow aria-hidden className="size-3.5" />

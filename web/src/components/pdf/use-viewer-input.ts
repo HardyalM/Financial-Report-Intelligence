@@ -1,6 +1,8 @@
 "use client";
 
+import { animate } from "motion/react";
 import * as React from "react";
+import { rubberClamp, spring, VelocityTracker } from "@/lib/motion";
 
 /** True after `ms` without activity; `poke` marks activity. Drives the auto-hiding toolbar. */
 export function useIdle(ms = 2200): [boolean, () => void] {
@@ -91,12 +93,15 @@ export function usePinchZoom(
   const zoomRef = React.useRef(zoom);
   zoomRef.current = zoom;
   const pendingAnchor = React.useRef<{ x: number; y: number; from: number } | null>(null);
+  // The zoom the fingers ask for, before the rubber band (a gesture's own coordinate).
+  const intent = React.useRef<number | null>(null);
+  const settle = React.useRef<{ stop: () => void } | null>(null);
+  const lastPoint = React.useRef({ x: 0, y: 0 });
 
-  const zoomAt = React.useCallback(
-    (next: number, clientX: number, clientY: number) => {
+  const apply = React.useCallback(
+    (to: number, clientX: number, clientY: number) => {
       const el = scroller.current;
       const from = zoomRef.current;
-      const to = clampZoom(next);
       if (!el || to === from) return;
       const box = el.getBoundingClientRect();
       pendingAnchor.current = { x: clientX - box.left, y: clientY - box.top, from };
@@ -105,6 +110,38 @@ export function usePinchZoom(
     },
     [scroller, setZoom],
   );
+
+  /** A zoom from a button or key: always within the limits. */
+  const zoomAt = React.useCallback(
+    (next: number, clientX: number, clientY: number) => {
+      settle.current?.stop();
+      intent.current = null;
+      apply(clampZoom(next), clientX, clientY);
+    },
+    [apply],
+  );
+
+  /** A zoom from a pinch: past a limit it gives with growing resistance instead of stopping. */
+  const pinchTo = React.useCallback(
+    (next: number, clientX: number, clientY: number) => {
+      settle.current?.stop();
+      lastPoint.current = { x: clientX, y: clientY };
+      intent.current = next;
+      apply(rubberClamp(next, ZOOM_MIN, ZOOM_MAX, ZOOM_MAX - ZOOM_MIN), clientX, clientY);
+    },
+    [apply],
+  );
+
+  /** The pinch ended: a zoom left past a limit springs back to it, from where it is. */
+  const release = React.useCallback(() => {
+    intent.current = null;
+    const from = zoomRef.current;
+    const to = clampZoom(from);
+    if (to === from) return;
+    const { x, y } = lastPoint.current;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return apply(to, x, y);
+    settle.current = animate(from, to, { ...spring.snappy, onUpdate: (z) => apply(z, x, y) });
+  }, [apply]);
 
   // After the new zoom has laid out: keep the anchored point under the pointer.
   React.useLayoutEffect(() => {
@@ -120,10 +157,14 @@ export function usePinchZoom(
   React.useEffect(() => {
     const el = scroller.current;
     if (!el) return;
+    let wheelEnd = 0;
     const onWheel = (e: WheelEvent) => {
       if (!e.ctrlKey) return; // a trackpad pinch arrives as ctrl+wheel
       e.preventDefault();
-      zoomAt(zoomRef.current * Math.exp(-e.deltaY * 0.0105), e.clientX, e.clientY);
+      pinchTo((intent.current ?? zoomRef.current) * Math.exp(-e.deltaY * 0.0105), e.clientX, e.clientY);
+      // A pinch has no "end" event as wheel input: it has ended when the events stop.
+      window.clearTimeout(wheelEnd);
+      wheelEnd = window.setTimeout(release, 90);
     };
     let gestureStart = 1;
     const onGestureStart = (e: Event) => {
@@ -133,7 +174,11 @@ export function usePinchZoom(
     const onGestureChange = (e: Event) => {
       e.preventDefault();
       const g = e as Event & { scale: number; clientX: number; clientY: number };
-      zoomAt(gestureStart * g.scale, g.clientX, g.clientY);
+      pinchTo(gestureStart * g.scale, g.clientX, g.clientY);
+    };
+    const onGestureEnd = (e: Event) => {
+      e.preventDefault();
+      release();
     };
     const touches = new Map<number, { x: number; y: number }>();
     let pinch: { distance: number; zoom: number } | null = null;
@@ -151,16 +196,20 @@ export function usePinchZoom(
       touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (pinch && touches.size === 2 && pinch.distance > 0) {
         const [a, b] = [...touches.values()];
-        zoomAt(pinch.zoom * (spread() / pinch.distance), (a!.x + b!.x) / 2, (a!.y + b!.y) / 2);
+        pinchTo(pinch.zoom * (spread() / pinch.distance), (a!.x + b!.x) / 2, (a!.y + b!.y) / 2);
       }
     };
     const onPointerUp = (e: PointerEvent) => {
       touches.delete(e.pointerId);
-      if (touches.size < 2) pinch = null;
+      if (touches.size < 2 && pinch) {
+        pinch = null;
+        release();
+      }
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     el.addEventListener("gesturestart", onGestureStart);
     el.addEventListener("gesturechange", onGestureChange);
+    el.addEventListener("gestureend", onGestureEnd);
     el.addEventListener("pointerdown", onPointerDown);
     el.addEventListener("pointermove", onPointerMove);
     el.addEventListener("pointerup", onPointerUp);
@@ -169,12 +218,14 @@ export function usePinchZoom(
       el.removeEventListener("wheel", onWheel);
       el.removeEventListener("gesturestart", onGestureStart);
       el.removeEventListener("gesturechange", onGestureChange);
+      el.removeEventListener("gestureend", onGestureEnd);
+      window.clearTimeout(wheelEnd);
       el.removeEventListener("pointerdown", onPointerDown);
       el.removeEventListener("pointermove", onPointerMove);
       el.removeEventListener("pointerup", onPointerUp);
       el.removeEventListener("pointercancel", onPointerUp);
     };
-  }, [scroller, zoomAt]);
+  }, [scroller, pinchTo, release]);
 
   return zoomAt;
 }
@@ -204,49 +255,57 @@ export function useDragPan(scroller: React.RefObject<HTMLElement | null>): boole
   React.useEffect(() => {
     const el = scroller.current;
     if (!el) return;
-    let drag: { x: number; y: number; t: number; vx: number; vy: number } | null = null;
+    let drag: { x: number; y: number } | null = null;
+    const tracker = new VelocityTracker();
     let raf = 0;
+    const stopGlide = () => cancelAnimationFrame(raf);
     const onDown = (e: PointerEvent) => {
+      stopGlide(); // a touch mid-glide catches the page where it is
       if (e.pointerType !== "mouse" || !(e.button === 1 || (e.button === 0 && space))) return;
       e.preventDefault();
-      cancelAnimationFrame(raf);
       el.setPointerCapture(e.pointerId);
-      drag = { x: e.clientX, y: e.clientY, t: performance.now(), vx: 0, vy: 0 };
+      drag = { x: e.clientX, y: e.clientY };
+      tracker.reset();
+      tracker.push(e.clientX, e.clientY);
     };
     const onMove = (e: PointerEvent) => {
       if (!drag) return;
-      const now = performance.now();
-      const dx = e.clientX - drag.x;
-      const dy = e.clientY - drag.y;
-      const dt = Math.max(1, now - drag.t);
-      el.scrollLeft -= dx;
-      el.scrollTop -= dy;
-      drag = { x: e.clientX, y: e.clientY, t: now, vx: 0.8 * (dx / dt) + 0.2 * drag.vx, vy: 0.8 * (dy / dt) + 0.2 * drag.vy };
+      // 1:1 with the pointer, from where it was grabbed.
+      el.scrollLeft -= e.clientX - drag.x;
+      el.scrollTop -= e.clientY - drag.y;
+      drag = { x: e.clientX, y: e.clientY };
+      tracker.push(e.clientX, e.clientY);
     };
     const onUp = () => {
       if (!drag) return;
-      let { vx, vy } = drag;
       drag = null;
+      const v = tracker.velocity(); // px/s
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      // Glide on with Apple's scroll deceleration (0.998 per ms): it comes to rest exactly where
+      // project() says a flick of this speed lands.
+      let vx = v.x / 1000;
+      let vy = v.y / 1000;
       let last = performance.now();
       const glide = (now: number) => {
         const dt = now - last;
         last = now;
         el.scrollLeft -= vx * dt;
         el.scrollTop -= vy * dt;
-        const decay = Math.pow(0.94, dt / 16);
+        const decay = Math.pow(0.998, dt);
         vx *= decay;
         vy *= decay;
-        if (Math.abs(vx) + Math.abs(vy) > 0.02) raf = requestAnimationFrame(glide);
+        if (Math.abs(vx) + Math.abs(vy) > 0.01) raf = requestAnimationFrame(glide);
       };
       raf = requestAnimationFrame(glide);
     };
+    el.addEventListener("wheel", stopGlide, { passive: true });
     el.addEventListener("pointerdown", onDown);
     el.addEventListener("pointermove", onMove);
     el.addEventListener("pointerup", onUp);
     el.addEventListener("pointercancel", onUp);
     return () => {
-      cancelAnimationFrame(raf);
+      stopGlide();
+      el.removeEventListener("wheel", stopGlide);
       el.removeEventListener("pointerdown", onDown);
       el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerup", onUp);

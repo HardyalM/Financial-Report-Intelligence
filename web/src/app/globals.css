@@ -240,6 +240,30 @@
     color: var(--ink);
     font-family: var(--font-sans);
     font-feature-settings: "cv11", "ss01";
+    font-optical-sizing: auto;
+    line-height: 1.5; /* body leading; headings set tighter leading where they are drawn */
+  }
+  /* Size-specific tracking (apple-design): large text tighter, small text slightly open, body 0.
+     Applied by role so components that set their own tracking keep it. */
+  h1 { letter-spacing: -0.03em; }
+  h2 { letter-spacing: -0.018em; }
+  h3 { letter-spacing: -0.008em; }
+
+  /* Feedback on pointer-down, not release: a button gives under the finger at once. */
+  button:not(:disabled) {
+    transition-property: color, background-color, border-color, opacity, box-shadow, scale;
+    transition-duration: 150ms;
+  }
+  /* `scale` (not `transform`) composes with Tailwind's `translate` and with Motion's transforms. */
+  button:not(:disabled):not([data-no-press]):active {
+    scale: 0.97;
+    transition-duration: 0ms; /* the press itself is immediate; the release eases back */
+  }
+  @media (prefers-reduced-motion: reduce) {
+    button:not(:disabled):not([data-no-press]):active {
+      scale: none;
+      opacity: 0.82; /* still visible feedback, no movement */
+    }
   }
   /* Text fields show focus through their own container border instead (search, filters). */
   :focus-visible:not(input, textarea) {
@@ -414,26 +438,13 @@
   mix-blend-mode: screen;
 }
 
-/* The floating glass toolbar: present on hover, focus or recent activity, quiet otherwise. */
+/* The floating glass toolbar (its show/hide is a spring in GlassToolbar). */
 .pdf-toolbar {
   background: color-mix(in oklch, var(--surface-raised) 72%, transparent);
   backdrop-filter: blur(18px) saturate(1.6);
   -webkit-backdrop-filter: blur(18px) saturate(1.6);
   border: 1px solid color-mix(in oklch, var(--line-strong) 70%, transparent);
   box-shadow: var(--shadow-pop);
-  transition: opacity 220ms ease, transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.pdf-toolbar[data-idle="true"] {
-  opacity: 0;
-  transform: translate(-50%, 8px) scale(0.98);
-}
-.pdf-stage:hover .pdf-toolbar,
-.pdf-toolbar:focus-within {
-  opacity: 1;
-  transform: translate(-50%, 0) scale(1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .pdf-toolbar { transition: none; }
 }
 
 /* A theme change repaints in one frame: no colour transitions while it happens. */
@@ -449,6 +460,7 @@
 }
 .tooltip-content[data-state="delayed-open"],
 .tooltip-content[data-state="instant-open"] {
+  transform-origin: var(--radix-tooltip-content-transform-origin); /* anchored to its trigger */
   animation: tooltip-in 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .tooltip-content[data-side="bottom"] { --tt-y: -3px; }
@@ -456,4 +468,42 @@
 .tooltip-content[data-side="right"] { --tt-x: -3px; --tt-y: 0; }
 @media (prefers-reduced-motion: reduce) {
   .tooltip-content { animation: none !important; }
+}
+
+/* ------------------------------------------------- user settings: transparency and contrast */
+
+/* Reduce transparency: translucent chrome becomes solid and the blur goes away. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass: var(--surface);
+  }
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur-sm,
+  [class*="backdrop-blur-"],
+  .pdf-toolbar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .pdf-toolbar {
+    background: var(--surface-raised);
+  }
+}
+
+/* More contrast: near-solid surfaces, defined borders, darker secondary text. */
+@media (prefers-contrast: more) {
+  :root {
+    --glass: var(--surface);
+    --line: var(--line-strong);
+    --ink-3: var(--ink-2);
+  }
+  .pdf-toolbar {
+    background: var(--surface-raised);
+    border-color: var(--ink-3);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

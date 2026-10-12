@@ -22,7 +22,7 @@ export function ReportedMetrics() {
   return (
     <section aria-labelledby="reported-heading" data-testid="reported-metrics">
       <div className="mb-3 flex items-baseline justify-between">
-        <h2 id="reported-heading" className="text-[15px] font-semibold tracking-[-0.01em]">
+        <h2 id="reported-heading" className="text-[0.9375rem] font-semibold tracking-[-0.01em]">
           Reported by the bank
         </h2>
         <p className="text-xs text-ink-3">Quoted from the report. Not computed here; never used in a ratio.</p>
@@ -35,8 +35,8 @@ export function ReportedMetrics() {
           return (
             <div key={id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3" data-testid={`reported-${id}`}>
               <div className="min-w-0">
-                <p className="text-[13px] font-medium text-ink">{any.label}</p>
-                <p className="text-[12px] text-ink-3">Printed as “{any.label_found}”</p>
+                <p className="text-[0.8125rem] font-medium text-ink">{any.label}</p>
+                <p className="text-[0.75rem] text-ink-3">Printed as “{any.label_found}”</p>
               </div>
               <div className="flex items-center gap-4">
                 <Figure metric={now} period={current?.id} onOpen={select} strong />
@@ -47,7 +47,7 @@ export function ReportedMetrics() {
         })}
       </Card>
       {reported.notes.length ? (
-        <ul className="mt-2 space-y-0.5 text-[12px] text-ink-3" data-testid="reported-notes">
+        <ul className="mt-2 space-y-0.5 text-[0.75rem] text-ink-3" data-testid="reported-notes">
           {reported.notes.map((n) => (
             <li key={n}>{n}</li>
           ))}
@@ -70,7 +70,7 @@ function Figure({
 }) {
   if (!metric) {
     return (
-      <span className="num w-36 text-right text-[12.5px] text-ink-3">
+      <span className="num w-36 text-right text-[0.78125rem] text-ink-3">
         {period}: not stated
       </span>
     );
@@ -78,8 +78,8 @@ function Figure({
   return (
     <span className="flex w-44 items-center justify-end gap-2">
       <Tooltip content={<><Quote aria-hidden className="mr-1 inline size-3" />{metric.quote}</>}>
-        <span tabIndex={0} className={`num text-right ${strong ? "text-[14px] font-semibold text-ink" : "text-[12.5px] text-ink-2"}`}>
-          <span className="mr-1.5 text-[11px] font-normal text-ink-3">{period}</span>
+        <span tabIndex={0} className={`num text-right ${strong ? "text-[0.875rem] font-semibold text-ink" : "text-[0.78125rem] text-ink-2"}`}>
+          <span className="mr-1.5 text-[0.6875rem] font-normal text-ink-3">{period}</span>
           {metric.value_text}
         </span>
       </Tooltip>

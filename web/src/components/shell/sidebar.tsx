@@ -48,20 +48,18 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
   };
 
   return (
-    <motion.aside
+    <aside
       aria-label="Sidebar"
       data-testid="sidebar"
       data-collapsed={collapsed ? "true" : "false"}
-      initial={false}
-      animate={{ width: mobile ? SIDEBAR_WIDE : collapsed ? SIDEBAR_NARROW : SIDEBAR_WIDE }}
-      transition={spring.page}
+      style={{ width: mobile ? SIDEBAR_WIDE : collapsed ? SIDEBAR_NARROW : SIDEBAR_WIDE }}
       className="flex h-full shrink-0 flex-col overflow-hidden border-r border-line bg-surface-sunk/80 backdrop-blur-xl"
       onClick={(e) => mobile && (e.target as HTMLElement).closest("a") && setDrawer(false)}
     >
       <div className="flex h-14 shrink-0 items-center gap-2 px-3">
         <Link href="/" className="flex min-w-0 items-center gap-2.5 rounded-lg px-1 py-1" aria-label="FinIntel dashboard">
           <BrandMark className="size-7 shrink-0" />
-          {!collapsed ? <span className="truncate text-[15px] font-semibold tracking-[-0.02em] text-ink">FinIntel</span> : null}
+          {!collapsed ? <span className="truncate text-[0.9375rem] font-semibold tracking-[-0.02em] text-ink">FinIntel</span> : null}
         </Link>
         {!mobile ? (
           <Tooltip content={<span className="inline-flex items-center gap-2">{collapsed ? "Expand sidebar" : "Collapse sidebar"} <Kbd>{shortcutLabel("mod+\\")}</Kbd></span>} side="right">
@@ -100,10 +98,10 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
           {reports.isPending ? (
             Array.from({ length: 4 }, (_, i) => <div key={i} className="mb-0.5 h-8 animate-pulse rounded-lg bg-ink/[0.04]" />)
           ) : reports.isError ? (
-            !collapsed ? <p className="px-2.5 py-1.5 text-[12px] text-ink-3">Reports couldn’t be listed.</p> : null
+            !collapsed ? <p className="px-2.5 py-1.5 text-[0.75rem] text-ink-3">Reports couldn’t be listed.</p> : null
           ) : reports.data.length === 0 ? (
             !collapsed ? (
-              <button type="button" onClick={upload.pick} className="w-full rounded-lg px-2.5 py-1.5 text-left text-[12.5px] text-ink-3 hover:bg-ink/[0.04] hover:text-ink-2">
+              <button type="button" onClick={upload.pick} className="w-full rounded-lg px-2.5 py-1.5 text-left text-[0.78125rem] text-ink-3 hover:bg-ink/[0.04] hover:text-ink-2">
                 No reports yet — add one
               </button>
             ) : null
@@ -117,7 +115,7 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
         <Row icon={<ShieldCheck aria-hidden />} label="Method & limits" collapsed={collapsed} href="/limitations" active={pathname === "/limitations"} />
         <ThemeSwitch collapsed={collapsed} />
       </div>
-    </motion.aside>
+    </aside>
   );
 }
 
@@ -141,14 +139,15 @@ function Row({
   testId?: string;
 }) {
   const className = cn(
-    "group relative flex h-8 w-full items-center gap-2.5 rounded-lg px-2 text-[13px] font-medium outline-none transition-colors duration-100",
+    "group relative flex h-8 w-full items-center gap-2.5 rounded-lg px-2 text-[0.8125rem] font-medium outline-none transition-colors duration-100",
     "[&>svg]:size-[17px] [&>svg]:shrink-0",
     active ? "bg-ink/[0.07] text-ink" : "text-ink-2 hover:bg-ink/[0.045] hover:text-ink",
+    "active:bg-ink/[0.09] active:duration-0", // feedback on pointer-down
   );
   const body = (
     <>
       {icon}
-      {!collapsed ? <span className="min-w-0 flex-1 truncate text-left">{label}</span> : null}
+      {!collapsed ? <FadeIn className="min-w-0 flex-1 truncate text-left">{label}</FadeIn> : null}
       {!collapsed && trailing ? <span className="opacity-70 transition-opacity group-hover:opacity-100">{trailing}</span> : null}
     </>
   );
@@ -205,20 +204,21 @@ function ReportRow({ report, collapsed, active }: { report: ReportSummary; colla
         setMenu({ x: e.clientX, y: e.clientY });
       }}
       className={cn(
-        "relative flex h-8 items-center gap-2.5 rounded-lg px-2 text-[13px] outline-none transition-colors duration-100",
+        "relative flex h-8 items-center gap-2.5 rounded-lg px-2 text-[0.8125rem] outline-none transition-colors duration-100",
         active ? "bg-ink/[0.07] font-medium text-ink" : "text-ink-2 hover:bg-ink/[0.045] hover:text-ink",
+        "active:bg-ink/[0.09] active:duration-0",
       )}
     >
       <span className="relative flex size-[17px] shrink-0 items-center justify-center">
-        <span className="flex size-[17px] items-center justify-center rounded-[5px] bg-ink/[0.07] text-[9.5px] font-semibold uppercase text-ink-2">
+        <span className="flex size-[17px] items-center justify-center rounded-[5px] bg-ink/[0.07] text-[0.59375rem] font-semibold uppercase text-ink-2">
           {title.charAt(0)}
         </span>
         <span aria-hidden className={cn("absolute -bottom-0.5 -right-0.5 size-[7px] rounded-full ring-2 ring-surface-sunk", status.dot, status.spinning && "animate-pulse")} />
       </span>
       {!collapsed ? (
         <>
-          <span className="min-w-0 flex-1 truncate">{title}</span>
-          {report.period_label ? <span className="num shrink-0 text-[11px] text-ink-3">{report.period_label}</span> : null}
+          <FadeIn className="min-w-0 flex-1 truncate">{title}</FadeIn>
+          {report.period_label ? <span className="num shrink-0 text-[0.6875rem] text-ink-3">{report.period_label}</span> : null}
           <span className="sr-only">, {status.label}</span>
         </>
       ) : null}
@@ -278,5 +278,14 @@ function ThemeSwitch({ collapsed }: { collapsed: boolean }) {
         </Tooltip>
       ))}
     </div>
+  );
+}
+
+/** Text that appears as the rail widens: a short fade, never a slide. */
+function FadeIn({ className, children }: { className?: string; children: React.ReactNode }) {
+  return (
+    <motion.span className={className} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.16 }}>
+      {children}
+    </motion.span>
   );
 }

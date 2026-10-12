@@ -38,7 +38,7 @@ export function TopBar() {
             type="button"
             onClick={() => palette.open()}
             data-testid="top-search"
-            className="hidden h-8 w-64 items-center gap-2 rounded-lg border border-line bg-surface/80 pl-2.5 pr-1.5 text-[13px] text-ink-3 shadow-[var(--shadow-card)] transition-colors hover:border-line-strong hover:text-ink-2 md:flex"
+            className="hidden h-8 w-64 items-center gap-2 rounded-lg border border-line bg-surface/80 pl-2.5 pr-1.5 text-[0.8125rem] text-ink-3 shadow-[var(--shadow-card)] transition-colors hover:border-line-strong hover:text-ink-2 md:flex"
           >
             <Search aria-hidden className="size-[15px]" />
             <span className="flex-1 text-left">Search or jump to…</span>
@@ -47,14 +47,14 @@ export function TopBar() {
           <button type="button" onClick={() => palette.open()} aria-label="Search" className="flex size-8 items-center justify-center rounded-lg text-ink-2 hover:bg-ink/[0.05] md:hidden">
             <Search aria-hidden className="size-[17px]" />
           </button>
-          <span className="hidden items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-[11.5px] font-medium text-ink-2 xl:inline-flex">
+          <span className="hidden items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-[0.71875rem] font-medium text-ink-2 xl:inline-flex">
             <ShieldCheck aria-hidden className="size-3.5 text-ok" />
             Research aid · not investment advice
           </span>
           <button
             type="button"
             onClick={upload.pick}
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-ink px-3 text-[13px] font-medium text-ink-inverse shadow-[var(--shadow-card)] transition-[opacity,transform] hover:opacity-90 active:scale-[0.98]"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-ink px-3 text-[0.8125rem] font-medium text-ink-inverse shadow-[var(--shadow-card)] transition-[opacity,transform] hover:opacity-90 active:scale-[0.98]"
           >
             <Plus aria-hidden className="size-4" />
             <span className="hidden sm:inline">New report</span>
@@ -83,7 +83,7 @@ function Breadcrumbs({ pathname }: { pathname: string }) {
     crumbs.push({
       label: name,
       extra: summary || cached ? (
-        <span className="ml-2 hidden items-center gap-1.5 text-[12px] text-ink-3 sm:inline-flex">
+        <span className="ml-2 hidden items-center gap-1.5 text-[0.75rem] text-ink-3 sm:inline-flex">
           <span aria-hidden className={cn("size-1.5 rounded-full", status.dot)} />
           {status.label}
         </span>
@@ -92,14 +92,14 @@ function Breadcrumbs({ pathname }: { pathname: string }) {
   }
   return (
     <nav aria-label="Breadcrumb" className="min-w-0" data-testid="breadcrumbs">
-      <ol className="flex min-w-0 items-center gap-1 text-[13px]">
+      <ol className="flex min-w-0 items-center gap-1 text-[0.8125rem]">
         {crumbs.map((c, i) => {
           const last = i === crumbs.length - 1;
           return (
             <li key={c.label} className={cn("flex min-w-0 items-center gap-1", !last && "shrink-0")}>
               {i > 0 ? <ChevronRight aria-hidden className="size-3.5 shrink-0 text-ink-3/70" /> : null}
               {c.href && !last ? (
-                <Link href={c.href} className="rounded-md px-1.5 py-1 text-ink-3 transition-colors hover:bg-ink/[0.05] hover:text-ink">
+                <Link href={c.href} className="rounded-md px-1.5 py-1 text-ink-3 transition-colors hover:bg-ink/[0.05] hover:text-ink active:bg-ink/[0.08] active:duration-0">
                   {c.label}
                 </Link>
               ) : (

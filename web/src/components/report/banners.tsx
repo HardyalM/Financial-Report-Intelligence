@@ -129,8 +129,8 @@ export function BannerStack() {
             )}
           />
           <div className="min-w-0 flex-1">
-            <p className="text-[13px] font-semibold text-ink">{b.title}</p>
-            <p className="mt-0.5 text-[12.5px] leading-relaxed text-ink-2">{b.body}</p>
+            <p className="text-[0.8125rem] font-semibold text-ink">{b.title}</p>
+            <p className="mt-0.5 text-[0.78125rem] leading-relaxed text-ink-2">{b.body}</p>
             {b.action ? <div className="mt-3">{b.action}</div> : null}
           </div>
           {b.dismissible ? (
@@ -191,7 +191,7 @@ function DocumentTypeChoice() {
           <label
             key={t.value}
             className={cn(
-              "cursor-pointer rounded-full border px-3 py-1 text-[12.5px] font-medium transition-colors",
+              "cursor-pointer rounded-full border px-3 py-1 text-[0.78125rem] font-medium transition-colors",
               choice === t.value ? "border-ink bg-ink text-ink-inverse" : "border-line-strong bg-surface text-ink-2 hover:text-ink",
             )}
           >
@@ -217,14 +217,14 @@ function DocumentTypeChoice() {
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="Why (kept in the audit trail)"
-          className="h-8 min-w-0 flex-1 rounded-md border border-line-strong bg-surface px-2 text-[13px] text-ink"
+          className="h-8 min-w-0 flex-1 rounded-md border border-line-strong bg-surface px-2 text-[0.8125rem] text-ink"
           data-testid="document-type-reason"
         />
         <Button type="submit" size="sm" disabled={busy || !choice || !reason.trim()} data-testid="document-type-submit">
           {busy ? "Saving…" : "Confirm type"}
         </Button>
       </div>
-      {error ? <p role="alert" className="text-[12.5px] text-missing">{error}</p> : null}
+      {error ? <p role="alert" className="text-[0.78125rem] text-missing">{error}</p> : null}
     </form>
   );
 }

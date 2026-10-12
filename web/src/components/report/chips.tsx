@@ -85,7 +85,7 @@ export function PageChip({
         data-testid={testId}
         onClick={onOpen}
         className={cn(
-          "num inline-flex h-5 items-center rounded border border-line bg-surface px-1.5 font-mono text-[11px] text-ink-2",
+          "num inline-flex h-5 items-center rounded border border-line bg-surface px-1.5 font-mono text-[0.6875rem] text-ink-2",
           "transition-colors hover:border-accent hover:text-accent",
         )}
         aria-label={`Open PDF page ${page}${label ? `, printed page ${label}` : ""}`}
@@ -102,7 +102,7 @@ export function NoteChip({ note }: { note: string }) {
       <span
         tabIndex={0}
         data-testid="note-chip"
-        className="num inline-flex h-5 items-center rounded border border-dashed border-line-strong px-1.5 text-[11px] text-ink-3"
+        className="num inline-flex h-5 items-center rounded border border-dashed border-line-strong px-1.5 text-[0.6875rem] text-ink-3"
       >
         Note {note}
       </span>
@@ -111,5 +111,5 @@ export function NoteChip({ note }: { note: string }) {
 }
 
 export function CodeHint({ code }: { code: string }) {
-  return <span className="font-mono text-[11px] text-ink-3">{code}</span>;
+  return <span className="font-mono text-[0.6875rem] text-ink-3">{code}</span>;
 }

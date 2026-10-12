@@ -35,10 +35,10 @@ export function ProgressStepper({ report }: { report: Report }) {
   return (
     <section aria-labelledby="progress-heading" className="rounded-xl border border-line bg-surface px-5 py-4" data-testid="progress-stepper">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 id="progress-heading" className="text-[13px] font-semibold text-ink">
+        <h2 id="progress-heading" className="text-[0.8125rem] font-semibold text-ink">
           Reading the report
         </h2>
-        <p className="text-[12px] text-ink-3" aria-live="polite" data-testid="progress-summary">
+        <p className="text-[0.75rem] text-ink-3" aria-live="polite" data-testid="progress-summary">
           {report.jobs.filter((j) => j.status === "done").length} of {report.jobs.length} stages done
         </p>
       </div>
@@ -53,7 +53,7 @@ export function ProgressStepper({ report }: { report: Report }) {
               data-step={step.label}
               data-state={state}
               className={cn(
-                "flex items-center gap-2 rounded-lg border px-2.5 py-2 text-[12px]",
+                "flex items-center gap-2 rounded-lg border px-2.5 py-2 text-[0.75rem]",
                 state === "done" && "border-ok-line bg-ok-soft text-ok",
                 state === "running" && "border-accent/40 bg-accent-soft text-accent",
                 state === "fallback" && "border-amber-line bg-amber-soft text-amber",

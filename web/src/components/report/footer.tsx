@@ -34,7 +34,7 @@ export function SiteFooter({ children }: { children?: React.ReactNode }) {
           </Link>
         </div>
         {children ? (
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-ink-3">{children}</div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[0.6875rem] text-ink-3">{children}</div>
         ) : null}
       </div>
     </footer>

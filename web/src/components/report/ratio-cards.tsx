@@ -34,10 +34,10 @@ export function RatioCards() {
   if (!report.ratios && ["queued", "processing", "failed"].includes(report.status)) {
     return (
       <section aria-labelledby="ratios-heading" data-testid="ratios-pending">
-        <h2 id="ratios-heading" className="mb-3 text-[15px] font-semibold tracking-[-0.01em]">
+        <h2 id="ratios-heading" className="mb-3 text-[0.9375rem] font-semibold tracking-[-0.01em]">
           Ratios
         </h2>
-        <p className="rounded-xl border border-line bg-surface px-5 py-4 text-[13px] text-ink-2">
+        <p className="rounded-xl border border-line bg-surface px-5 py-4 text-[0.8125rem] text-ink-2">
           {report.status === "failed"
             ? "Not calculated: processing stopped before the figures were ready."
             : "Calculated in code once the figures are checked."}
@@ -101,8 +101,8 @@ function RatioCard({ name }: { name: RatioName }) {
     <Card data-testid={`ratio-card-state-${info.state}`} data-ratio={name} className="flex flex-col">
       <div className="flex items-start justify-between gap-3 px-5 pt-5">
         <div>
-          <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-ink">{now?.label ?? locked.label}</h3>
-          <p className="mt-1 font-mono text-[11.5px] text-ink-3" data-testid="ratio-formula">
+          <h3 className="text-[0.875rem] font-semibold tracking-[-0.01em] text-ink">{now?.label ?? locked.label}</h3>
+          <p className="mt-1 font-mono text-[0.71875rem] text-ink-3" data-testid="ratio-formula">
             {now?.formula_text?.replace(" - ", " − ") ?? locked.formula}
           </p>
         </div>
@@ -125,7 +125,7 @@ function RatioCard({ name }: { name: RatioName }) {
       ) : null}
       {name === "debt_to_equity" && info.state !== "K4" && info.state !== "K5" ? <DebtSplit /> : null}
       {info.state === "K1" || info.state === "K2" ? (
-        <p className="mt-auto border-t border-line px-5 py-2.5 text-[11.5px] leading-relaxed text-ink-3">
+        <p className="mt-auto border-t border-line px-5 py-2.5 text-[0.71875rem] leading-relaxed text-ink-3">
           Year-end balances; seasonal businesses may differ within the year.
         </p>
       ) : null}
@@ -147,14 +147,14 @@ function RatioCard({ name }: { name: RatioName }) {
       const unit = info.withheldFor === "unit";
       return (
         <div className="space-y-2 pb-3">
-          <p className="flex items-center gap-1.5 text-[13px] font-medium text-ink-2">
+          <p className="flex items-center gap-1.5 text-[0.8125rem] font-medium text-ink-2">
             <CircleHelp aria-hidden className="size-4 text-ink-3" />
             {unit ? "Withheld until the unit is confirmed" : "Document type unclear: confirm to show ratios"}
           </p>
           <a
             href={unit ? "#banner-unit" : "#banner-document-type"}
             data-testid={unit ? "confirm-unit" : "confirm-document-type"}
-            className="inline-flex items-center gap-1 text-[12.5px] font-medium text-accent hover:underline"
+            className="inline-flex items-center gap-1 text-[0.78125rem] font-medium text-accent hover:underline"
           >
             {unit ? "Why the unit matters" : "Confirm the document type"} <ArrowRight aria-hidden className="size-3.5" />
           </a>
@@ -166,11 +166,11 @@ function RatioCard({ name }: { name: RatioName }) {
       const [headline, ...rest] = explanation.split(": ");
       return (
         <div className="space-y-1 pb-3">
-          <p className="flex items-center gap-1.5 text-[13px] font-medium text-ink-2">
+          <p className="flex items-center gap-1.5 text-[0.8125rem] font-medium text-ink-2">
             <Ban aria-hidden className="size-4 text-ink-3" />
             {headline}
           </p>
-          {rest.length ? <p className="text-[12.5px] leading-relaxed text-ink-3">{rest.join(": ")}</p> : null}
+          {rest.length ? <p className="text-[0.78125rem] leading-relaxed text-ink-3">{rest.join(": ")}</p> : null}
         </div>
       );
     }
@@ -179,7 +179,7 @@ function RatioCard({ name }: { name: RatioName }) {
     }
     return (
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pb-2">
-        <span className="display-figure text-[36px] text-ink" data-testid="ratio-value">
+        <span className="display-figure text-[2.25rem] text-ink" data-testid="ratio-value">
           {formatRatio(ratio.value, ratio.unit)}
         </span>
         {info.flag ? (
@@ -188,7 +188,7 @@ function RatioCard({ name }: { name: RatioName }) {
             {info.flag}
           </Badge>
         ) : null}
-        <span className="num flex basis-full flex-wrap gap-x-3 text-[12.5px] text-ink-3">
+        <span className="num flex basis-full flex-wrap gap-x-3 text-[0.78125rem] text-ink-3">
           {prior ? (
             <span data-testid="ratio-prior">
               {prior.id}: {p?.value != null ? formatRatio(p.value, p.unit) : "not available"}
@@ -214,11 +214,11 @@ function MissingValue({ ratio, name }: { ratio: Ratio | null; name: RatioName })
   const zero = ratio?.reason === "division_by_zero";
   return (
     <div className="space-y-1.5 pb-3">
-      <span className="display-figure block text-[36px] text-ink-3" aria-label="not available">
+      <span className="display-figure block text-[2.25rem] text-ink-3" aria-label="not available">
         {"—"}
       </span>
       {zero ? (
-        <p className="text-[12.5px] text-ink-2">Not computable: the denominator is zero.</p>
+        <p className="text-[0.78125rem] text-ink-2">Not computable: the denominator is zero.</p>
       ) : (
         <ul className="space-y-0.5">
           {missing.map((item) => {
@@ -230,7 +230,7 @@ function MissingValue({ ratio, name }: { ratio: Ratio | null; name: RatioName })
                   data-testid="ratio-missing-input"
                   data-item={item}
                   onClick={() => focusRow(item)}
-                  className="inline-flex items-center gap-1 text-left text-[12.5px] font-medium text-accent hover:underline"
+                  className="inline-flex items-center gap-1 text-left text-[0.78125rem] font-medium text-accent hover:underline"
                 >
                   <FileQuestion aria-hidden className="size-3.5" />
                   Needs {itemLabel(item).toLowerCase()}: {missingPhrase(state)}
@@ -251,18 +251,18 @@ function Inputs({ ratio, name }: { ratio: Ratio | null; name: RatioName }) {
   const unit = unitLabel(report.pack?.currency, report.pack?.unit_scale);
   const entries = Object.values(ratio.inputs);
   return (
-    <dl className="mx-5 mb-3 divide-y divide-line rounded-lg border border-line bg-surface-sunk/50 text-[12.5px]" data-testid="ratio-inputs">
+    <dl className="mx-5 mb-3 divide-y divide-line rounded-lg border border-line bg-surface-sunk/50 text-[0.78125rem]" data-testid="ratio-inputs">
       {entries.map((input) => (
         <div key={input.item} className="flex items-center justify-between gap-3 px-3 py-1.5">
           <dt className="flex items-center gap-1.5 text-ink-2">
             {itemLabel(input.item)}
             {input.badges.includes("derived") ? (
-              <Badge tone="derived" className="px-1.5 text-[10.5px]">
+              <Badge tone="derived" className="px-1.5 text-[0.65625rem]">
                 Derived
               </Badge>
             ) : null}
             {input.badges.some((b) => b.startsWith("manual")) ? (
-              <Badge tone="amber" className="px-1.5 text-[10.5px]">
+              <Badge tone="amber" className="px-1.5 text-[0.65625rem]">
                 <UserPen aria-hidden />
                 {input.badges.includes("manual_unanchored") ? "Manual: not on page" : "Manual"}
               </Badge>
@@ -282,7 +282,7 @@ function Inputs({ ratio, name }: { ratio: Ratio | null; name: RatioName }) {
           </dd>
         </div>
       ))}
-      <div className="px-3 py-1 text-right text-[10.5px] uppercase tracking-[0.06em] text-ink-3">{unit}</div>
+      <div className="px-3 py-1 text-right text-[0.65625rem] uppercase tracking-[0.06em] text-ink-3">{unit}</div>
     </dl>
   );
 }
@@ -306,13 +306,13 @@ function DebtSplit() {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         data-testid="debt-split-toggle"
-        className="inline-flex items-center gap-1 text-[12.5px] font-medium text-ink-2 hover:text-ink"
+        className="inline-flex items-center gap-1 text-[0.78125rem] font-medium text-ink-2 hover:text-ink"
       >
         <ChevronRight aria-hidden className={cn("size-3.5 transition-transform", open && "rotate-90")} />
         Borrowings and lease liabilities
       </button>
       {open ? (
-        <ul className="mt-1.5 space-y-1 text-[12.5px]" data-testid="debt-split">
+        <ul className="mt-1.5 space-y-1 text-[0.78125rem]" data-testid="debt-split">
           {parts.map(({ id, value }) => (
             <li key={id} className="flex items-center justify-between gap-2 pl-5">
               <span className={cn(used.has(id) ? "text-ink-2" : "text-ink-3")}>{DEBT_COMPONENTS[id]}</span>
