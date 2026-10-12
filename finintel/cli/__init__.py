@@ -112,6 +112,10 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--engines", choices=("local", "all"), default="local")
     serve.add_argument("--embedder", choices=("bge-m3", "fake"), default="bge-m3")
     serve.add_argument("--cache-dir", type=Path)
+    demo = commands.add_parser("demo", help="add, list or remove the sample reports")
+    demo.add_argument("action", choices=("seed", "list", "clear"))
+    demo.add_argument("--embedder", choices=("bge-m3", "fake"), default="fake")
+    demo.add_argument("--cache-dir", type=Path)
     cm = commands.add_parser("commentary", help="grounded commentary for a report (M5.2)")
     cm.add_argument("company", help='fixture name, e.g. "company_a"')
     cm.add_argument("--replay", type=Path, help="replay the recorded model calls in this artefact")
@@ -159,6 +163,8 @@ def main(argv: list[str] | None = None) -> int:
         )
     if args.command == "run":
         return _run(args, settings)
+    if args.command == "demo":
+        return _demo(args, settings)
     if args.command == "commentary":
         return _commentary(args, settings)
     if args.command == "eval-e3":
@@ -329,6 +335,43 @@ def _run(args: argparse.Namespace, settings: Settings) -> int:
         return EXIT_HOLDOUT
     except (FileNotFoundError, ValueError, RuntimeError, IngestError, psycopg.Error) as exc:
         print(f"finintel run: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return EXIT_FAILED
+
+
+def _demo(args: argparse.Namespace, settings: Settings) -> int:
+    """`finintel demo seed|list|clear`: the dashboard's sample reports (finintel/demo)."""
+    import os
+
+    from finintel import demo
+    from finintel.cli.settings import read_dotenv
+    from finintel.db.migrate import database_url
+    from finintel.worker.runner import run_until_idle
+
+    try:
+        with psycopg.connect(database_url(), autocommit=True) as conn:
+            if args.action == "clear":
+                removed = demo.clear(conn)
+                print(f"removed {len(removed)} sample report(s): {removed}")
+                return EXIT_OK
+            if args.action == "list":
+                rows = conn.execute(
+                    "SELECT id, filename, status FROM documents WHERE is_sample ORDER BY id"
+                ).fetchall()
+                for r in rows:
+                    print(f"{r[0]:>5}  {r[2]:<24} {r[1]}")
+                print(f"{len(rows)} sample report(s)")
+                return EXIT_OK
+            env = {**read_dotenv(Path(".env")), **os.environ}
+            ctx = run_cmd.build_context(
+                env, settings.artifacts_dir, args.cache_dir or settings.cache_dir,
+                engines="local", embedder=args.embedder,
+            )  # fmt: skip
+            result = demo.seed(conn, ctx)
+            run_until_idle(conn, ctx)
+            print(f"added {result['added']}; already present (not marked) {result['skipped']}")
+            return EXIT_OK
+    except (FileNotFoundError, IngestError, psycopg.Error) as exc:
+        print(f"finintel demo: {type(exc).__name__}: {exc}", file=sys.stderr)
         return EXIT_FAILED
 
 

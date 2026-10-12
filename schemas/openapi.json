@@ -15,6 +15,40 @@
         "title": "Body_upload_uploads_post",
         "type": "object"
       },
+      "CommentaryHeadline": {
+        "additionalProperties": false,
+        "properties": {
+          "citations": {
+            "title": "Citations",
+            "type": "integer"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "stale": {
+            "title": "Stale",
+            "type": "boolean"
+          },
+          "topics": {
+            "title": "Topics",
+            "type": "integer"
+          },
+          "topics_ok": {
+            "title": "Topics Ok",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "mode",
+          "topics_ok",
+          "topics",
+          "citations",
+          "stale"
+        ],
+        "title": "CommentaryHeadline",
+        "type": "object"
+      },
       "CommentaryOut": {
         "additionalProperties": false,
         "properties": {
@@ -71,6 +105,29 @@
         "title": "CommentaryOut",
         "type": "object"
       },
+      "DashboardOut": {
+        "additionalProperties": false,
+        "properties": {
+          "has_samples": {
+            "title": "Has Samples",
+            "type": "boolean"
+          },
+          "reports": {
+            "description": "Newest first.",
+            "items": {
+              "$ref": "#/components/schemas/ReportCard"
+            },
+            "title": "Reports",
+            "type": "array"
+          }
+        },
+        "required": [
+          "reports",
+          "has_samples"
+        ],
+        "title": "DashboardOut",
+        "type": "object"
+      },
       "DocumentTypeIn": {
         "additionalProperties": false,
         "properties": {
@@ -95,6 +152,40 @@
           "reason"
         ],
         "title": "DocumentTypeIn",
+        "type": "object"
+      },
+      "FigureCounts": {
+        "additionalProperties": false,
+        "description": "The current period's line items, by how each value was settled (no values here).",
+        "properties": {
+          "derived": {
+            "description": "Computed in code from printed lines (e.g. total debt).",
+            "title": "Derived",
+            "type": "integer"
+          },
+          "empty": {
+            "description": "Left empty, with the reason on the report.",
+            "title": "Empty",
+            "type": "integer"
+          },
+          "manual": {
+            "description": "Entered, forced or confirmed by a person.",
+            "title": "Manual",
+            "type": "integer"
+          },
+          "read": {
+            "description": "Read from the statements and anchored to the page.",
+            "title": "Read",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "read",
+          "derived",
+          "manual",
+          "empty"
+        ],
+        "title": "FigureCounts",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -439,6 +530,248 @@
         "title": "PageWord",
         "type": "object"
       },
+      "RatioHeadline": {
+        "additionalProperties": false,
+        "properties": {
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Against the prior period, as the engine computed it.",
+            "title": "Change"
+          },
+          "change_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "percentage_points",
+                  "absolute"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Kind"
+          },
+          "flags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Flags",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "fraction",
+              "multiple"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The ratio engine's value; null when not computed.",
+            "title": "Value"
+          }
+        },
+        "required": [
+          "name",
+          "label",
+          "value",
+          "unit",
+          "status",
+          "flags",
+          "change_kind",
+          "change"
+        ],
+        "title": "RatioHeadline",
+        "type": "object"
+      },
+      "ReportCard": {
+        "additionalProperties": false,
+        "description": "One report on the dashboard: what the pipeline produced for it, and what it waits for.",
+        "properties": {
+          "commentary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommentaryHeadline"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "document_type": {
+            "title": "Document Type",
+            "type": "string"
+          },
+          "figures": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FigureCounts"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "is_sample": {
+            "title": "Is Sample",
+            "type": "boolean"
+          },
+          "jobs": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "title": "Jobs",
+            "type": "array"
+          },
+          "open_review_items": {
+            "title": "Open Review Items",
+            "type": "integer"
+          },
+          "page_count": {
+            "title": "Page Count",
+            "type": "integer"
+          },
+          "period_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period Label"
+          },
+          "prior_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prior Label"
+          },
+          "ratios": {
+            "items": {
+              "$ref": "#/components/schemas/RatioHeadline"
+            },
+            "title": "Ratios",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "unit_scale": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Scale"
+          },
+          "waiting_for": {
+            "anyOf": [
+              {
+                "enum": [
+                  "unit",
+                  "document_type",
+                  "review",
+                  "failed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Waiting For"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "filename",
+          "document_type",
+          "status",
+          "is_sample",
+          "created_at",
+          "page_count",
+          "period_label",
+          "prior_label",
+          "currency",
+          "unit_scale",
+          "figures",
+          "ratios",
+          "commentary",
+          "open_review_items",
+          "waiting_for",
+          "jobs"
+        ],
+        "title": "ReportCard",
+        "type": "object"
+      },
       "ReportOut": {
         "additionalProperties": false,
         "properties": {
@@ -612,6 +945,12 @@
           "id": {
             "title": "Id",
             "type": "integer"
+          },
+          "is_sample": {
+            "default": false,
+            "description": "Sample data (removable as a set).",
+            "title": "Is Sample",
+            "type": "boolean"
           },
           "open_review_items": {
             "description": "Review items still waiting for a person.",
@@ -908,6 +1247,40 @@
         "title": "ReviewOut",
         "type": "object"
       },
+      "SamplesOut": {
+        "additionalProperties": false,
+        "properties": {
+          "added": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Added",
+            "type": "array"
+          },
+          "removed": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Removed",
+            "type": "array"
+          },
+          "skipped": {
+            "description": "Already present (never marked as samples).",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Skipped",
+            "type": "array"
+          }
+        },
+        "required": [
+          "added",
+          "skipped",
+          "removed"
+        ],
+        "title": "SamplesOut",
+        "type": "object"
+      },
       "StatementLocationIn": {
         "additionalProperties": false,
         "properties": {
@@ -1075,6 +1448,25 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/dashboard": {
+      "get": {
+        "description": "Every report with what the pipeline produced for it (counts of figures by how they were\nsettled, the headline ratios as the engine stored them, cited commentary) and what it is\nwaiting for. Newest first.",
+        "operationId": "get_dashboard_dashboard_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Dashboard"
+      }
+    },
     "/healthz": {
       "get": {
         "operationId": "healthz_healthz_get",
@@ -1599,6 +1991,42 @@
           }
         },
         "summary": "Unit Confirmation"
+      }
+    },
+    "/samples": {
+      "delete": {
+        "description": "Remove every sample report. A person's own uploads are never samples.",
+        "operationId": "delete_samples_samples_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SamplesOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete Samples"
+      },
+      "post": {
+        "description": "Add the sample reports: bundled PDFs through the real pipeline, marked as samples.",
+        "operationId": "post_samples_samples_post",
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SamplesOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Post Samples"
       }
     },
     "/uploads": {

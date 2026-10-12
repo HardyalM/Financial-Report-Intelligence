@@ -76,6 +76,13 @@ def load_doc(conn: psycopg.Connection, document_id: int) -> Doc:
     return Doc(*row)
 
 
+def _provider(conn: psycopg.Connection, ctx: RunContext, doc: Doc) -> Any:
+    """No model is called for sample reports (demo data): their commentary is extractive."""
+    from finintel.demo import is_sample
+
+    return None if is_sample(conn, doc.id) else ctx.provider
+
+
 def _pdf(ctx: RunContext, doc: Doc) -> Path:
     return ctx.store.path(doc.storage_key)
 
@@ -142,7 +149,7 @@ def extract_stage(conn: psycopg.Connection, ctx: RunContext, doc: Doc) -> Outcom
     hints, unit, chosen_type = _decisions(overrides)
     result = extract_pack(
         _pdf(ctx, doc), StageCache(ctx.cache_dir), engines=ctx.engines, azure=ctx.azure,
-        provider=ctx.provider, location_hints=hints or None, confirmed_unit=unit,
+        provider=_provider(conn, ctx, doc), location_hints=hints or None, confirmed_unit=unit,
     )  # fmt: skip
     located = result.located
     doc_type = chosen_type or (located.profile.document_type.value if located else None)
@@ -223,8 +230,8 @@ def commentary_stage(conn: psycopg.Connection, ctx: RunContext, doc: Doc) -> Out
     )
     facts = extract_facts(layer, pack)
     run = build_commentary(
-        provider=ctx.provider, pack=pack, ratios=ratios, chunks=chunks, retrieved=retrieved,
-        page_labels=labels, facts=facts,
+        provider=_provider(conn, ctx, doc), pack=pack, ratios=ratios, chunks=chunks,
+        retrieved=retrieved, page_labels=labels, facts=facts,
     )  # fmt: skip
     truth = build_ground_truth(pack, ratios, facts)
     audit = audit_commentary(

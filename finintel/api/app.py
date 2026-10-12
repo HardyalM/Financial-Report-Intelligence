@@ -24,6 +24,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import ValidationError
 
+from finintel.api import dashboard as dash
 from finintel.api import models as m
 from finintel.api.extraction_view import extraction_view
 from finintel.cache import StageCache
@@ -243,7 +244,9 @@ def create_app(
                    p.pack->>'company_name', p.pack->'periods'->0->>'label', p.pack->>'currency',
                    (p.pack->>'unit_scale')::bigint,
                    (SELECT count(*) FROM review_items r WHERE r.document_id = d.id AND r.status = 'open'),
-                   (SELECT c.stale FROM commentaries c WHERE c.document_id = d.id ORDER BY c.id DESC LIMIT 1)
+                   (SELECT c.stale FROM commentaries c WHERE c.document_id = d.id
+                    ORDER BY c.id DESC LIMIT 1),
+                   d.is_sample, p.pack->>'document_type'
             FROM documents d
             LEFT JOIN LATERAL (
                 SELECT pack FROM statement_packs s WHERE s.document_id = d.id
@@ -254,12 +257,99 @@ def create_app(
         ).fetchall()
         return [
             m.ReportSummary(
-                id=r[0], filename=r[1], document_type=r[2], status=r[3], page_count=r[4],
+                id=r[0], filename=r[1], document_type=r[2] if r[2] != "other" or not r[13] else r[13],
+                status=r[3], page_count=r[4],
                 created_at=r[5].isoformat(), company_name=r[6], period_label=r[7], currency=r[8],
-                unit_scale=r[9], open_review_items=int(r[10]), stale=bool(r[11]),
+                unit_scale=r[9], open_review_items=int(r[10]), stale=bool(r[11]), is_sample=bool(r[12]),
             )
             for r in rows
         ]  # fmt: skip
+
+    @app.get("/dashboard", response_model=m.DashboardOut)
+    def get_dashboard(conn: psycopg.Connection = db) -> m.DashboardOut:
+        """Every report with what the pipeline produced for it (counts of figures by how they were
+        settled, the headline ratios as the engine stored them, cited commentary) and what it is
+        waiting for. Newest first."""
+        rows = conn.execute(
+            """
+            SELECT d.id, d.filename, d.document_type, d.status, d.page_count, d.created_at,
+                   d.is_sample, p.pack, rp.pack, c.output, c.stale,
+                   (SELECT count(*) FROM review_items r
+                    WHERE r.document_id = d.id AND r.status = 'open')
+            FROM documents d
+            LEFT JOIN LATERAL (
+                SELECT id, pack FROM statement_packs s WHERE s.document_id = d.id
+                ORDER BY s.version DESC LIMIT 1
+            ) p ON true
+            LEFT JOIN LATERAL (
+                SELECT pack FROM ratio_packs r WHERE r.statement_pack_id = p.id
+                ORDER BY r.id DESC LIMIT 1
+            ) rp ON true
+            LEFT JOIN LATERAL (
+                SELECT output, stale FROM commentaries k WHERE k.document_id = d.id
+                ORDER BY k.id DESC LIMIT 1
+            ) c ON true
+            ORDER BY d.created_at DESC, d.id DESC
+            """
+        ).fetchall()
+        jobs_by_doc: dict[int, list[m.JobOut]] = {}
+        for doc_id, stage, status, attempts, error in conn.execute(
+            "SELECT document_id, stage, status, attempts, error_code FROM jobs "
+            "ORDER BY document_id, ordinal"
+        ).fetchall():
+            jobs_by_doc.setdefault(doc_id, []).append(
+                m.JobOut(stage=stage, status=status, attempts=attempts, error_code=error)
+            )
+        cards = []
+        for (doc_id, filename, row_type, status, pages, created, sample, pack, ratios, output,
+             stale, review) in rows:  # fmt: skip
+            doc_type = dash.document_type_of(str(row_type), pack)
+            periods = (pack or {}).get("periods") or []
+            figures = dash.figure_counts(pack)
+            cards.append(
+                m.ReportCard(
+                    id=doc_id,
+                    title=(pack or {}).get("company_name") or Path(filename).stem,
+                    filename=filename,
+                    document_type=doc_type,
+                    status=status,
+                    is_sample=bool(sample),
+                    created_at=created.isoformat(),
+                    page_count=pages,
+                    period_label=periods[0].get("label") if periods else None,
+                    prior_label=periods[1].get("label") if len(periods) > 1 else None,
+                    currency=(pack or {}).get("currency"),
+                    unit_scale=(pack or {}).get("unit_scale"),
+                    figures=m.FigureCounts(**figures) if figures else None,
+                    ratios=[m.RatioHeadline(**r) for r in dash.ratio_headlines(ratios, doc_type)],
+                    commentary=(
+                        m.CommentaryHeadline(**h)
+                        if (h := dash.commentary_headline(output, bool(stale)))
+                        else None
+                    ),
+                    open_review_items=int(review),
+                    waiting_for=dash.waiting_for(status, int(review)),
+                    jobs=jobs_by_doc.get(doc_id, []),
+                )
+            )
+        return m.DashboardOut(reports=cards, has_samples=any(c.is_sample for c in cards))
+
+    @app.post("/samples", response_model=m.SamplesOut, status_code=202)
+    def post_samples(conn: psycopg.Connection = db) -> m.SamplesOut:
+        """Add the sample reports: bundled PDFs through the real pipeline, marked as samples."""
+        assert ctx is not None
+        from finintel.demo import seed
+
+        result = seed(conn, ctx)
+        settle(conn)
+        return m.SamplesOut(added=result["added"], skipped=result["skipped"], removed=[])
+
+    @app.delete("/samples", response_model=m.SamplesOut)
+    def delete_samples(conn: psycopg.Connection = db) -> m.SamplesOut:
+        """Remove every sample report. A person's own uploads are never samples."""
+        from finintel.demo import clear
+
+        return m.SamplesOut(added=[], skipped=[], removed=clear(conn))
 
     @app.get("/reports/{report_id}", response_model=m.ReportOut)
     def get_report(report_id: int, conn: psycopg.Connection = db) -> m.ReportOut:

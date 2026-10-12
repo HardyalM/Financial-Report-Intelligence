@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, ExternalLink, LayoutDashboard, Link2, Monitor, Moon, PanelLeftClose, PanelLeftOpen, Plus, Search, ShieldCheck, Sun } from "lucide-react";
+import { Copy, ExternalLink, FlaskConical, LayoutDashboard, Link2, Monitor, Moon, PanelLeftClose, PanelLeftOpen, Plus, Search, ShieldCheck, Sun } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ import { useToast } from "@/components/ui/toast";
 import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cn";
 import { spring } from "@/lib/motion";
-import { type ReportSummary, usePrefetchReport, useReports } from "@/lib/queries";
+import { type ReportSummary, usePrefetchReport, useReports, useShowSamples } from "@/lib/queries";
 
 export const SIDEBAR_WIDE = 248;
 export const SIDEBAR_NARROW = 60;
@@ -35,6 +35,8 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
   const palette = usePalette();
   const upload = useUpload();
   const reports = useReports();
+  const [showSamples] = useShowSamples();
+  const listed = (reports.data ?? []).filter((r) => showSamples || !r.is_sample);
   const nav = React.useRef<HTMLElement>(null);
 
   // Arrow keys move focus between rows, like a native source list.
@@ -99,14 +101,14 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
             Array.from({ length: 4 }, (_, i) => <div key={i} className="mb-0.5 h-8 animate-pulse rounded-lg bg-ink/[0.04]" />)
           ) : reports.isError ? (
             !collapsed ? <p className="px-2.5 py-1.5 text-[0.75rem] text-ink-3">Reports couldn’t be listed.</p> : null
-          ) : reports.data.length === 0 ? (
+          ) : listed.length === 0 ? (
             !collapsed ? (
               <button type="button" onClick={upload.pick} className="w-full rounded-lg px-2.5 py-1.5 text-left text-[0.78125rem] text-ink-3 hover:bg-ink/[0.04] hover:text-ink-2">
                 No reports yet — add one
               </button>
             ) : null
           ) : (
-            reports.data.slice(0, 30).map((r) => <ReportRow key={r.id} report={r} collapsed={collapsed} active={pathname === `/reports/${r.id}`} />)
+            listed.slice(0, 30).map((r) => <ReportRow key={r.id} report={r} collapsed={collapsed} active={pathname === `/reports/${r.id}`} />)
           )}
         </div>
       </nav>
@@ -218,7 +220,11 @@ function ReportRow({ report, collapsed, active }: { report: ReportSummary; colla
       {!collapsed ? (
         <>
           <FadeIn className="min-w-0 flex-1 truncate">{title}</FadeIn>
-          {report.period_label ? <span className="num shrink-0 text-[0.6875rem] text-ink-3">{report.period_label}</span> : null}
+          {report.is_sample ? (
+            <FlaskConical aria-label="sample" className="size-3 shrink-0 text-suggested" />
+          ) : report.period_label ? (
+            <span className="num shrink-0 text-[0.6875rem] text-ink-3">{report.period_label}</span>
+          ) : null}
           <span className="sr-only">, {status.label}</span>
         </>
       ) : null}

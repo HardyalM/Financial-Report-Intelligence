@@ -4,6 +4,7 @@ import {
   ArrowRight,
   BookOpen,
   CornerDownLeft,
+  FlaskConical,
   FileText,
   Hash,
   LayoutDashboard,
@@ -31,7 +32,7 @@ import { useUpload } from "@/components/shell/upload";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
 import { spring, useSafeMotion } from "@/lib/motion";
-import { usePrefetchReport, useReports } from "@/lib/queries";
+import { usePrefetchReport, useReports, useSamples, useShowSamples } from "@/lib/queries";
 
 interface Command {
   id: string;
@@ -112,6 +113,13 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
   const router = useRouter();
   const pathname = usePathname();
   const reports = useReports();
+  const [showSamples, setShowSamples] = useShowSamples();
+  const samples = useSamples({
+    added: (r) => toast({ tone: "ok", title: "Sample reports added", body: `${r.added.length} being read now.` }),
+    removed: (r) => toast({ tone: "ok", title: "Sample reports removed", body: `${r.removed.length} removed.` }),
+    failed: (_w, e) => toast({ tone: "error", title: "Sample reports: not done", body: e.message }),
+  });
+  const hasSamples = (reports.data ?? []).some((r) => r.is_sample);
   const prefetch = usePrefetchReport();
   const { setTheme, theme } = useTheme();
   const { toggleSidebar } = useShell();
@@ -134,13 +142,15 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
 
   const commands: Command[] = React.useMemo(() => {
     const out: Command[] = [];
-    for (const r of reports.data ?? []) {
+    for (const r of (reports.data ?? []).filter((x) => showSamples || !x.is_sample)) {
       const s = statusMeta(r.status);
       out.push({
         id: `report-${r.id}`,
         group: "Reports",
         label: reportTitle(r),
-        detail: [r.period_label ? `FY ${r.period_label}` : null, s.label, whenAdded(r.created_at)].filter(Boolean).join(" · "),
+        detail: [r.is_sample ? "Sample" : null, r.period_label ? `FY ${r.period_label}` : null, s.label, whenAdded(r.created_at)]
+          .filter(Boolean)
+          .join(" · "),
         keywords: `${r.filename} ${r.id} ${r.document_type}`,
         icon: <FileText aria-hidden />,
         run: go(`/reports/${r.id}`),
@@ -191,6 +201,29 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
       { id: "nav-dashboard", group: "Go to", label: "Dashboard", keywords: "home reports", icon: <LayoutDashboard aria-hidden />, run: go("/") },
       { id: "nav-limits", group: "Go to", label: "Method & limits", keywords: "limitations", icon: <ShieldCheck aria-hidden />, run: go("/limitations") },
       { id: "act-upload", group: "Actions", label: "Analyse a new report…", keywords: "upload pdf new", icon: <Upload aria-hidden />, run: upload.pick },
+      {
+        id: "act-samples",
+        group: "Actions",
+        label: hasSamples ? (showSamples ? "Hide sample reports" : "Show sample reports") : "Add sample reports",
+        keywords: "demo sample data example",
+        icon: <FlaskConical aria-hidden />,
+        run: () => {
+          if (!hasSamples) samples.add.mutate();
+          else setShowSamples(!showSamples);
+        },
+      },
+      ...(hasSamples
+        ? [
+            {
+              id: "act-samples-remove",
+              group: "Actions",
+              label: "Remove sample reports",
+              keywords: "demo sample data delete clear",
+              icon: <FlaskConical aria-hidden />,
+              run: () => samples.remove.mutate(),
+            },
+          ]
+        : []),
       { id: "act-sidebar", group: "Actions", label: "Toggle sidebar", icon: <PanelLeft aria-hidden />, shortcut: "mod+\\", run: toggleSidebar },
       { id: "theme-light", group: "Theme", label: "Light", detail: theme === "light" ? "Current" : undefined, keywords: "theme appearance", icon: <Sun aria-hidden />, run: () => setTheme("light") },
       { id: "theme-dark", group: "Theme", label: "Dark", detail: theme === "dark" ? "Current" : undefined, keywords: "theme appearance", icon: <Moon aria-hidden />, run: () => setTheme("dark") },
@@ -198,7 +231,7 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
     );
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reports.data, query, onReport, theme]);
+  }, [reports.data, query, onReport, theme, showSamples, hasSamples]);
 
   const results = React.useMemo(() => {
     if (!query.trim()) {

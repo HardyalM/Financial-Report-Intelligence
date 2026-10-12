@@ -74,6 +74,69 @@ class ReportSummary(_Model):
     unit_scale: int | None
     open_review_items: int = Field(description="Review items still waiting for a person.")
     stale: bool = Field(description="Existing commentary no longer matches the current pack.")
+    is_sample: bool = Field(default=False, description="Sample data (removable as a set).")
+
+
+class FigureCounts(_Model):
+    """The current period's line items, by how each value was settled (no values here)."""
+
+    read: int = Field(description="Read from the statements and anchored to the page.")
+    derived: int = Field(description="Computed in code from printed lines (e.g. total debt).")
+    manual: int = Field(description="Entered, forced or confirmed by a person.")
+    empty: int = Field(description="Left empty, with the reason on the report.")
+
+
+class RatioHeadline(_Model):
+    name: str
+    label: str
+    value: float | None = Field(description="The ratio engine's value; null when not computed.")
+    unit: Literal["fraction", "multiple"]
+    status: str
+    flags: list[str]
+    change_kind: Literal["percentage_points", "absolute"] | None
+    change: float | None = Field(description="Against the prior period, as the engine computed it.")
+
+
+class CommentaryHeadline(_Model):
+    mode: str
+    topics_ok: int
+    topics: int
+    citations: int
+    stale: bool
+
+
+class ReportCard(_Model):
+    """One report on the dashboard: what the pipeline produced for it, and what it waits for."""
+
+    id: int
+    title: str
+    filename: str
+    document_type: str
+    status: str
+    is_sample: bool
+    created_at: str
+    page_count: int
+    period_label: str | None
+    prior_label: str | None
+    currency: str | None
+    unit_scale: int | None
+    figures: FigureCounts | None
+    ratios: list[RatioHeadline]
+    commentary: CommentaryHeadline | None
+    open_review_items: int
+    waiting_for: Literal["unit", "document_type", "review", "failed"] | None
+    jobs: list[JobOut]
+
+
+class DashboardOut(_Model):
+    reports: list[ReportCard] = Field(description="Newest first.")
+    has_samples: bool
+
+
+class SamplesOut(_Model):
+    added: list[int]
+    skipped: list[int] = Field(description="Already present (never marked as samples).")
+    removed: list[int]
 
 
 class CommentaryOut(_Model):

@@ -14,9 +14,12 @@ import { ApiError, fetchReport, inProgress, type ReportData, request } from "@/l
 import type { components } from "@/types/generated/api";
 
 export type ReportSummary = components["schemas"]["ReportSummary"];
+export type ReportCard = components["schemas"]["ReportCard"];
+export type Dashboard = components["schemas"]["DashboardOut"];
 
 export const keys = {
   reports: ["reports"] as const,
+  dashboard: ["dashboard"] as const,
   report: (id: string | number) => ["report", String(id)] as const,
 };
 
@@ -108,7 +111,7 @@ export function useAddUploaded() {
           : [
               {
                 company_name: null, document_type: "other", created_at: new Date().toISOString(),
-                period_label: null, currency: null, unit_scale: null, open_review_items: 0, stale: false,
+                period_label: null, currency: null, unit_scale: null, open_review_items: 0, stale: false, is_sample: false,
                 ...row,
               },
               ...list,
@@ -118,4 +121,105 @@ export function useAddUploaded() {
     },
     [client],
   );
+}
+
+const moving = (status: string) => status === "queued" || status === "processing";
+
+/** The dashboard: every report with what the pipeline produced for it. Live while any is moving. */
+export function useDashboard() {
+  return useQuery({
+    queryKey: keys.dashboard,
+    queryFn: () => request<Dashboard>("/dashboard"),
+    refetchInterval: (q) => (q.state.data?.reports.some((r) => moving(r.status)) ? 1500 : false),
+  });
+}
+
+/**
+ * Sample reports: adding runs bundled PDFs through the real pipeline (the server marks them);
+ * removing is optimistic (they leave the screen at once and come back if the server refuses).
+ */
+export interface SampleNotices {
+  added?: (r: { added: number[]; skipped: number[] }) => void;
+  removed?: (r: { removed: number[] }) => void;
+  failed?: (what: "add" | "remove", e: Error) => void;
+}
+
+export function useSamples(notices: SampleNotices = {}) {
+  const client = useQueryClient();
+  // Notices ride on the mutation, not on mutate(): removing samples hides the controls that asked
+  // for it (optimistically), and a component's own mutate() callbacks die with it.
+  const say = React.useRef(notices);
+  say.current = notices;
+  const refresh = () =>
+    Promise.all([
+      client.invalidateQueries({ queryKey: keys.dashboard }),
+      client.invalidateQueries({ queryKey: keys.reports }),
+    ]);
+  const add = useMutation({
+    mutationFn: () => request<{ added: number[]; skipped: number[] }>("/samples", { method: "POST" }),
+    onSuccess: (r) => say.current.added?.(r),
+    onError: (e) => say.current.failed?.("add", e as Error),
+    onSettled: refresh,
+  });
+  const remove = useMutation({
+    mutationFn: () => request<{ removed: number[] }>("/samples", { method: "DELETE" }),
+    onMutate: async () => {
+      await Promise.all([client.cancelQueries({ queryKey: keys.dashboard }), client.cancelQueries({ queryKey: keys.reports })]);
+      const before = {
+        dashboard: client.getQueryData<Dashboard>(keys.dashboard),
+        reports: client.getQueryData<ReportSummary[]>(keys.reports),
+      };
+      if (before.dashboard) {
+        client.setQueryData<Dashboard>(keys.dashboard, {
+          reports: before.dashboard.reports.filter((r) => !r.is_sample),
+          has_samples: false,
+        });
+      }
+      if (before.reports) client.setQueryData(keys.reports, before.reports.filter((r) => !r.is_sample));
+      return before;
+    },
+    onSuccess: (r) => say.current.removed?.(r),
+    onError: (e, _v, before) => {
+      if (before?.dashboard) client.setQueryData(keys.dashboard, before.dashboard);
+      if (before?.reports) client.setQueryData(keys.reports, before.reports);
+      say.current.failed?.("remove", e as Error);
+    },
+    onSettled: refresh,
+  });
+  return { add, remove };
+}
+
+const SHOW_SAMPLES = "finintel-show-samples";
+
+/** Whether sample reports are shown (remembered; on by default). Changes sync across the app. */
+export function useShowSamples(): [boolean, (show: boolean) => void] {
+  const subscribe = React.useCallback((on: () => void) => {
+    window.addEventListener("finintel-samples", on);
+    window.addEventListener("storage", on);
+    return () => {
+      window.removeEventListener("finintel-samples", on);
+      window.removeEventListener("storage", on);
+    };
+  }, []);
+  const show = React.useSyncExternalStore(
+    subscribe,
+    () => {
+      try {
+        return localStorage.getItem(SHOW_SAMPLES) !== "hidden";
+      } catch {
+        return true;
+      }
+    },
+    () => true,
+  );
+  const set = React.useCallback((next: boolean) => {
+    try {
+      if (next) localStorage.removeItem(SHOW_SAMPLES);
+      else localStorage.setItem(SHOW_SAMPLES, "hidden");
+    } catch {
+      // not remembered; still applied for this page
+    }
+    window.dispatchEvent(new Event("finintel-samples"));
+  }, []);
+  return [show, set];
 }

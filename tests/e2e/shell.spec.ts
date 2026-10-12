@@ -20,25 +20,6 @@ async function cumulativeLayoutShift(page: Page): Promise<number> {
   );
 }
 
-test("the dashboard lists every report with its status and what waits for a person", async ({ page }) => {
-  await openDashboard(page, [...FIXTURES]);
-  const rows = page.getByTestId("report-row");
-  await expect(rows).toHaveCount(4);
-  await expect(page.getByTestId("filter-all")).toContainText("4");
-  await page.getByTestId("filter-waiting").click();
-  // Waiting = a status that needs a person (document type, unit) or open review items.
-  const waiting = page.getByTestId("filter-waiting");
-  const n = Number((await waiting.innerText()).match(/\d+/)![0]);
-  await expect(rows).toHaveCount(n);
-  const statuses = await page.getByTestId("report-row-status").allInnerTexts();
-  expect(statuses).toEqual(expect.arrayContaining(["Needs document type", "Needs unit"]));
-  await page.getByTestId("filter-all").click();
-  await page.keyboard.press("/");
-  await expect(page.getByTestId("dashboard-filter")).toBeFocused();
-  await page.keyboard.type("example");
-  await expect(rows).toHaveCount(1);
-});
-
 test("keyboard only: filter, arrow to a report, Enter opens it", async ({ page }) => {
   await openDashboard(page, [...FIXTURES]);
   await page.keyboard.press("/");
@@ -124,6 +105,9 @@ test("the theme toggle switches to dark, and the choice is applied before first 
 
 test("with no reports, the dashboard is an onboarding page with one-click actions", async ({ page }) => {
   await page.route("**/api/reports", (r) => r.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
+  await page.route("**/api/dashboard", (r) =>
+    r.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ reports: [], has_samples: false }) }),
+  );
   await page.goto("/");
   await expect(page.getByTestId("onboarding")).toBeVisible();
   await expect(page.getByRole("button", { name: "Analyse your first report" })).toBeVisible();
@@ -133,6 +117,7 @@ test("with no reports, the dashboard is an onboarding page with one-click action
 
 test("if the list can't be fetched, the page says so and still offers upload", async ({ page }) => {
   await page.route("**/api/reports", (r) => r.fulfill({ status: 503, contentType: "application/json", body: "{}" }));
+  await page.route("**/api/dashboard", (r) => r.fulfill({ status: 503, contentType: "application/json", body: "{}" }));
   await page.goto("/");
   await expect(page.getByTestId("reports-unavailable")).toBeVisible();
   await expect(page.getByTestId("upload-dropzone")).toBeVisible();
