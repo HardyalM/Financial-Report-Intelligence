@@ -110,6 +110,8 @@ export const decisions = {
 export interface ReportData {
   report: Report;
   commentary: CommentaryResponse | null;
+  /** Why there is no commentary to show, when the API said (e.g. it is in an older format). */
+  commentaryNote: string | null;
   review: Review | null;
   /** A bank's own CET1 ratio and NIM, as stated in its narrative (empty for others). */
   reported: ReportedMetrics;
@@ -129,9 +131,13 @@ async function fetchAll(id: string): Promise<ReportData> {
   const path = `/reports/${encodeURIComponent(id)}`;
   const report = await request<Report>(path);
   const empty: ReportedMetrics = { metrics: [], notes: [] };
+  let commentaryNote: string | null = null;
   const [commentary, review, reported] = await Promise.all([
     request<CommentaryResponse>(`${path}/commentary`).catch((e: unknown) => {
-      if (e instanceof ApiError && e.status === 404) return null;
+      if (e instanceof ApiError && e.status === 404) {
+        if (e.code === "commentary_outdated") commentaryNote = e.message;
+        return null;
+      }
       throw e;
     }),
     request<Review>(`${path}/review`).catch(() => null),
@@ -139,7 +145,7 @@ async function fetchAll(id: string): Promise<ReportData> {
       ? request<ReportedMetrics>(`${path}/reported-metrics`).catch(() => empty)
       : Promise.resolve(empty),
   ]);
-  return { report, commentary, review, reported };
+  return { report, commentary, commentaryNote, review, reported };
 }
 
 /**

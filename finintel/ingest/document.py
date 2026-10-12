@@ -85,7 +85,9 @@ def ingest(pdf_path: Path, *, max_bytes: int = MAX_UPLOAD_BYTES) -> DocumentReco
         doc = pymupdf.open(pdf_path, filetype="pdf")
     except Exception as exc:  # MuPDF raises FileDataError, RuntimeError, ... for damaged files
         raise IngestError(
-            IngestErrorCode.UNREADABLE_PDF, f"{pdf_path.name} could not be opened ({exc})"
+            IngestErrorCode.UNREADABLE_PDF,
+            # Not MuPDF's own text: it names the server path the upload was written to.
+            f"{pdf_path.name} could not be opened: it is damaged or not a complete PDF",
         ) from exc
     with doc:
         if doc.needs_pass:

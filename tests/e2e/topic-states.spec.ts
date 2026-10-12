@@ -43,3 +43,20 @@ test("stale: figures changed since the commentary was written", async ({ page })
   await expect(page.getByTestId("banner-stale")).toBeVisible();
   await expect(page.locator("#row-current_assets")).toHaveAttribute("data-testid", "figure-row-state-R4");
 });
+
+test("outdated: commentary in an older format is explained, never rendered or crashed on", async ({ page }) => {
+  await openReport(page, "company_a", async (p) => {
+    await p.route("**/api/reports/*/commentary", (route) =>
+      route.fulfill({
+        status: 404,
+        contentType: "application/json",
+        body: JSON.stringify({
+          detail: { code: "commentary_outdated", message: "the stored commentary was written in an older format" },
+        }),
+      }),
+    );
+  });
+  await expect(page.getByTestId("commentary-outdated")).toContainText("earlier version of this tool");
+  await expect(page.getByTestId("figures-table")).toBeVisible(); // the rest of the report still renders
+  await expect(page.getByTestId("topic-state-ok")).toHaveCount(0);
+});

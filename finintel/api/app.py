@@ -8,22 +8,28 @@ decision, lets the pipeline's own stages re-run, and serves what the database ho
 from __future__ import annotations
 
 import json
+import math
 import tempfile
 import threading
+from collections import OrderedDict
 from collections.abc import Callable, Iterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
 import psycopg
-from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile
-from fastapi.responses import FileResponse
+from fastapi import Depends, FastAPI, File, HTTPException, Request, Response, UploadFile
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import FileResponse, JSONResponse
+from pydantic import ValidationError
 
 from finintel.api import models as m
 from finintel.api.extraction_view import extraction_view
 from finintel.cache import StageCache
 from finintel.commentary.reported import find_reported_metrics
 from finintel.contracts import validate_pack
+from finintel.contracts.commentary import Commentary
 from finintel.db import jobs, persist
 from finintel.ingest import MAX_UPLOAD_BYTES, IngestError, IngestErrorCode
 from finintel.parse.cached import cached_text_layer
@@ -55,6 +61,36 @@ def _error(status: int, code: str, message: str) -> HTTPException:
     return HTTPException(status_code=status, detail={"code": code, "message": message})
 
 
+_TEXT_LAYERS_KEPT = 4  # reports whose text layer the page endpoint keeps in memory
+
+
+def _json_safe(value: Any) -> Any:
+    """`value` with every non-finite float (NaN, Infinity) replaced by its name as a string."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return str(value)
+    if isinstance(value, dict):
+        return {k: _json_safe(v) for k, v in value.items()}
+    if isinstance(value, list | tuple):
+        return [_json_safe(v) for v in value]
+    return value
+
+
+def _stored_name(filename: str | None) -> str:
+    """The upload's file name as it is stored: its base name, never empty, "." or "..", and short
+    enough for any filesystem (255 bytes); a long name keeps its start and its extension."""
+    name = Path(filename or "").name
+    if name in ("", ".", ".."):
+        return "upload.pdf"  # "..", "/" or "a/.." has no base name to store the file under
+    if len(name.encode()) <= _MAX_NAME_BYTES:
+        return name
+    suffix = Path(name).suffix[:16]
+    stem = name[: len(name) - len(suffix)].encode()[: _MAX_NAME_BYTES - len(suffix.encode())]
+    return stem.decode(errors="ignore") + suffix
+
+
+_MAX_NAME_BYTES = 200  # under the 255-byte limit, with room for the store's ".tmp<pid>" suffix
+
+
 def create_app(
     ctx: RunContext | None = None,
     connect: Connect | None = None,
@@ -84,6 +120,14 @@ def create_app(
         description="A research aid: numbers come from the statement pack, never from a model.",
         lifespan=lifespan,
     )
+
+    @app.exception_handler(RequestValidationError)
+    async def invalid_request(_: Request, exc: RequestValidationError) -> JSONResponse:
+        # FastAPI's own 422 echoes each offending input; a NaN or Infinity there cannot be written
+        # as JSON and turned the refusal into a 500. The echo is made JSON-safe, the rest is kept.
+        return JSONResponse(
+            status_code=422, content={"detail": _json_safe(jsonable_encoder(exc.errors()))}
+        )
 
     def conn_dep() -> Iterator[psycopg.Connection]:
         assert connect is not None, "app was created without a database"
@@ -167,7 +211,7 @@ def create_app(
             raise _error(
                 413, IngestErrorCode.FILE_TOO_LARGE.value, f"the limit is {limit // 1_048_576} MB"
             )
-        name = Path(file.filename or "upload.pdf").name
+        name = _stored_name(file.filename)
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / name
             path.write_bytes(data)
@@ -242,21 +286,47 @@ def create_app(
         ).fetchone()
         if row is None:
             raise _error(404, "commentary_not_found", "no commentary for this report yet")
+        try:
+            Commentary.model_validate(row[1])
+        except ValidationError as exc:
+            # Written by an earlier version of the contract (for example before ADR-012 added
+            # `figures`): not served as current, so the screen never renders a shape it can't read.
+            raise _error(
+                404,
+                "commentary_outdated",
+                "the stored commentary was written in an older format; it is rewritten when the "
+                "commentary stage runs again",
+            ) from exc
         return m.CommentaryOut(
             id=row[0], output=dict(row[1]), stale=row[2], model_id=row[3], prompt_version=row[4],
             validation=dict(row[5]),
         )  # fmt: skip
 
+    layers: OrderedDict[str, Any] = OrderedDict()  # sha256 -> text layer, most recent last
+    layers_lock = threading.Lock()
+
     def text_layer(conn: psycopg.Connection, report_id: int) -> Any:
+        """The report's text layer, kept in memory for the last few reports: the evidence panel
+        asks for one page per click, and reading the cached layer from disk costs ~0.3 s."""
         assert ctx is not None
         doc = doc_row(conn, report_id)
-        layer, _ = cached_text_layer(
-            ctx.store.path(str(doc[6])), str(doc[1]), StageCache(ctx.cache_dir)
-        )
+        sha = str(doc[1])
+        with layers_lock:
+            if sha in layers:
+                layers.move_to_end(sha)
+                return layers[sha]
+        layer, _ = cached_text_layer(ctx.store.path(str(doc[6])), sha, StageCache(ctx.cache_dir))
+        with layers_lock:
+            layers[sha] = layer
+            while len(layers) > _TEXT_LAYERS_KEPT:
+                layers.popitem(last=False)
         return layer
 
     @app.get("/reports/{report_id}/pages/{n}", response_model=m.PageOut)
     def get_page(report_id: int, n: int, conn: psycopg.Connection = db) -> m.PageOut:
+        count = doc_row(conn, report_id)[3]
+        if count is not None and not 1 <= n <= int(count):
+            raise _error(404, "page_not_found", f"page {n} is outside 1..{count}")
         layer = text_layer(conn, report_id)
         page = next((p for p in layer.pages if p.page == n), None)
         if page is None:
@@ -402,7 +472,14 @@ def create_app(
     def post_override(
         report_id: int, body: m.OverrideIn, conn: psycopg.Connection = db
     ) -> m.OverrideResult:
-        doc_row(conn, report_id)
+        doc = doc_row(conn, report_id)
+        count = doc[3]
+        if body.page is not None and not (1 <= body.page <= int(count or body.page)):
+            # Checked before anything is written: a page outside the document was a 500 (the pack
+            # schema refused it) or, above the last page, a figure citing a page that isn't there.
+            raise _error(
+                422, "page_out_of_range", f"page {body.page} is outside 1..{count} for this report"
+            )
         try:
             ov = resolve(conn, report_id, body)
             with conn.transaction():

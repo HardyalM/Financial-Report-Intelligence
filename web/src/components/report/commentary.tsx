@@ -19,9 +19,20 @@ const TOPIC_TITLES: Record<string, string> = {
 
 /** Commentary (UI.md section 7). Every paragraph is validated by code before it reaches here. */
 export function CommentaryPanel() {
-  const { commentary, report } = useReportContext();
+  const { commentary, commentaryNote, report } = useReportContext();
   if (!commentary) {
     const job = report.jobs.find((j) => j.stage === "commentary");
+    if (commentaryNote) {
+      return (
+        <Card className="px-5 py-4" data-testid="commentary-outdated">
+          <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Commentary</h2>
+          <p className="mt-1 text-[13px] text-ink-2">
+            The stored commentary was written by an earlier version of this tool and can’t be shown.
+            It is rewritten when the commentary stage runs again. Figures and ratios above are current.
+          </p>
+        </Card>
+      );
+    }
     return (
       <Card className="px-5 py-4" data-testid="commentary-pending">
         <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Commentary</h2>

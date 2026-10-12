@@ -112,7 +112,9 @@ class OverrideIn(_Model):
     item: str
     period_id: str
     candidate_id: str | None = None
-    value: float | None = None
+    # A figure is finite: NaN or Infinity (which JSON parsers accept) is refused here, before it
+    # can reach a pack, a ratio or Postgres (which rejects NaN in jsonb).
+    value: float | None = Field(default=None, allow_inf_nan=False)
     raw_text: str | None = None
     page: int | None = None
     reason: str | None = None
