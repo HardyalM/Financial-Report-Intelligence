@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AppBar } from "@/components/app-bar";
 import { SiteFooter } from "@/components/report/footer";
 
 export const metadata: Metadata = { title: "Limitations" };
@@ -8,11 +9,12 @@ export const metadata: Metadata = { title: "Limitations" };
 export default function Limitations() {
   return (
     <div className="flex min-h-screen flex-col">
+      <AppBar />
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-12 sm:px-6" data-testid="limitations">
         <Link href="/" className="text-[13px] text-accent hover:underline">
           ← Financial Report Intelligence
         </Link>
-        <h1 className="mt-4 text-2xl font-semibold tracking-[-0.02em]">Limitations</h1>
+        <h1 className="mt-4 text-[34px] font-semibold tracking-[-0.03em]">Limitations</h1>
         <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
           A research aid for reading UK annual reports, not investment advice. It is built to say
           when it cannot do something rather than guess. These are the things it does not do.
@@ -52,9 +54,9 @@ export default function Limitations() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mt-8">
-      <h2 className="text-[15px] font-semibold text-ink">{title}</h2>
-      <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[14px] leading-relaxed text-ink-2">{children}</ul>
+    <section className="mt-6 rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
+      <h2 className="text-[16px] font-semibold tracking-[-0.015em] text-ink">{title}</h2>
+      <ul className="mt-3 list-disc space-y-2 pl-5 text-[14px] leading-relaxed text-ink-2 marker:text-ink-3">{children}</ul>
     </section>
   );
 }

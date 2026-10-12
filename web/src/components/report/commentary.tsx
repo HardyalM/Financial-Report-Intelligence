@@ -5,6 +5,7 @@ import * as React from "react";
 import { useReportContext } from "@/components/report/context";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cn";
 import type { Citation, Figure, Paragraph, RatioName, Topic } from "@/lib/types";
@@ -37,20 +38,26 @@ export function CommentaryPanel() {
   const output = commentary.output;
   const summary = output.executive_summary;
   return (
-    <section aria-labelledby="commentary-heading" className="space-y-3" data-testid="commentary">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="commentary-heading" className="text-[15px] font-semibold tracking-[-0.01em]">
-          Commentary
-        </h2>
-        {output.mode === "extractive" ? (
-          <Badge tone="neutral" data-testid="extractive-label">
-            <FileText aria-hidden />
-            {output.label ?? "Extractive summary: no generated text"}
-          </Badge>
-        ) : (
-          <p className="text-xs text-ink-3">Figures are filled in by code; quotes are checked against the report.</p>
-        )}
-      </div>
+    <section aria-labelledby="commentary-heading" className="space-y-4" data-testid="commentary">
+      <SectionHeading
+        id="commentary-heading"
+        eyebrow="From the narrative"
+        title="Commentary"
+        className="mb-0"
+        description={
+          output.mode === "extractive"
+            ? "Verbatim passages from the report, each with its page."
+            : "Figures are filled in by code; quotes are checked against the report."
+        }
+        aside={
+          output.mode === "extractive" ? (
+            <Badge tone="neutral" data-testid="extractive-label">
+              <FileText aria-hidden />
+              {output.label ?? "Extractive summary: no generated text"}
+            </Badge>
+          ) : null
+        }
+      />
 
       {commentary.stale || report.stale ? (
         <div

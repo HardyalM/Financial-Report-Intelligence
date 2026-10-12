@@ -20,31 +20,46 @@ v1 has **one primary screen: the Report screen**.
 
 ## 2. Layout (desktop, width ≥ 1280 px)
 
+*Revised 2026-10-12 (visual redesign): an app bar, a headline-figures strip and sticky section tabs
+were added. Every state, test id and rule in this document is unchanged.*
+
 ```
 ┌───────────────────────────────────────────────────────────────────────────────────────────┐
-│ A  Company plc · Annual Report 2025 · Consolidated · [Corporate] · [£m GBP] · [Ready]     │
-│    badges: [Unit confirmed manually] [Reduced verification]                (if present)   │
+│ T  App bar (sticky): FinIntel · Reports / Company   [Research aid · not investment advice]│
+│                                                     [Method & limits] [+ New report]      │
 ├───────────────────────────────────────────────────────────────────────────────────────────┤
-│ B  Banner stack (highest priority first, §8)                                             │
+│ A  ANNUAL REPORT 2025                                                                     │
+│    Company plc                              [Ready] [Corporate] [£m GBP] [badges…]        │
+│    Year ended … · Consolidated statements · file.pdf · N pages                            │
+│ H  Headline figures (6 tiles): value · unit · change with arrow · prior year              │
+│    Corporate: Revenue, Operating profit, Operating margin, ROCE, Current ratio, D/E       │
+│    Bank: Total income, PBT, Cost-to-income, Loan-to-deposit, Total assets, Total equity   │
+├───────────────────────────────────────────────────────────────────────────────────────────┤
+│ S  Section tabs (sticky under T): Key figures · Ratios · Commentary (current one marked)   │
 ├─────────────────────────────────────────────────────┬─────────────────────────────────────┤
-│ C1 Numbers snapshot (code-rendered, one line)        │ D  Evidence panel (sticky)          │
-│                                                      │   D1 PDF page viewer + highlight    │
-│ C2 Key figures                FY2025   FY2024  Δ     │   D2 Provenance card                │
-│    Revenue                    12,345.0 11,890.0 …    │   D3 Review actions (when relevant) │
-│    [p.142] [Note 3] Two engine families agree        │                                     │
-│    Operating profit           — Needs review (2)     │   Empty: "Select a figure, ratio    │
-│    …                                                 │   input or citation to see its      │
-│                                                      │   source."                          │
-│ C3 Ratios  [Op. margin] [Current] [D/E] [ROCE]       │                                     │
+│ B  Banner stack (highest priority first, §8)         │ D  Evidence panel (sticky)          │
+│ C1 Snapshot · FY2025 (code-rendered, one line)       │   D1 PDF page viewer + highlight    │
+│                                                      │   D2 Provenance card                │
+│ C2 STATEMENTS / Key figures   FY2025   FY2024  Δ     │   D3 Review actions (when relevant) │
+│    Revenue                    12,345.0 11,890.0 ↗ …  │                                     │
+│    [p.142] [Note 3] Two engine families agree        │   Empty: "Select a figure, ratio    │
+│    Operating profit           — Needs review (2)     │   input or citation to see its      │
+│                                                      │   source." and what it will show    │
+│ C3 COMPUTED IN CODE / Ratios  [cards, K1–K6]         │                                     │
 │                                                      │                                     │
-│ C4 Commentary                                        │                                     │
-│    Executive summary · Income drivers · Risks ·      │                                     │
-│    Governance · Liquidity & capital (if evidenced)   │                                     │
+│ C4 FROM THE NARRATIVE / Commentary                   │                                     │
 ├─────────────────────────────────────────────────────┴─────────────────────────────────────┤
-│ Footer: Research aid. Not investment advice. · Limitations · Model and prompt versions     │
+│ Footer: FinIntel · Research aid. Not investment advice. · Limitations · model and versions │
 └───────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
+- **Headline tiles (H)** show only values the pack or the ratio pack published, formatted by code.
+  A null tile shows "—" and a short reason (Not found, Needs review, Missing input, Not
+  applicable, Withheld); the full sentence stays on the row or card. A figure tile opens its row
+  and source; a ratio tile scrolls to its card. A tile using a manual input carries the manual mark.
+- **Change arrows** (tiles and the table's change column) are neutral: direction only, never green
+  or red, because a rise is not a judgement. The arrow follows the printed, rounded figure, so a
+  change shown as "0.00x" or "0.0%" has a flat arrow.
 - **Narrower than 1280 px:** the evidence panel becomes a bottom sheet.
 - **Below 768 px:** the screen is read-only; review actions are desktop-only in v1.
 - The figures in the sketch are the fictional `EXAMPLE` numbers.

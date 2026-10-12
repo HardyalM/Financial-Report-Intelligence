@@ -59,8 +59,8 @@ export function UploadDropzone() {
           void send(e.dataTransfer.files[0]);
         }}
         className={cn(
-          "flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-colors",
-          over ? "border-accent bg-accent-soft" : "border-line-strong bg-surface",
+          "flex flex-col items-center gap-3 rounded-2xl border border-dashed px-6 py-10 text-center transition-all",
+          over ? "scale-[1.01] border-accent bg-accent-soft" : "border-line-strong bg-surface-sunk/60 hover:border-ink-3",
         )}
       >
         {busy ? (
@@ -72,14 +72,16 @@ export function UploadDropzone() {
           </>
         ) : (
           <>
-            <FileUp aria-hidden className="size-6 text-ink-3" />
+            <span className="flex size-11 items-center justify-center rounded-xl border border-line bg-surface shadow-[var(--shadow-card)]">
+              <FileUp aria-hidden className="size-5 text-accent" />
+            </span>
             <p className="text-[14px] font-medium text-ink">
               Drop an annual report PDF (up to 50&nbsp;MB). Digitally born PDFs work best.
             </p>
             <button
               type="button"
               onClick={() => input.current?.click()}
-              className="rounded-md border border-line-strong bg-surface px-3 py-1.5 text-[13px] font-medium text-ink hover:bg-surface-sunk"
+              className="rounded-lg bg-ink px-3.5 py-2 text-[13px] font-medium text-ink-inverse shadow-[var(--shadow-card)] transition-opacity hover:opacity-90"
             >
               Choose a file
             </button>

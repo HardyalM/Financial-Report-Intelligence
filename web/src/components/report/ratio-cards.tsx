@@ -6,6 +6,7 @@ import { PageChip } from "@/components/report/chips";
 import { useReportContext } from "@/components/report/context";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cn";
 import { formatFigure, formatRatio, formatRatioChange, unitLabel } from "@/lib/format";
@@ -48,16 +49,16 @@ export function RatioCards() {
   // not applicable, so a reader sees why they are absent rather than wondering.
   const bank = BANK.filter((n) => report.ratios?.periods.some((p) => p.ratios[n]));
   return (
-    <section aria-labelledby="ratios-heading" className="space-y-5">
+    <section aria-labelledby="ratios-heading" className="space-y-10">
       {bank.length ? (
         <div>
-          <div className="mb-3 flex items-baseline justify-between">
-            <h2 id="ratios-heading" className="text-[15px] font-semibold tracking-[-0.01em]">
-              Bank ratios
-            </h2>
-            <p className="text-xs text-ink-3">Computed in code from the figures above. Year-end balances.</p>
-          </div>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2" data-testid="bank-ratios">
+          <SectionHeading
+            id="ratios-heading"
+            eyebrow="Computed in code"
+            title="Bank ratios"
+            description="Locked definitions, computed from the figures above. Year-end balances."
+          />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2" data-testid="bank-ratios">
             {bank.map((name) => (
               <RatioCard key={name} name={name} />
             ))}
@@ -65,15 +66,17 @@ export function RatioCards() {
         </div>
       ) : null}
       <div>
-        <div className="mb-3 flex items-baseline justify-between">
-          <h2 id={bank.length ? "corporate-ratios-heading" : "ratios-heading"} className="text-[15px] font-semibold tracking-[-0.01em]">
-            {bank.length ? "Corporate ratios" : "Ratios"}
-          </h2>
-          <p className="text-xs text-ink-3">
-            {bank.length ? "Shown so their absence is explained." : "Computed in code from the figures above. Year-end balances."}
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <SectionHeading
+          id={bank.length ? "corporate-ratios-heading" : "ratios-heading"}
+          eyebrow={bank.length ? "Not applicable to banks" : "Computed in code"}
+          title={bank.length ? "Corporate ratios" : "Ratios"}
+          description={
+            bank.length
+              ? "Shown so their absence is explained."
+              : "Locked definitions, computed from the figures above. Year-end balances."
+          }
+        />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {CORPORATE.map((name) => (
             <RatioCard key={name} name={name} />
           ))}
@@ -96,10 +99,10 @@ function RatioCard({ name }: { name: RatioName }) {
 
   return (
     <Card data-testid={`ratio-card-state-${info.state}`} data-ratio={name} className="flex flex-col">
-      <div className="flex items-start justify-between gap-3 px-5 pt-4">
+      <div className="flex items-start justify-between gap-3 px-5 pt-5">
         <div>
-          <h3 className="text-[13px] font-semibold text-ink">{now?.label ?? locked.label}</h3>
-          <p className="mt-0.5 text-[12px] text-ink-3" data-testid="ratio-formula">
+          <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-ink">{now?.label ?? locked.label}</h3>
+          <p className="mt-1 font-mono text-[11.5px] text-ink-3" data-testid="ratio-formula">
             {now?.formula_text?.replace(" - ", " − ") ?? locked.formula}
           </p>
         </div>
@@ -113,7 +116,7 @@ function RatioCard({ name }: { name: RatioName }) {
         ) : null}
       </div>
 
-      <div className="px-5 pb-1 pt-3">
+      <div className="px-5 pb-2 pt-4">
         <CardValue name={name} ratio={now} prior={before} change={change ?? null} />
       </div>
 
@@ -176,7 +179,7 @@ function RatioCard({ name }: { name: RatioName }) {
     }
     return (
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pb-2">
-        <span className="num text-[28px] font-semibold leading-none tracking-[-0.02em] text-ink" data-testid="ratio-value">
+        <span className="display-figure text-[36px] text-ink" data-testid="ratio-value">
           {formatRatio(ratio.value, ratio.unit)}
         </span>
         {info.flag ? (
@@ -211,7 +214,7 @@ function MissingValue({ ratio, name }: { ratio: Ratio | null; name: RatioName })
   const zero = ratio?.reason === "division_by_zero";
   return (
     <div className="space-y-1.5 pb-3">
-      <span className="num text-[28px] font-semibold leading-none text-ink-3" aria-label="not available">
+      <span className="display-figure block text-[36px] text-ink-3" aria-label="not available">
         {"—"}
       </span>
       {zero ? (

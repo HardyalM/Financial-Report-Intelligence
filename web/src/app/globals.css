@@ -8,20 +8,24 @@
  * the only signal. Foreground/background pairs meet WCAG AA at the sizes used.
  */
 :root {
-  --bg: oklch(0.985 0.002 95);
+  /* Neutrals: a cool, paper-like ground with ink that reads as print, not as screen grey. */
+  --bg: oklch(0.982 0.004 255);
   --surface: oklch(1 0 0);
-  --surface-sunk: oklch(0.97 0.003 95);
+  --surface-sunk: oklch(0.973 0.005 255);
   --surface-raised: oklch(1 0 0);
-  --line: oklch(0.91 0.004 95);
-  --line-strong: oklch(0.84 0.006 95);
-  --ink: oklch(0.2 0.01 260);
-  --ink-2: oklch(0.38 0.012 260);
-  --ink-3: oklch(0.52 0.012 260);
+  --line: oklch(0.92 0.006 255);
+  --line-strong: oklch(0.86 0.009 255);
+  --ink: oklch(0.205 0.028 262);
+  --ink-2: oklch(0.405 0.022 262);
+  --ink-3: oklch(0.545 0.017 262);
   --ink-inverse: oklch(0.99 0 0);
-  --accent: oklch(0.42 0.13 262);
-  --accent-soft: oklch(0.95 0.025 262);
-  --focus: oklch(0.55 0.17 262);
-  --highlight: oklch(0.95 0.08 95);
+  --brand: oklch(0.255 0.065 262);
+  --brand-2: oklch(0.42 0.15 258);
+  --accent: oklch(0.47 0.165 260);
+  --accent-soft: oklch(0.956 0.026 260);
+  --focus: oklch(0.56 0.18 260);
+  --highlight: oklch(0.95 0.085 95);
+  --glass: oklch(1 0 0 / 0.78);
 
   /* row and card states: text, soft background, border */
   --ok: oklch(0.45 0.11 160);
@@ -52,27 +56,31 @@
   --muted-soft: oklch(0.965 0.003 260);
   --muted-line: oklch(0.89 0.005 260);
 
-  --shadow-card: 0 1px 0 oklch(0 0 0 / 0.03), 0 1px 3px oklch(0 0 0 / 0.04);
-  --shadow-pop: 0 10px 30px -12px oklch(0 0 0 / 0.25), 0 2px 6px oklch(0 0 0 / 0.06);
+  --shadow-card: 0 1px 2px oklch(0.25 0.04 262 / 0.04), 0 1px 1px oklch(0.25 0.04 262 / 0.02);
+  --shadow-raised: 0 1px 2px oklch(0.25 0.04 262 / 0.05), 0 8px 24px -12px oklch(0.25 0.04 262 / 0.14);
+  --shadow-pop: 0 18px 40px -16px oklch(0.25 0.04 262 / 0.3), 0 2px 6px oklch(0.25 0.04 262 / 0.06);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: oklch(0.16 0.006 260);
-    --surface: oklch(0.2 0.007 260);
-    --surface-sunk: oklch(0.18 0.006 260);
-    --surface-raised: oklch(0.23 0.008 260);
-    --line: oklch(0.29 0.008 260);
-    --line-strong: oklch(0.36 0.01 260);
-    --ink: oklch(0.95 0.004 95);
-    --ink-2: oklch(0.8 0.008 260);
-    --ink-3: oklch(0.66 0.01 260);
-    --ink-inverse: oklch(0.18 0.01 260);
-    --accent: oklch(0.78 0.1 262);
-    --accent-soft: oklch(0.28 0.04 262);
-    --focus: oklch(0.72 0.14 262);
-    --highlight: oklch(0.38 0.08 95);
+    --bg: oklch(0.145 0.01 262);
+    --surface: oklch(0.183 0.012 262);
+    --surface-sunk: oklch(0.163 0.011 262);
+    --surface-raised: oklch(0.215 0.013 262);
+    --line: oklch(0.27 0.013 262);
+    --line-strong: oklch(0.34 0.015 262);
+    --ink: oklch(0.955 0.005 255);
+    --ink-2: oklch(0.8 0.012 258);
+    --ink-3: oklch(0.65 0.014 258);
+    --ink-inverse: oklch(0.17 0.012 262);
+    --brand: oklch(0.86 0.06 255);
+    --brand-2: oklch(0.72 0.14 258);
+    --accent: oklch(0.76 0.12 258);
+    --accent-soft: oklch(0.27 0.05 260);
+    --focus: oklch(0.72 0.15 258);
+    --highlight: oklch(0.4 0.08 95);
+    --glass: oklch(0.17 0.012 262 / 0.78);
     --ok: oklch(0.8 0.12 160);
     --ok-soft: oklch(0.26 0.04 160);
     --ok-line: oklch(0.4 0.06 160);
@@ -101,7 +109,8 @@
     --muted-soft: oklch(0.24 0.006 260);
     --muted-line: oklch(0.36 0.008 260);
     --shadow-card: 0 0 0 1px oklch(1 0 0 / 0.02);
-    --shadow-pop: 0 12px 32px -12px oklch(0 0 0 / 0.6);
+    --shadow-raised: 0 0 0 1px oklch(1 0 0 / 0.03), 0 10px 28px -14px oklch(0 0 0 / 0.7);
+    --shadow-pop: 0 18px 40px -14px oklch(0 0 0 / 0.7);
     color-scheme: dark;
   }
 }
@@ -119,6 +128,9 @@
   --color-ink-2: var(--ink-2);
   --color-ink-3: var(--ink-3);
   --color-ink-inverse: var(--ink-inverse);
+  --color-brand: var(--brand);
+  --color-brand-2: var(--brand-2);
+  --color-glass: var(--glass);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-focus: var(--focus);
@@ -151,6 +163,7 @@
   --color-muted-soft: var(--muted-soft);
   --color-muted-line: var(--muted-line);
   --shadow-card: var(--shadow-card);
+  --shadow-raised: var(--shadow-raised);
   --shadow-pop: var(--shadow-pop);
 }
 
@@ -159,6 +172,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+  html {
+    scroll-padding-top: 7.5rem; /* the sticky app bar and section nav */
   }
   body {
     background: var(--bg);
@@ -179,6 +195,33 @@
 @utility num {
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum", "lnum", "cv11";
+}
+
+/* Small uppercase labels above values and sections. */
+@utility eyebrow {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* Large display figures: tight, tabular, lining. */
+@utility display-figure {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum", "lnum", "cv11", "ss01";
+  letter-spacing: -0.025em;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* A faint engineering grid behind hero areas. */
+@utility hero-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklch, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--line) 55%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 30%, transparent 80%);
 }
 
 @utility placeholder-figure {

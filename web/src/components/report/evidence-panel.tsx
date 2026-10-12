@@ -45,7 +45,7 @@ export function EvidencePanel() {
       <aside
         aria-label="Evidence"
         data-testid="evidence-panel"
-        className="sticky top-6 max-h-[calc(100vh-3rem)] overflow-y-auto rounded-xl border border-line bg-surface shadow-[var(--shadow-card)]"
+        className="sticky top-[7.5rem] max-h-[calc(100vh-9rem)] overflow-y-auto rounded-2xl border border-line bg-surface shadow-[var(--shadow-raised)]"
       >
         <PanelBody />
       </aside>
@@ -118,11 +118,24 @@ function PanelBody() {
   );
   if (!selection) {
     return (
-      <div className="flex min-h-64 flex-col items-center justify-center gap-2 px-6 py-10 text-center">
-        <MousePointerClick aria-hidden className="size-5 text-ink-3" />
-        <p className="max-w-[16rem] text-[13px] leading-relaxed text-ink-3" data-testid="evidence-empty">
-          Select a figure, ratio input or citation to see its source.
-        </p>
+      <div>
+        <div className="flex items-center justify-between border-b border-line px-5 py-3">
+          <span className="eyebrow">Evidence</span>
+          <span className="text-[11.5px] text-ink-3">Source page · provenance</span>
+        </div>
+        <div className="flex min-h-72 flex-col items-center justify-center gap-4 px-8 py-12 text-center">
+          <span className="relative flex size-12 items-center justify-center rounded-2xl border border-line bg-surface-sunk">
+            <MousePointerClick aria-hidden className="size-5 text-ink-2" />
+          </span>
+          <p className="max-w-[17rem] text-[13px] leading-relaxed text-ink-2" data-testid="evidence-empty">
+            Select a figure, ratio input or citation to see its source.
+          </p>
+          <ul className="w-full max-w-[17rem] space-y-1.5 text-left text-[12px] text-ink-3">
+            <li className="flex gap-2"><span className="num text-ink-2">1</span>The PDF page, with the cell or quote highlighted</li>
+            <li className="flex gap-2"><span className="num text-ink-2">2</span>The text as printed and the arithmetic checks</li>
+            <li className="flex gap-2"><span className="num text-ink-2">3</span>Review actions when a figure needs a decision</li>
+          </ul>
+        </div>
       </div>
     );
   }

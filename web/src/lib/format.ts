@@ -110,3 +110,13 @@ export function pageRange(pages: number[]): string {
   const last = sorted[sorted.length - 1]!;
   return first === last ? `p. ${first}` : `pp. ${first}–${last}`;
 }
+
+/**
+ * The direction a formatted change shows: +1, −1, or 0 when it rounds to zero. Arrows follow the
+ * printed figure, so "0.00x" never carries a down arrow from a −0.004 underneath.
+ */
+export function shownDirection(formatted: string): -1 | 0 | 1 {
+  const digits = formatted.replace(/[^0-9]/g, "");
+  if (!digits || /^0+$/.test(digits)) return 0;
+  return formatted.startsWith("+") ? 1 : formatted.startsWith(MINUS) || formatted.startsWith("-") ? -1 : 0;
+}

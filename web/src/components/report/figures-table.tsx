@@ -1,14 +1,15 @@
 "use client";
 
-import { ChevronRight, Lock } from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, ChevronRight, Lock } from "lucide-react";
 import * as React from "react";
 import { CodeHint, NoteChip, PageChip, StateBadge } from "@/components/report/chips";
 import { useReportContext } from "@/components/report/context";
 import { Card } from "@/components/ui/card";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cn";
 import { checkSentence, DECISION_SENTENCES, warningSentence } from "@/lib/copy";
-import { formatFigure, formatPercentChange, pageRange, unitLabel } from "@/lib/format";
+import { formatFigure, formatPercentChange, pageRange, shownDirection, unitLabel } from "@/lib/format";
 import {
   DEBT_COMPONENTS,
   GROUP_TITLES,
@@ -36,21 +37,29 @@ export function FiguresTable() {
     .filter((g) => g.items.length > 0);
 
   return (
+    <section aria-labelledby="figures-heading">
+    <SectionHeading
+      id="figures-heading"
+      eyebrow="Statements"
+      title="Key figures"
+      description={
+        <>
+          As printed in the {pack.basis === "company_only" ? "company" : "consolidated"} statements, in{" "}
+          {unit} {pack.currency}. Liabilities are shown as positive amounts; • marks a ratio input.
+        </>
+      }
+      aside={
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-[11.5px] font-medium text-ink-2">
+          <span className="num">{unit}</span> {pack.currency}
+        </span>
+      }
+    />
     <Card className="overflow-hidden" data-testid="figures-table">
-      <div className="flex items-baseline justify-between gap-4 border-b border-line px-5 py-3.5">
-        <div>
-          <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Key figures</h2>
-          <p className="mt-0.5 text-xs text-ink-3">
-            As printed in the {pack.basis === "company_only" ? "company" : "consolidated"} statements, in{" "}
-            {unit} {pack.currency}. Liabilities are shown as positive amounts; • marks a ratio input.
-          </p>
-        </div>
-      </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <caption className="sr-only">Key figures with their source pages and verification state</caption>
           <thead>
-            <tr className="border-b border-line text-[11px] uppercase tracking-[0.06em] text-ink-3">
+            <tr className="border-b border-line bg-surface-sunk/60 text-[10.5px] uppercase tracking-[0.08em] text-ink-3">
               <th scope="col" className="px-5 py-2 text-left font-medium">
                 Line item
               </th>
@@ -67,7 +76,7 @@ export function FiguresTable() {
                 <th
                   colSpan={prior ? 4 : 3}
                   scope="colgroup"
-                  className="bg-surface-sunk px-5 py-1.5 text-left text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-3"
+                  className="border-y border-line bg-surface-sunk/70 px-5 pb-1.5 pt-4 text-left text-[10.5px] font-semibold uppercase tracking-[0.09em] text-ink-2"
                 >
                   {GROUP_TITLES[group]}
                 </th>
@@ -80,6 +89,7 @@ export function FiguresTable() {
         </table>
       </div>
     </Card>
+    </section>
   );
 }
 
@@ -119,7 +129,7 @@ function FigureRow({ item }: { item: ItemDef }) {
           selected ? "bg-accent-soft/50" : "hover:bg-surface-sunk/60",
         )}
       >
-        <th scope="row" className="px-5 py-3 text-left font-normal">
+        <th scope="row" className="px-5 py-2.5 text-left font-normal">
           <div className="flex items-baseline gap-2">
             <Tooltip content={line?.label_found ? `Printed as “${line.label_found}”` : null}>
               <span
@@ -142,8 +152,15 @@ function FigureRow({ item }: { item: ItemDef }) {
         </th>
         <ValueCell info={now} period={current!.id} item={item.id} />
         {prior && before ? <ValueCell info={before} period={prior.id} item={item.id} secondary /> : null}
-        <td className="num px-5 py-3 text-right text-[13px] text-ink-2">
-          {change === null ? <span aria-label="not available">—</span> : formatPercentChange(change)}
+        <td className="num px-5 py-2.5 text-right text-[13px] text-ink-2">
+          {change === null ? (
+            <span aria-label="not available" className="text-ink-3">—</span>
+          ) : (
+            <span className="inline-flex items-center justify-end gap-0.5">
+              <ChangeArrow text={formatPercentChange(change)} />
+              {formatPercentChange(change)}
+            </span>
+          )}
         </td>
       </tr>
       {open
@@ -151,6 +168,13 @@ function FigureRow({ item }: { item: ItemDef }) {
         : null}
     </>
   );
+}
+
+/** Direction only, never colour: a rise in a liability is not "good" (UI.md section 10). */
+function ChangeArrow({ text }: { text: string }) {
+  const d = shownDirection(text);
+  const Icon = d > 0 ? ArrowUpRight : d < 0 ? ArrowDownRight : ArrowRight;
+  return <Icon aria-hidden className="size-3.5 text-ink-3" />;
 }
 
 function changeFor(
@@ -178,7 +202,7 @@ function ValueCell({
   const v = info.value?.value;
   return (
     <td
-      className={cn("num px-3 py-3 text-right text-[14px]", secondary ? "text-ink-2" : "font-medium text-ink")}
+      className={cn("num px-3 py-2.5 text-right text-[14px]", secondary ? "text-ink-3" : "font-semibold text-ink")}
       data-period={period}
     >
       <div className="flex items-center justify-end gap-1.5">
