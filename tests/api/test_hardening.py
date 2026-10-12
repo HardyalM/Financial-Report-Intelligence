@@ -131,3 +131,51 @@ def test_the_report_list_is_newest_first_with_status_and_no_figures(client: Test
     assert not ({"pack", "ratios", "value"} & set(row))  # a list never carries figures
     second = upload(client, ROOT_FIXTURE, name="missing_unit.pdf")["id"]
     assert [r["id"] for r in client.get("/reports").json()] == [second, first]
+
+
+def test_deleting_a_report_removes_it_its_derived_data_and_its_pdf(
+    client: TestClient, db: psycopg.Connection, ctx: Any
+) -> None:
+    keep = upload(client, ROOT_FIXTURE, name="missing_unit.pdf")["id"]
+    rid = upload(client)["id"]
+    row = db.execute("SELECT storage_key FROM documents WHERE id = %s", (rid,)).fetchone()
+    assert row is not None
+    key = row[0]
+    assert ctx.store.path(key).is_file()
+    r = client.delete(f"/reports/{rid}")
+    assert r.status_code == 204
+    assert client.get(f"/reports/{rid}").status_code == 404
+    for table in (
+        "statement_packs",
+        "ratio_packs",
+        "commentaries",
+        "chunks",
+        "jobs",
+        "review_items",
+    ):
+        column = (
+            "statement_pack_id IN (SELECT id FROM statement_packs WHERE document_id = %s)"
+            if table == "ratio_packs"
+            else "document_id = %s"
+        )
+        assert db.execute(f"SELECT count(*) FROM {table} WHERE {column}", (rid,)).fetchone() == (
+            0,
+        ), table
+    assert not ctx.store.path(key).exists()  # the stored PDF is gone too
+    assert [c["id"] for c in client.get("/dashboard").json()["reports"]] == [
+        keep
+    ]  # others untouched
+    again = client.delete(f"/reports/{rid}")
+    assert again.status_code == 404 and code(again) == "report_not_found"
+
+
+def test_a_report_with_a_running_stage_is_not_deleted(
+    client: TestClient, db: psycopg.Connection
+) -> None:
+    rid = upload(client)["id"]
+    db.execute(
+        "UPDATE jobs SET status = 'running' WHERE document_id = %s AND stage = 'index'", (rid,)
+    )
+    r = client.delete(f"/reports/{rid}")
+    assert r.status_code == 409 and code(r) == "report_busy"
+    assert client.get(f"/reports/{rid}").status_code == 200  # nothing removed

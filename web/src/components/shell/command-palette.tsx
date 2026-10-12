@@ -17,6 +17,7 @@ import {
   Sigma,
   Sun,
   Table2,
+  Trash2,
   Upload,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -25,6 +26,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { Kbd } from "@/components/pdf/toolbar";
 import { shortcutLabel, useHotkeys } from "@/components/pdf/use-viewer-input";
+import { useDeleteReportAction } from "@/components/shell/delete-report";
 import { reportTitle, statusMeta, whenAdded } from "@/components/shell/report-meta";
 import { useShell } from "@/components/shell/shell-context";
 import { useTheme } from "@/components/shell/theme";
@@ -121,6 +123,7 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
   });
   const hasSamples = (reports.data ?? []).some((r) => r.is_sample);
   const prefetch = usePrefetchReport();
+  const removeReport = useDeleteReportAction();
   const { setTheme, theme } = useTheme();
   const { toggleSidebar } = useShell();
   const upload = useUpload();
@@ -183,6 +186,17 @@ function Palette({ initial, onClose }: { initial: string; onClose: () => void })
             const button = document.querySelector<HTMLButtonElement>("[data-testid=open-reader]");
             if (button) button.click();
             else toast({ tone: "info", title: "Select a figure first", body: "Click a page chip to open its page, then open the document." });
+          },
+        },
+        {
+          id: "delete-report",
+          group: "This report",
+          label: "Delete this report…",
+          keywords: "remove trash",
+          icon: <Trash2 aria-hidden />,
+          run: () => {
+            const r = (reports.data ?? []).find((x) => String(x.id) === onReport);
+            void removeReport({ id: Number(onReport), title: r ? reportTitle(r) : `report ${onReport}` });
           },
         },
         {

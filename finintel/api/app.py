@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 import psycopg
+import structlog
 from fastapi import Depends, FastAPI, File, HTTPException, Request, Response, UploadFile
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
@@ -61,6 +62,8 @@ _INGEST_STATUS = {
 def _error(status: int, code: str, message: str) -> HTTPException:
     return HTTPException(status_code=status, detail={"code": code, "message": message})
 
+
+log = structlog.get_logger()
 
 _TEXT_LAYERS_KEPT = 4  # reports whose text layer the page endpoint keeps in memory
 
@@ -343,6 +346,35 @@ def create_app(
         result = seed(conn, ctx)
         settle(conn)
         return m.SamplesOut(added=result["added"], skipped=result["skipped"], removed=[])
+
+    @app.delete("/reports/{report_id}", status_code=204, responses={404: {}, 409: {}})
+    def delete_report(report_id: int, conn: psycopg.Connection = db) -> Response:
+        """Delete a report for good: the document, everything derived from it (packs, ratios,
+        commentary, chunks, review items, overrides and jobs, by cascade) and its stored PDF.
+        Refused while a stage is running, so the worker is never left writing to a report that
+        has gone; a queued or finished report can always be deleted."""
+        assert ctx is not None
+        doc = doc_row(conn, report_id)
+        running = conn.execute(
+            "SELECT stage FROM jobs WHERE document_id = %s AND status = 'running' LIMIT 1",
+            (report_id,),
+        ).fetchone()
+        if running is not None:
+            raise _error(
+                409, "report_busy", f"the {running[0]} stage is running; try again when it ends"
+            )
+        conn.execute("DELETE FROM documents WHERE id = %s", (report_id,))
+        key = str(doc[6]) if doc[6] else None
+        if key:
+            try:
+                path = ctx.store.path(key)
+                path.unlink(missing_ok=True)
+                if path.parent.is_dir() and not any(path.parent.iterdir()):
+                    path.parent.rmdir()  # the per-file folder under sha256/
+            except (OSError, ValueError):
+                log.warning("api.delete_report.file_kept", report_id=report_id)
+        log.info("api.delete_report", report_id=report_id)
+        return Response(status_code=204)
 
     @app.delete("/samples", response_model=m.SamplesOut)
     def delete_samples(conn: psycopg.Connection = db) -> m.SamplesOut:

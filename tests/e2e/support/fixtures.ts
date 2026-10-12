@@ -145,6 +145,12 @@ export async function routeFixtures(
     if (!hit) return json(404, { detail: { code: "report_not_found", message: `unexpected ${rest}` } });
     const { body, name } = hit;
     const tail = m![2] ?? "";
+    if (tail === "" && route.request().method() === "DELETE") {
+      byId.delete(m![1]!); // gone from the list and the dashboard too
+      const at = bodies.indexOf(body);
+      if (at >= 0) (bodies.splice(at, 1), names.splice(at, 1));
+      return route.fulfill({ status: 204 });
+    }
     if (tail === "") return json(200, body.report);
     if (tail === "/commentary") {
       return body.commentary

@@ -88,7 +88,14 @@ export interface paths {
         get: operations["get_report_reports__report_id__get"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Report
+         * @description Delete a report for good: the document, everything derived from it (packs, ratios,
+         *     commentary, chunks, review items, overrides and jobs, by cascade) and its stored PDF.
+         *     Refused while a stage is running, so the worker is never left writing to a report that
+         *     has gone; a queued or finished report can always be deleted.
+         */
+        delete: operations["delete_report_reports__report_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -954,6 +961,49 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ReportOut"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_report_reports__report_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

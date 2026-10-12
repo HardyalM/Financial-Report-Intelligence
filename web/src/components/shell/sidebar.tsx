@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, ExternalLink, FlaskConical, LayoutDashboard, Link2, Monitor, Moon, PanelLeftClose, PanelLeftOpen, Plus, Search, ShieldCheck, Sun } from "lucide-react";
+import { Copy, ExternalLink, FlaskConical, Trash2, LayoutDashboard, Link2, Monitor, Moon, PanelLeftClose, PanelLeftOpen, Plus, Search, ShieldCheck, Sun } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { Kbd } from "@/components/pdf/toolbar";
 import { shortcutLabel } from "@/components/pdf/use-viewer-input";
 import { usePalette } from "@/components/shell/command-palette";
+import { useDeleteReportAction } from "@/components/shell/delete-report";
 import { reportTitle, statusMeta } from "@/components/shell/report-meta";
 import { useShell } from "@/components/shell/shell-context";
 import { type ThemeChoice, useTheme } from "@/components/shell/theme";
@@ -175,6 +176,7 @@ function ReportRow({ report, collapsed, active }: { report: ReportSummary; colla
   const prefetch = usePrefetchReport();
   const router = useRouter();
   const toast = useToast();
+  const remove = useDeleteReportAction();
   const [menu, setMenu] = React.useState<{ x: number; y: number } | null>(null);
   const status = statusMeta(report.status);
   const title = reportTitle(report);
@@ -191,6 +193,7 @@ function ReportRow({ report, collapsed, active }: { report: ReportSummary; colla
       },
     },
     { label: `Copy report number (${report.id})`, icon: <Copy aria-hidden />, run: () => void navigator.clipboard?.writeText(String(report.id)) },
+    { label: "Delete report…", icon: <Trash2 aria-hidden />, destructive: true, run: () => void remove({ id: report.id, title }) },
   ];
   const link = (
     <Link

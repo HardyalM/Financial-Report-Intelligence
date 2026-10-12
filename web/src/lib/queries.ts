@@ -223,3 +223,43 @@ export function useShowSamples(): [boolean, (show: boolean) => void] {
   }, []);
   return [show, set];
 }
+
+/**
+ * Delete a report (it cannot be undone; the caller confirms first). Optimistic: it leaves every
+ * list at once and comes back if the server refuses (for instance while a stage is running).
+ */
+export function useDeleteReport(notices: { deleted?: (id: number) => void; failed?: (e: Error) => void } = {}) {
+  const client = useQueryClient();
+  const say = React.useRef(notices);
+  say.current = notices;
+  return useMutation({
+    mutationFn: async (id: number) => {
+      await request<null>(`/reports/${id}`, { method: "DELETE" });
+      return id;
+    },
+    onMutate: async (id) => {
+      await Promise.all([client.cancelQueries({ queryKey: keys.dashboard }), client.cancelQueries({ queryKey: keys.reports })]);
+      const before = {
+        dashboard: client.getQueryData<Dashboard>(keys.dashboard),
+        reports: client.getQueryData<ReportSummary[]>(keys.reports),
+      };
+      if (before.dashboard) {
+        const reports = before.dashboard.reports.filter((r) => r.id !== id);
+        client.setQueryData<Dashboard>(keys.dashboard, { reports, has_samples: reports.some((r) => r.is_sample) });
+      }
+      if (before.reports) client.setQueryData(keys.reports, before.reports.filter((r) => r.id !== id));
+      return before;
+    },
+    onSuccess: (id) => {
+      client.removeQueries({ queryKey: keys.report(id) });
+      say.current.deleted?.(id);
+    },
+    onError: (e, _id, before) => {
+      if (before?.dashboard) client.setQueryData(keys.dashboard, before.dashboard);
+      if (before?.reports) client.setQueryData(keys.reports, before.reports);
+      say.current.failed?.(e as Error);
+    },
+    onSettled: () =>
+      Promise.all([client.invalidateQueries({ queryKey: keys.dashboard }), client.invalidateQueries({ queryKey: keys.reports })]),
+  });
+}

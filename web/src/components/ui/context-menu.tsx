@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useIsPresent } from "motion/react";
 import { createPortal } from "react-dom";
 import { spring, useSafeMotion } from "@/lib/motion";
 import { cn } from "@/lib/cn";
@@ -11,6 +11,8 @@ export interface MenuItem {
   hint?: string;
   icon?: React.ReactNode;
   disabled?: boolean;
+  /** Cannot be undone: shown last, apart, in the error colour. */
+  destructive?: boolean;
   run: () => void;
 }
 
@@ -36,6 +38,11 @@ export function ContextMenu({
 
 function Menu({ at, items, onClose }: { at: { x: number; y: number }; items: MenuItem[]; onClose: () => void }) {
   const menu = React.useRef<HTMLDivElement>(null);
+  // While it animates out, a closing menu no longer listens: a key pressed then belongs to
+  // whatever opened next (a confirmation, say), not to the menu that is leaving.
+  const present = useIsPresent();
+  const presentRef = React.useRef(present);
+  presentRef.current = present;
   const safe = useSafeMotion(); // reduced motion: these fade instead of moving
   const [pos, setPos] = React.useState<{ x: number; y: number } | null>(null);
 
@@ -52,6 +59,7 @@ function Menu({ at, items, onClose }: { at: { x: number; y: number }; items: Men
   React.useEffect(() => {
     const openedAt = performance.now();
     const close = (e: Event) => {
+      if (!presentRef.current) return;
       if (e instanceof MouseEvent && menu.current?.contains(e.target as Node)) return;
       // A scroll in the first instant is the page settling (scroll restoration, a list
       // animating in), not the person scrolling away: native menus survive it too.
@@ -59,6 +67,7 @@ function Menu({ at, items, onClose }: { at: { x: number; y: number }; items: Men
       onClose();
     };
     const onKey = (e: KeyboardEvent) => {
+      if (!presentRef.current) return;
       if (e.key === "Escape") {
         e.stopPropagation();
         onClose();
@@ -98,8 +107,9 @@ function Menu({ at, items, onClose }: { at: { x: number; y: number }; items: Men
       onContextMenu={(e) => e.preventDefault()}
     >
       {items.map((item) => (
+        <React.Fragment key={item.label}>
+        {item.destructive ? <div role="separator" className="mx-2 my-1 h-px bg-line" /> : null}
         <button
-          key={item.label}
           type="button"
           role="menuitem"
           disabled={item.disabled}
@@ -110,12 +120,14 @@ function Menu({ at, items, onClose }: { at: { x: number; y: number }; items: Men
           className={cn(
             "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left outline-none",
             "hover:bg-surface-sunk focus-visible:bg-surface-sunk disabled:opacity-40 [&_svg]:size-4 [&_svg]:text-ink-3",
+            item.destructive && "text-missing hover:bg-missing-soft focus-visible:bg-missing-soft [&_svg]:text-missing",
           )}
         >
           {item.icon}
           <span className="flex-1 truncate">{item.label}</span>
           {item.hint ? <span className="text-[0.6875rem] text-ink-3">{item.hint}</span> : null}
         </button>
+        </React.Fragment>
       ))}
     </motion.div>
   );

@@ -43,6 +43,7 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
       detail?.message ?? response.statusText,
     );
   }
+  if (response.status === 204) return null as T; // no content (a delete)
   return (await response.json()) as T;
 }
 

@@ -31,6 +31,7 @@ import { Kbd } from "@/components/pdf/toolbar";
 import { shortcutLabel } from "@/components/pdf/use-viewer-input";
 import { SiteFooter } from "@/components/report/footer";
 import { usePalette } from "@/components/shell/command-palette";
+import { useDeleteReportAction } from "@/components/shell/delete-report";
 import { statusMeta, whenAdded } from "@/components/shell/report-meta";
 import { useUpload } from "@/components/shell/upload";
 import { Badge } from "@/components/ui/badge";
@@ -700,6 +701,7 @@ function RowLink({
   const router = useRouter();
   const prefetch = usePrefetchReport();
   const toast = useToast();
+  const remove = useDeleteReportAction();
   const [menu, setMenu] = React.useState<{ x: number; y: number } | null>(null);
   const href = `/reports/${card.id}`;
   const items: MenuItem[] = [
@@ -714,6 +716,7 @@ function RowLink({
       },
     },
     { label: `Copy report number (${card.id})`, icon: <Copy aria-hidden />, run: () => void navigator.clipboard?.writeText(String(card.id)) },
+    { label: "Delete report…", icon: <Trash2 aria-hidden />, destructive: true, run: () => void remove({ id: card.id, title: card.title }) },
   ];
   return (
     <>

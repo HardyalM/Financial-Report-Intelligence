@@ -1527,6 +1527,43 @@
       }
     },
     "/reports/{report_id}": {
+      "delete": {
+        "description": "Delete a report for good: the document, everything derived from it (packs, ratios,\ncommentary, chunks, review items, overrides and jobs, by cascade) and its stored PDF.\nRefused while a stage is running, so the worker is never left writing to a report that\nhas gone; a queued or finished report can always be deleted.",
+        "operationId": "delete_report_reports__report_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Report"
+      },
       "get": {
         "operationId": "get_report_reports__report_id__get",
         "parameters": [

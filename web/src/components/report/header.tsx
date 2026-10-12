@@ -1,7 +1,25 @@
 "use client";
 
-import { CalendarDays, CircleCheck, CircleDashed, Clock, FileText, Lock, ShieldHalf, TriangleAlert, UserPen } from "lucide-react";
+import {
+  CalendarDays,
+  CircleCheck,
+  CircleDashed,
+  Clock,
+  Copy,
+  FileText,
+  Link2,
+  Lock,
+  MoreHorizontal,
+  ShieldHalf,
+  Trash2,
+  TriangleAlert,
+  UserPen,
+} from "lucide-react";
+import * as React from "react";
 import { useReportContext } from "@/components/report/context";
+import { useDeleteReportAction } from "@/components/shell/delete-report";
+import { ContextMenu, type MenuItem } from "@/components/ui/context-menu";
+import { useToast } from "@/components/ui/toast";
 import { HeadlineMetrics } from "@/components/report/headline-metrics";
 import { Badge, type Tone } from "@/components/ui/badge";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -92,11 +110,52 @@ export function ReportHeader() {
                 </Badge>
               </Tooltip>
             ) : null}
+            <ReportActions id={report.id} title={name} />
           </div>
         </div>
         <HeadlineMetrics />
         <div className="h-6" />
       </div>
     </header>
+  );
+}
+
+/** The report's own actions, anchored to their button: copy its link or number, or delete it. */
+function ReportActions({ id, title }: { id: number; title: string }) {
+  const remove = useDeleteReportAction();
+  const toast = useToast();
+  const [at, setAt] = React.useState<{ x: number; y: number } | null>(null);
+  const items: MenuItem[] = [
+    {
+      label: "Copy link",
+      icon: <Link2 aria-hidden />,
+      run: () => {
+        void navigator.clipboard?.writeText(new URL(`/reports/${id}`, window.location.href).href);
+        toast({ tone: "ok", title: "Link copied", body: title });
+      },
+    },
+    { label: `Copy report number (${id})`, icon: <Copy aria-hidden />, run: () => void navigator.clipboard?.writeText(String(id)) },
+    { label: "Delete report…", icon: <Trash2 aria-hidden />, destructive: true, run: () => void remove({ id, title }) },
+  ];
+  return (
+    <>
+      <Tooltip content="Report actions">
+        <button
+          type="button"
+          aria-label="Report actions"
+          aria-haspopup="menu"
+          aria-expanded={at !== null}
+          data-testid="report-actions"
+          onClick={(e) => {
+            const r = e.currentTarget.getBoundingClientRect();
+            setAt({ x: r.left, y: r.bottom + 6 }); // opens under its button
+          }}
+          className="inline-flex size-7 items-center justify-center rounded-lg border border-line bg-surface text-ink-2 hover:bg-surface-sunk hover:text-ink"
+        >
+          <MoreHorizontal aria-hidden className="size-4" />
+        </button>
+      </Tooltip>
+      <ContextMenu at={at} items={items} onClose={() => setAt(null)} />
+    </>
   );
 }

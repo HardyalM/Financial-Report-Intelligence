@@ -6,6 +6,7 @@ import * as React from "react";
 import { AppShell } from "@/components/shell/app-shell";
 import { ThemeProvider } from "@/components/shell/theme";
 import { UploadProvider } from "@/components/shell/upload";
+import { ConfirmProvider } from "@/components/ui/confirm";
 import { ToastProvider } from "@/components/ui/toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { makeQueryClient } from "@/lib/queries";
@@ -19,9 +20,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <MotionConfig reducedMotion="user">
           <ToastProvider>
             <TooltipProvider delayDuration={300} skipDelayDuration={120}>
-              <UploadProvider>
-                <AppShell>{children}</AppShell>
-              </UploadProvider>
+              <ConfirmProvider>
+                <UploadProvider>
+                  <AppShell>{children}</AppShell>
+                </UploadProvider>
+              </ConfirmProvider>
             </TooltipProvider>
           </ToastProvider>
         </MotionConfig>
