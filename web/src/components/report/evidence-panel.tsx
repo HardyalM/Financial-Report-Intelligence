@@ -9,6 +9,7 @@ import { ReviewPanel } from "@/components/report/review-panel";
 import { Badge } from "@/components/ui/badge";
 import { warningSentence } from "@/lib/copy";
 import { pageRange, unitLabel } from "@/lib/format";
+import { warmRenderer } from "@/lib/pdf-renderer";
 import { FAMILY_NAMES, itemLabel } from "@/lib/items";
 import { cellInfo } from "@/lib/states";
 import type { ArithmeticCheck, Candidate, Citation, Report, ReportedMetric } from "@/lib/types";
@@ -32,8 +33,10 @@ function useWide(): boolean {
  * provenance (D2). Sticky beside the report from 1280 px; a bottom sheet below that (Esc closes).
  */
 export function EvidencePanel() {
-  const { selection, select } = useReportContext();
+  const { selection, select, report } = useReportContext();
   const wide = useWide();
+  // The original is opened in the render worker while the reader looks at the figures.
+  React.useEffect(() => (report.page_count ? warmRenderer(`/api/reports/${report.id}/original`) : undefined), [report.id, report.page_count]);
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && select(null);
     window.addEventListener("keydown", onKey);

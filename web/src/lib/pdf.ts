@@ -29,6 +29,19 @@ export function loadDocument(url: string): Promise<PDFDocumentProxy> {
   return doc;
 }
 
+
+type Viewer = typeof import("pdfjs-dist/web/pdf_viewer.mjs");
+let viewerLib: Promise<Viewer> | null = null;
+
+/** pdf.js's viewer components (the text layer with native selection). They read pdfjsLib globally. */
+export function pdfViewerLib(): Promise<Viewer> {
+  viewerLib ??= pdfjs().then((m) => {
+    (globalThis as unknown as { pdfjsLib: PdfJs }).pdfjsLib = m;
+    return import("pdfjs-dist/web/pdf_viewer.mjs");
+  });
+  return viewerLib;
+}
+
 export type BoxSpace = "unrotated" | "display";
 
 export interface PageBox {

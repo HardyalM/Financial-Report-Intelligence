@@ -26,6 +26,8 @@
   --focus: oklch(0.56 0.18 260);
   --highlight: oklch(0.95 0.085 95);
   --glass: oklch(1 0 0 / 0.78);
+  --pdf-paper: oklch(1 0 0);
+  --pdf-desk: oklch(0.955 0.006 255);
 
   /* row and card states: text, soft background, border */
   --ok: oklch(0.45 0.11 160);
@@ -81,6 +83,8 @@
     --focus: oklch(0.72 0.15 258);
     --highlight: oklch(0.4 0.08 95);
     --glass: oklch(0.17 0.012 262 / 0.78);
+    --pdf-paper: var(--surface);
+    --pdf-desk: oklch(0.13 0.01 262);
     --ok: oklch(0.8 0.12 160);
     --ok-soft: oklch(0.26 0.04 160);
     --ok-line: oklch(0.4 0.06 160);
@@ -252,4 +256,122 @@
   outline: 2px solid color-mix(in oklch, oklch(0.75 0.16 85) 85%, transparent);
   border-radius: 2px;
   mix-blend-mode: multiply;
+}
+
+/* ---------------------------------------------------------------- PDF pages (viewer, reader) */
+
+.pdf-skeleton {
+  background:
+    linear-gradient(100deg, transparent 20%, color-mix(in oklch, var(--ink) 5%, transparent) 40%, transparent 60%)
+      0 0 / 220% 100%,
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 18px,
+      color-mix(in oklch, var(--ink) 6%, transparent) 18px 26px
+    ) 12% 10% / 76% 80% no-repeat;
+  animation: pdf-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes pdf-shimmer {
+  from { background-position: 120% 0, 12% 10%; }
+  to { background-position: -120% 0, 12% 10%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pdf-skeleton { animation: none; }
+}
+
+/* pdf.js text layer: transparent text over the glyphs, for native selection (pdf_viewer.css). */
+.pdf-text-host .textLayer {
+  position: absolute;
+  text-align: initial;
+  inset: 0;
+  overflow: clip;
+  opacity: 1;
+  line-height: 1;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-size-adjust: none;
+  forced-color-adjust: none;
+  transform-origin: 0 0;
+  caret-color: CanvasText;
+  z-index: 0;
+  outline: none;
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
+}
+.pdf-text-host .textLayer :is(span, br) {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+  user-select: text;
+}
+.pdf-text-host .textLayer > :not(.markedContent),
+.pdf-text-host .textLayer .markedContent span:not(.markedContent) {
+  z-index: 1;
+  --font-height: 0;
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
+  --scale-x: 1;
+  --rotate: 0deg;
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+}
+.pdf-text-host .textLayer .markedContent { display: contents; }
+.pdf-text-host .textLayer span[role="img"] { user-select: none; cursor: default; }
+.pdf-text-host .textLayer ::selection {
+  background: color-mix(in oklch, var(--accent) 32%, transparent);
+  color: transparent;
+}
+.pdf-text-host .textLayer br::selection { background: transparent; }
+.pdf-text-host .textLayer .endOfContent {
+  display: block;
+  position: absolute;
+  inset: 100% 0 0;
+  z-index: 0;
+  cursor: default;
+  user-select: none;
+}
+.pdf-text-host .textLayer.selecting .endOfContent { top: 0; }
+
+.pdf-search-hit {
+  background: color-mix(in oklch, var(--highlight) 70%, transparent);
+  border-radius: 2px;
+  mix-blend-mode: multiply;
+}
+.pdf-search-hit-active {
+  background: color-mix(in oklch, oklch(0.75 0.17 60) 55%, transparent);
+  outline: 2px solid oklch(0.7 0.17 55);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .pdf-highlight,
+  :root:not([data-theme="light"]) .pdf-search-hit {
+    mix-blend-mode: screen;
+  }
+}
+:root[data-theme="dark"] .pdf-highlight,
+:root[data-theme="dark"] .pdf-search-hit {
+  mix-blend-mode: screen;
+}
+
+/* The floating glass toolbar: present on hover, focus or recent activity, quiet otherwise. */
+.pdf-toolbar {
+  background: color-mix(in oklch, var(--surface-raised) 72%, transparent);
+  backdrop-filter: blur(18px) saturate(1.6);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  border: 1px solid color-mix(in oklch, var(--line-strong) 70%, transparent);
+  box-shadow: var(--shadow-pop);
+  transition: opacity 220ms ease, transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pdf-toolbar[data-idle="true"] {
+  opacity: 0;
+  transform: translate(-50%, 8px) scale(0.98);
+}
+.pdf-stage:hover .pdf-toolbar,
+.pdf-toolbar:focus-within {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pdf-toolbar { transition: none; }
 }

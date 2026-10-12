@@ -124,6 +124,16 @@ Each card shows the **name**, both periods, the change (in pp for margins and RO
 - Highlight boxes come from text-layer bounding boxes: the cell for a figure, the lines for a quote (one box per page when a quote crosses pages).
 - Zoom; previous and next page.
 
+*Revised 2026-10-12 (viewer upgrade). The panel still shows one page with its highlight; the rest is how it is drawn and what opens from it.*
+
+- **Drawing off the main thread.** A render worker runs pdf.js (parsing in-thread, drawing on an OffscreenCanvas) and returns each page as an ImageBitmap. A page asked for while the worker is still starting is drawn on the main thread, so the first page never waits; a worker that fails is reported in the console and falls back the same way. `data-render-mode` on the viewer records which thread drew the pages.
+- **Pages:** a skeleton until drawn, then a fade-in; a cached page appears at once; while a zoom is still changing the existing bitmap is shown stretched and the sharp one replaces it.
+- **Text:** pdf.js's own text layer (TextLayerBuilder), so selection, copy and double-click behave as native DOM text.
+- **Theme:** in dark mode the page's lightness is inverted with hue kept and mapped onto the app's `--surface` and `--ink`; images on the page (recorded by pdf.js while drawing) keep their printed colours.
+- **Controls:** a floating glass toolbar (fades when idle, returns on hover or focus); pinch to zoom anchored under the fingers (trackpad, Safari gestures, touch); Space-drag or middle-drag pans with momentum.
+- **Keys** (while the pointer or focus is on the viewer): ← → page, ⌘/Ctrl + = − 0 zoom, ⌘/Ctrl F opens the reader's search.
+- **Open document:** a full-screen reader at the same page with the same highlights: continuous pages (only those near the viewport are mounted; the next ones are drawn ahead), a sidebar with thumbnails that follow the page being read, the PDF's outline and search results; search across all pages (⌘/Ctrl F, Enter / ⇧Enter or ⌘/Ctrl G to step, matches marked on the page); ← → PageUp PageDown Home End; ⌘/Ctrl + = − 0; S toggles the sidebar; Esc closes and the panel follows to the page you were on. A context menu offers copy, search for the selection and zoom.
+
 ### 6.2 Provenance card
 
 | For a figure | For a citation |
