@@ -69,7 +69,7 @@ function Breadcrumbs({ pathname }: { pathname: string }) {
   const reports = useReports();
   const client = useQueryClient();
   const id = /^\/reports\/(\d+)/.exec(pathname)?.[1];
-  const crumbs: { label: string; href?: string; extra?: React.ReactNode }[] = [{ label: "Dashboard", href: "/" }];
+  const crumbs: { label: string; href?: string; extra?: React.ReactNode }[] = [{ label: "Financial Report Intelligence", href: "/" }];
   if (pathname === "/limitations") crumbs.push({ label: "Method & limits" });
   if (id) {
     const summary = reports.data?.find((r) => String(r.id) === id);
@@ -97,11 +97,22 @@ function Breadcrumbs({ pathname }: { pathname: string }) {
           const last = i === crumbs.length - 1;
           return (
             <li key={c.label} className={cn("flex min-w-0 items-center gap-1", !last && "shrink-0")}>
-              {i > 0 ? <ChevronRight aria-hidden className="size-3.5 shrink-0 text-ink-3/70" /> : null}
+              {i > 0 ? <ChevronRight aria-hidden className={cn("size-3.5 shrink-0 text-ink-3/70", i === 1 && "hidden sm:block")} /> : null}
               {c.href && !last ? (
-                <Link href={c.href} className="rounded-md px-1.5 py-1 text-ink-3 transition-colors hover:bg-ink/[0.05] hover:text-ink active:bg-ink/[0.08] active:duration-0">
+                <Link
+                  href={c.href}
+                  className={cn(
+                    "rounded-md px-1.5 py-1 text-ink-3 transition-colors hover:bg-ink/[0.05] hover:text-ink active:bg-ink/[0.08] active:duration-0",
+                    i === 0 && "hidden whitespace-nowrap sm:inline", // the product name gives way to the page on a phone
+                  )}
+                >
                   {c.label}
                 </Link>
+              ) : i === 0 ? (
+                // On the dashboard the first crumb is the product itself: set as a title.
+                <span aria-current="page" className="truncate px-1.5 py-1 text-[0.875rem] font-semibold tracking-[-0.015em] text-ink">
+                  {c.label}
+                </span>
               ) : (
                 <span aria-current={last ? "page" : undefined} className="flex min-w-0 items-center truncate px-1.5 py-1 font-medium text-ink">
                   <span className="truncate">{c.label}</span>

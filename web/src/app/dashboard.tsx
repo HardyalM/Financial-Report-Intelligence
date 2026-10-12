@@ -80,12 +80,15 @@ function DashboardView({ cards, hasSamples }: { cards: ReportCard[] | null; hasS
         aria-busy={loading || undefined}
       >
         <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
-          <div className="space-y-1.5">
-            <p className="eyebrow">Workspace</p>
-            <h1 className="text-[1.75rem] font-semibold leading-tight text-ink">Reports</h1>
-            <p className="max-w-xl text-[0.84375rem] leading-relaxed text-ink-3">
-              Figures read from the statements and anchored to their page, ratios computed in code, commentary that cites
-              its source. What can’t be verified stays empty, with the reason.
+          <div className="max-w-2xl space-y-2">
+            <h1 className="text-[1.75rem] font-semibold leading-[1.15] tracking-[-0.03em] text-ink sm:text-[2rem]">
+              Financial Report Intelligence
+            </h1>
+            <p className="text-[0.9375rem] leading-relaxed text-ink-2" data-testid="dashboard-summary">
+              Turns a UK annual report into figures you can trace. The income statement and balance sheet are read from
+              the PDF, checked by arithmetic and anchored to their page; ratios are computed in code from fixed
+              definitions; and the commentary cites the report for every sentence. Anything that can’t be verified is
+              left empty, with the reason. A research aid, not investment advice.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">

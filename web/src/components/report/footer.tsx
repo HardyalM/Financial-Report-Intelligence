@@ -33,9 +33,16 @@ export function SiteFooter({ children }: { children?: React.ReactNode }) {
             Limitations
           </Link>
         </div>
-        {children ? (
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[0.6875rem] text-ink-3">{children}</div>
-        ) : null}
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+          {children ? (
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[0.6875rem] text-ink-3">{children}</div>
+          ) : (
+            <span />
+          )}
+          <p className="ml-auto text-[0.6875rem] tracking-[0.01em] text-ink-3/80" data-testid="signature">
+            Designed and developed by: <span className="font-medium text-ink-2/90">Hardyal Mahal</span>
+          </p>
+        </div>
       </div>
     </footer>
   );
