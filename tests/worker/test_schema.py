@@ -74,3 +74,22 @@ def test_overrides_are_append_only(conn: psycopg.Connection) -> None:
     for sql in ("UPDATE overrides SET reason = 'x'", "DELETE FROM overrides"):
         with pytest.raises(psycopg.errors.RaiseException, match="append-only"):
             conn.execute(sql)
+
+
+def test_deleting_a_report_takes_its_overrides_with_it(conn: psycopg.Connection) -> None:
+    doc = conn.execute(
+        "INSERT INTO documents (sha256, filename, page_count) VALUES ('t', 'g', 1) RETURNING id"
+    ).fetchone()
+    assert doc is not None
+    conn.execute(
+        "INSERT INTO overrides (document_id, action, payload, anchored) VALUES (%s, 'set_null', '{}', true)",
+        (doc[0],),
+    )
+    # While the report exists its history cannot be erased in part...
+    with pytest.raises(psycopg.errors.RaiseException, match="append-only"):
+        conn.execute("DELETE FROM overrides WHERE document_id = %s", (doc[0],))
+    # ...but deleting the whole report removes its overrides with it.
+    conn.execute("DELETE FROM documents WHERE id = %s", (doc[0],))
+    assert conn.execute(
+        "SELECT count(*) FROM overrides WHERE document_id = %s", (doc[0],)
+    ).fetchone() == (0,)

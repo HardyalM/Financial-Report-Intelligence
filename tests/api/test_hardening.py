@@ -179,3 +179,18 @@ def test_a_report_with_a_running_stage_is_not_deleted(
     r = client.delete(f"/reports/{rid}")
     assert r.status_code == 409 and code(r) == "report_busy"
     assert client.get(f"/reports/{rid}").status_code == 200  # nothing removed
+
+
+def test_a_report_with_a_persons_decisions_can_be_deleted(
+    client: TestClient, db: psycopg.Connection
+) -> None:
+    rid = upload(client)["id"]
+    decided = client.post(
+        f"/reports/{rid}/overrides",
+        json={"action": "set_null", "item": "revenue", "period_id": "FY2024", "reason": "check"},
+    )
+    assert decided.status_code == 200  # an override: append-only history
+    assert client.delete(f"/reports/{rid}").status_code == 204  # was a 500 (append-only trigger)
+    assert db.execute(
+        "SELECT count(*) FROM overrides WHERE document_id = %s", (rid,)
+    ).fetchone() == (0,)
