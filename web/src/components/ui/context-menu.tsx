@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { motion } from "motion/react";
 import { createPortal } from "react-dom";
+import { spring } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 
 export interface MenuItem {
@@ -40,8 +42,12 @@ export function ContextMenu({
 
   React.useEffect(() => {
     if (!at) return;
+    const openedAt = performance.now();
     const close = (e: Event) => {
       if (e instanceof MouseEvent && menu.current?.contains(e.target as Node)) return;
+      // A scroll in the first instant is the page settling (scroll restoration, a list
+      // animating in), not the person scrolling away: native menus survive it too.
+      if (e.type === "scroll" && performance.now() - openedAt < 150) return;
       onClose();
     };
     const onKey = (e: KeyboardEvent) => {
@@ -70,10 +76,13 @@ export function ContextMenu({
 
   if (!at || typeof document === "undefined") return null;
   return createPortal(
-    <div
+    <motion.div
       ref={menu}
       role="menu"
-      className="fixed z-[70] min-w-48 rounded-xl border border-line bg-surface-raised p-1 text-[13px] text-ink shadow-[var(--shadow-pop)]"
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={spring.snappy}
+      className="fixed z-[70] min-w-48 origin-top-left rounded-xl border border-line bg-surface-raised p-1 text-[13px] text-ink shadow-[var(--shadow-pop)]"
       style={{ left: pos?.x ?? at.x, top: pos?.y ?? at.y, visibility: pos ? "visible" : "hidden" }}
       onContextMenu={(e) => e.preventDefault()}
     >
@@ -97,7 +106,7 @@ export function ContextMenu({
           {item.hint ? <span className="text-[11px] text-ink-3">{item.hint}</span> : null}
         </button>
       ))}
-    </div>,
+    </motion.div>,
     document.body,
   );
 }

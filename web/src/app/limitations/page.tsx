@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AppBar } from "@/components/app-bar";
 import { SiteFooter } from "@/components/report/footer";
 
 export const metadata: Metadata = { title: "Limitations" };
@@ -9,7 +8,6 @@ export const metadata: Metadata = { title: "Limitations" };
 export default function Limitations() {
   return (
     <div className="flex min-h-screen flex-col">
-      <AppBar />
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-12 sm:px-6" data-testid="limitations">
         <Link href="/" className="text-[13px] text-accent hover:underline">
           ← Financial Report Intelligence

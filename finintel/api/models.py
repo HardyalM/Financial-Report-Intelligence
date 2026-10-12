@@ -59,6 +59,23 @@ class ReportOut(_Model):
     )
 
 
+class ReportSummary(_Model):
+    """One row of the report list: what the dashboard and the command palette show, no figures."""
+
+    id: int
+    filename: str
+    company_name: str | None
+    document_type: str
+    status: str
+    page_count: int
+    created_at: str
+    period_label: str | None = Field(description="The current period's label, e.g. FY2024.")
+    currency: str | None
+    unit_scale: int | None
+    open_review_items: int = Field(description="Review items still waiting for a person.")
+    stale: bool = Field(description="Existing commentary no longer matches the current pack.")
+
+
 class CommentaryOut(_Model):
     id: int
     output: dict[str, Any] = Field(description="schemas/commentary.schema.json")

@@ -12,9 +12,11 @@ from fastapi.testclient import TestClient
 
 from finintel.api import app as api_app
 from finintel.parse.cached import cached_text_layer
-from tests.api.conftest import EXCERPT, upload
+from tests.api.conftest import EXCERPT, ROOT, upload
 
 pytestmark = pytest.mark.network
+
+ROOT_FIXTURE = ROOT / "tests" / "e2e" / "fixtures" / "pdfs" / "missing_unit.pdf"
 
 
 def code(r: Any) -> str:
@@ -114,3 +116,18 @@ def test_an_override_on_a_page_outside_the_document_is_refused(
     assert r.status_code == 422 and code(r) == "page_out_of_range"
     assert db.execute("SELECT count(*) FROM overrides").fetchone() == (0,)
     assert db.execute("SELECT count(*) FROM statement_packs").fetchone() == (1,)
+
+
+def test_the_report_list_is_newest_first_with_status_and_no_figures(client: TestClient) -> None:
+    assert client.get("/reports").json() == []
+    first = upload(client)["id"]
+    rows = client.get("/reports").json()
+    assert [r["id"] for r in rows] == [first]
+    row = rows[0]
+    assert row["filename"] == EXCERPT.name and row["status"] == "ready"
+    assert row["page_count"] == 305 and row["period_label"] == "2024"  # the label as printed
+    assert row["currency"] == "EUR" and row["unit_scale"] == 1_000_000
+    assert row["open_review_items"] >= 0 and row["stale"] is False
+    assert not ({"pack", "ratios", "value"} & set(row))  # a list never carries figures
+    second = upload(client, ROOT_FIXTURE, name="missing_unit.pdf")["id"]
+    assert [r["id"] for r in client.get("/reports").json()] == [second, first]

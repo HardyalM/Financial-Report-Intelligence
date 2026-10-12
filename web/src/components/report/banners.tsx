@@ -9,6 +9,8 @@ import { ApiError, decisions } from "@/lib/api";
 import { cn } from "@/lib/cn";
 import { warningSentence } from "@/lib/copy";
 import { STATEMENT_NAMES } from "@/lib/items";
+import { useToast } from "@/components/ui/toast";
+import { markProcessing, useDecision } from "@/lib/queries";
 
 interface BannerDef {
   id: string;
@@ -157,7 +159,9 @@ const TYPES = [
 
 /** "Corporate / Bank / NHS trust / Other" with a reason; ratios re-run under that type. */
 function DocumentTypeChoice() {
-  const { report, reload } = useReportContext();
+  const { report } = useReportContext();
+  const decide = useDecision(report.id);
+  const toast = useToast();
   const [choice, setChoice] = React.useState<string | null>(null);
   const [reason, setReason] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
@@ -168,10 +172,14 @@ function DocumentTypeChoice() {
     setBusy(true);
     setError(null);
     try {
-      await decisions.documentType(report.id, { document_type: choice, reason: reason.trim() });
-      await reload();
+      await decide(
+        () => decisions.documentType(report.id, { document_type: choice, reason: reason.trim() }),
+        markProcessing({ document_type: choice }),
+      );
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      const message = err instanceof ApiError ? err.message : String(err);
+      setError(message);
+      toast({ tone: "error", title: "The document type wasn’t saved", body: message });
     } finally {
       setBusy(false);
     }

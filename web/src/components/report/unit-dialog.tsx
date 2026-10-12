@@ -6,6 +6,8 @@ import { useReportContext } from "@/components/report/context";
 import { PdfViewer } from "@/components/report/pdf-viewer";
 import { Button } from "@/components/ui/button";
 import { ApiError, decisions } from "@/lib/api";
+import { useToast } from "@/components/ui/toast";
+import { markProcessing, useDecision } from "@/lib/queries";
 
 const CURRENCIES = [
   { code: "GBP", label: "Pounds sterling (£)" },
@@ -25,7 +27,9 @@ const SCALES = [
  * until it is confirmed, and the pack carries a permanent "Unit confirmed manually" badge.
  */
 export function UnitDialog() {
-  const { report, reload } = useReportContext();
+  const { report } = useReportContext();
+  const decide = useDecision(report.id);
+  const toast = useToast();
   const [currency, setCurrency] = React.useState("GBP");
   const [scale, setScale] = React.useState<number | null>(null);
   const [page, setPage] = React.useState(Math.min(2, report.page_count));
@@ -40,10 +44,11 @@ export function UnitDialog() {
     setBusy(true);
     setError(null);
     try {
-      await decisions.unit(report.id, { currency, unit_scale: scale, evidence_page: page });
-      await reload();
+      await decide(() => decisions.unit(report.id, { currency, unit_scale: scale, evidence_page: page }), markProcessing());
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      const message = err instanceof ApiError ? err.message : String(err);
+      setError(message);
+      toast({ tone: "error", title: "The unit wasn’t confirmed", body: message });
     } finally {
       setBusy(false);
     }

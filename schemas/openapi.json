@@ -571,6 +571,107 @@
         "title": "ReportOut",
         "type": "object"
       },
+      "ReportSummary": {
+        "additionalProperties": false,
+        "description": "One row of the report list: what the dashboard and the command palette show, no figures.",
+        "properties": {
+          "company_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "document_type": {
+            "title": "Document Type",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "open_review_items": {
+            "description": "Review items still waiting for a person.",
+            "title": "Open Review Items",
+            "type": "integer"
+          },
+          "page_count": {
+            "title": "Page Count",
+            "type": "integer"
+          },
+          "period_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The current period's label, e.g. FY2024.",
+            "title": "Period Label"
+          },
+          "stale": {
+            "description": "Existing commentary no longer matches the current pack.",
+            "title": "Stale",
+            "type": "boolean"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "unit_scale": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Scale"
+          }
+        },
+        "required": [
+          "id",
+          "filename",
+          "company_name",
+          "document_type",
+          "status",
+          "page_count",
+          "created_at",
+          "period_label",
+          "currency",
+          "unit_scale",
+          "open_review_items",
+          "stale"
+        ],
+        "title": "ReportSummary",
+        "type": "object"
+      },
       "ReportedMetric": {
         "additionalProperties": false,
         "description": "A figure the company states in its narrative (for example its CET1 ratio or net interest margin), shown 'as reported (p. X)' and never used in any computation (SCHEMA section 11, OQ-4 = B). value_text is a verbatim substring of quote, quote a verbatim substring of the chunk; value is parsed from value_text by code; a model never supplies either.",
@@ -1008,6 +1109,29 @@
           }
         },
         "summary": "Readyz"
+      }
+    },
+    "/reports": {
+      "get": {
+        "description": "Every report, newest first, with what a list needs to show (name, period, status, what\nis waiting for a person). No figures: those are read from the report itself.",
+        "operationId": "list_reports_reports_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReportSummary"
+                  },
+                  "title": "Response List Reports Reports Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Reports"
       }
     },
     "/reports/{report_id}": {

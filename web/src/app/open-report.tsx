@@ -26,7 +26,7 @@ export function OpenReport() {
         placeholder="Report number, e.g. 1"
         value={id}
         onChange={(e) => setId(e.target.value)}
-        className="num h-9 flex-1 rounded-md bg-transparent px-2 text-sm outline-none placeholder:text-ink-3"
+        className="num h-9 min-w-0 flex-1 rounded-md bg-transparent px-2 text-sm outline-none placeholder:text-ink-3"
       />
       <Button type="submit" disabled={!/^\d+$/.test(id.trim())}>
         Open report <ArrowRight aria-hidden />

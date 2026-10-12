@@ -10,6 +10,8 @@ import { cn } from "@/lib/cn";
 import { warningSentence } from "@/lib/copy";
 import { FAMILY_NAMES, itemLabel, STATEMENT_NAMES } from "@/lib/items";
 import { type CellInfo, cellInfo } from "@/lib/states";
+import { useToast } from "@/components/ui/toast";
+import { markProcessing, useDecision } from "@/lib/queries";
 
 /** The states in which a figure is waiting for a person (UI.md section 6.3). */
 const NEEDS_DECISION = new Set(["R6", "R7", "R8"]);
@@ -269,7 +271,9 @@ function statementOf(report: ReturnType<typeof useReportContext>["report"], item
 
 /** Re-run extraction for a statement on the page a person names (EXTRACTION section 6). */
 export function PointToPage({ statement }: { statement: string }) {
-  const { report, reload } = useReportContext();
+  const { report } = useReportContext();
+  const decide = useDecision(report.id);
+  const toast = useToast();
   const [page, setPage] = React.useState(String(report.extraction?.statements?.[statement]?.pages?.[0] ?? ""));
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
@@ -278,10 +282,14 @@ export function PointToPage({ statement }: { statement: string }) {
     setBusy(true);
     setError(null);
     try {
-      await decisions.statementLocation(report.id, { statement_type: statement, page: Number(page) });
-      await reload();
+      await decide(
+        () => decisions.statementLocation(report.id, { statement_type: statement, page: Number(page) }),
+        markProcessing(),
+      );
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      const message = err instanceof ApiError ? err.message : String(err);
+      setError(message);
+      toast({ tone: "error", title: "Extraction didn’t run again", body: message });
     } finally {
       setBusy(false);
     }

@@ -233,6 +233,34 @@ def create_app(
             id=doc_id, sha256=str(row[1]), status=str(row[5]), duplicate=existing is not None
         )
 
+    @app.get("/reports", response_model=list[m.ReportSummary])
+    def list_reports(conn: psycopg.Connection = db) -> list[m.ReportSummary]:
+        """Every report, newest first, with what a list needs to show (name, period, status, what
+        is waiting for a person). No figures: those are read from the report itself."""
+        rows = conn.execute(
+            """
+            SELECT d.id, d.filename, d.document_type, d.status, d.page_count, d.created_at,
+                   p.pack->>'company_name', p.pack->'periods'->0->>'label', p.pack->>'currency',
+                   (p.pack->>'unit_scale')::bigint,
+                   (SELECT count(*) FROM review_items r WHERE r.document_id = d.id AND r.status = 'open'),
+                   (SELECT c.stale FROM commentaries c WHERE c.document_id = d.id ORDER BY c.id DESC LIMIT 1)
+            FROM documents d
+            LEFT JOIN LATERAL (
+                SELECT pack FROM statement_packs s WHERE s.document_id = d.id
+                ORDER BY s.version DESC LIMIT 1
+            ) p ON true
+            ORDER BY d.created_at DESC, d.id DESC
+            """
+        ).fetchall()
+        return [
+            m.ReportSummary(
+                id=r[0], filename=r[1], document_type=r[2], status=r[3], page_count=r[4],
+                created_at=r[5].isoformat(), company_name=r[6], period_label=r[7], currency=r[8],
+                unit_scale=r[9], open_review_items=int(r[10]), stale=bool(r[11]),
+            )
+            for r in rows
+        ]  # fmt: skip
+
     @app.get("/reports/{report_id}", response_model=m.ReportOut)
     def get_report(report_id: int, conn: psycopg.Connection = db) -> m.ReportOut:
         doc = doc_row(conn, report_id)

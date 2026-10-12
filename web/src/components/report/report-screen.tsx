@@ -8,8 +8,7 @@ import { ReportProvider } from "@/components/report/context";
 import { EvidencePanel } from "@/components/report/evidence-panel";
 import { FiguresTable } from "@/components/report/figures-table";
 import { ReportFooter, SiteFooter } from "@/components/report/footer";
-import { AppBar } from "@/components/app-bar";
-import { ReportHeader, reportName } from "@/components/report/header";
+import { ReportHeader } from "@/components/report/header";
 import { SectionNav } from "@/components/report/section-nav";
 import { RatioCards } from "@/components/report/ratio-cards";
 import { ReportedMetrics } from "@/components/report/reported-metrics";
@@ -35,7 +34,6 @@ export function ReportScreen({ id }: { id: string }) {
           : "This report couldn’t be loaded";
     return (
       <div className="flex min-h-screen flex-col">
-        <AppBar />
         <main className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center justify-center gap-3 px-4 text-center">
           <CircleAlert aria-hidden className="size-6 text-ink-3" />
           <h1 className="text-lg font-semibold" data-testid="report-error">
@@ -56,15 +54,6 @@ export function ReportScreen({ id }: { id: string }) {
     <TooltipProvider delayDuration={250} skipDelayDuration={100}>
       <ReportProvider data={state.data} reload={reload}>
         <div className="flex min-h-screen flex-col">
-          <AppBar>
-            <Link href="/" className="hidden hover:text-ink sm:inline">
-              Reports
-            </Link>
-            <span aria-hidden className="hidden text-line-strong sm:inline">
-              /
-            </span>
-            <span className="truncate font-medium text-ink">{reportName(state.data.report)}</span>
-          </AppBar>
           <ReportHeader />
           <div className="sticky top-14 z-30 border-b border-line bg-glass backdrop-blur-xl backdrop-saturate-150">
             <div className="mx-auto max-w-[1600px] px-1 sm:px-3 lg:px-5">
@@ -138,7 +127,6 @@ function StageStatus({ report }: { report: Report }) {
 function LoadingScreen() {
   return (
     <div className="min-h-screen" aria-busy="true" aria-live="polite">
-      <AppBar />
       <div className="border-b border-line bg-surface px-8 py-7">
         <Skeleton className="h-3 w-32" />
         <Skeleton className="mt-3 h-8 w-80" />

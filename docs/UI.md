@@ -5,6 +5,10 @@ v1 has **one primary screen: the Report screen**.
 - Evidence, provenance and review happen in a panel on the same screen.
 - The only other page is a static **Limitations** page (M8.3), linked from the footer.
 
+*Revised 2026-10-12 (app shell): the report screen is still the primary screen. Upload's empty
+state grew into a dashboard of reports (`GET /reports`, a read-only list with no figures), and
+every page sits in an app shell. See section 2a.*
+
 ---
 
 ## 1. Principles
@@ -65,6 +69,18 @@ were added. Every state, test id and rule in this document is unchanged.*
 - The figures in the sketch are the fictional `EXAMPLE` numbers.
 
 ---
+
+## 2a. App shell (2026-10-12)
+
+- **Sidebar** (fixed; ⌘/Ctrl \ collapses it to a 60 px icon rail, remembered; a drawer below 1024 px): search, Dashboard, New report, recent reports (status dot, period; hover prefetches; right-click menu), Method & limits, and the theme switch (Light, Dark, Match system). ↑ ↓ move between rows.
+- **Top bar**: breadcrumbs (Dashboard › company › status), a search field that opens the command palette, the research-aid marker, New report.
+- **Command palette** (⌘/Ctrl K, anywhere): reports by fuzzy name, file or number ("Open report 12"); on a report, its sections, the original document and copy link; go to; upload; sidebar; theme. ↑ ↓ ↵, Esc clears then closes. Highlighting a report prefetches it.
+- **Dashboard** (`/`): counts that filter (All, Ready, Waiting for you, In progress; counts only, no figures), a filter field ("/" focuses it, ↓ enters the list), report rows (↑ ↓ ↵, hover prefetch, right-click menu), and an "Analyse a report" card. No reports: an onboarding page with one-click actions. List unavailable: says so, upload still offered. Loading: a skeleton in the dashboard's own shape (no layout shift).
+- **Data**: TanStack Query caches reports and the list; a report polls only while its stages run. **Optimistic updates are status and workflow only** (a decision shows "Processing" at once; a refusal puts the screen back and raises a notice): a figure is never shown before the server has computed it.
+- **Uploads**: one path for the drop zone, sidebar and palette; a PDF dropped anywhere on the window is caught.
+- **Motion**: one set of springs (Motion) for page entry, the palette, menus, toasts and the sidebar; `prefers-reduced-motion` turns them off.
+- **Theme**: tokens in `globals.css` for light and dark, chosen by the system or `data-theme`; the choice is applied by an inline script before first paint.
+- **Focus**: a brand focus ring (2 px plus a soft halo) on every control; text fields show focus through their container.
 
 ## 3. Empty and processing states
 

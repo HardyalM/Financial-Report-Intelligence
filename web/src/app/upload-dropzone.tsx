@@ -1,48 +1,17 @@
 "use client";
 
 import { FileUp, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import * as React from "react";
-import { ApiError, uploadPdf } from "@/lib/api";
+import { useUpload } from "@/components/shell/upload";
+import { Kbd } from "@/components/pdf/toolbar";
+import { shortcutLabel } from "@/components/pdf/use-viewer-input";
 import { cn } from "@/lib/cn";
 
-const LIMIT = 50 * 1024 * 1024; // ingest.MAX_UPLOAD_BYTES; the API refuses anything larger too
-
-const REFUSALS: Record<string, string> = {
-  not_a_pdf: "That file isn’t a PDF.",
-  file_too_large: "That file is over the 50 MB limit.",
-  encrypted_pdf: "That PDF is password-protected, so it can’t be read.",
-  unreadable_pdf: "That PDF couldn’t be opened. It may be damaged.",
-};
-
 /** The empty state (UI.md section 3): drop a PDF, then follow it through the stages. */
-export function UploadDropzone() {
-  const router = useRouter();
+export function UploadDropzone({ compact = false }: { compact?: boolean }) {
+  const { send, busy, error } = useUpload();
   const input = React.useRef<HTMLInputElement>(null);
   const [over, setOver] = React.useState(false);
-  const [busy, setBusy] = React.useState<string | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
-
-  const send = async (file: File | undefined) => {
-    if (!file) return;
-    setError(null);
-    if (!file.name.toLowerCase().endsWith(".pdf") && file.type !== "application/pdf") {
-      setError(REFUSALS.not_a_pdf!);
-      return;
-    }
-    if (file.size > LIMIT) {
-      setError(REFUSALS.file_too_large!);
-      return;
-    }
-    setBusy(file.name);
-    try {
-      const result = await uploadPdf(file);
-      router.push(`/reports/${result.id}`);
-    } catch (err) {
-      setBusy(null);
-      setError(err instanceof ApiError ? (REFUSALS[err.code] ?? err.message) : String(err));
-    }
-  };
 
   return (
     <div className="space-y-2">
@@ -59,7 +28,8 @@ export function UploadDropzone() {
           void send(e.dataTransfer.files[0]);
         }}
         className={cn(
-          "flex flex-col items-center gap-3 rounded-2xl border border-dashed px-6 py-10 text-center transition-all",
+          "flex flex-col items-center rounded-2xl border border-dashed text-center transition-[background-color,border-color,transform] duration-200",
+          compact ? "gap-2 px-5 py-6" : "gap-3 px-6 py-10",
           over ? "scale-[1.01] border-accent bg-accent-soft" : "border-line-strong bg-surface-sunk/60 hover:border-ink-3",
         )}
       >
@@ -85,6 +55,11 @@ export function UploadDropzone() {
             >
               Choose a file
             </button>
+            {!compact ? (
+              <p className="text-[11.5px] text-ink-3">
+                Or drop it anywhere in the app · <Kbd>{shortcutLabel("mod+k")}</Kbd> for everything else
+              </p>
+            ) : null}
           </>
         )}
         <input
@@ -94,7 +69,10 @@ export function UploadDropzone() {
           className="sr-only"
           data-testid="upload-input"
           aria-label="Annual report PDF"
-          onChange={(e) => void send(e.target.files?.[0])}
+          onChange={(e) => {
+            void send(e.target.files?.[0]);
+            e.target.value = "";
+          }}
         />
       </div>
       {error ? (

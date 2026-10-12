@@ -34,6 +34,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Reports
+         * @description Every report, newest first, with what a list needs to show (name, period, status, what
+         *     is waiting for a person). No figures: those are read from the report itself.
+         */
+        get: operations["list_reports_reports_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/reports/{report_id}": {
         parameters: {
             query?: never;
@@ -437,6 +458,45 @@ export interface components {
             }[];
         };
         /**
+         * ReportSummary
+         * @description One row of the report list: what the dashboard and the command palette show, no figures.
+         */
+        ReportSummary: {
+            /** Company Name */
+            company_name: string | null;
+            /** Created At */
+            created_at: string;
+            /** Currency */
+            currency: string | null;
+            /** Document Type */
+            document_type: string;
+            /** Filename */
+            filename: string;
+            /** Id */
+            id: number;
+            /**
+             * Open Review Items
+             * @description Review items still waiting for a person.
+             */
+            open_review_items: number;
+            /** Page Count */
+            page_count: number;
+            /**
+             * Period Label
+             * @description The current period's label, e.g. FY2024.
+             */
+            period_label: string | null;
+            /**
+             * Stale
+             * @description Existing commentary no longer matches the current pack.
+             */
+            stale: boolean;
+            /** Status */
+            status: string;
+            /** Unit Scale */
+            unit_scale: number | null;
+        };
+        /**
          * ReportedMetric
          * @description A figure the company states in its narrative (for example its CET1 ratio or net interest margin), shown 'as reported (p. X)' and never used in any computation (SCHEMA section 11, OQ-4 = B). value_text is a verbatim substring of quote, quote a verbatim substring of the chunk; value is parsed from value_text by code; a model never supplies either.
          */
@@ -650,6 +710,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthOut"];
+                };
+            };
+        };
+    };
+    list_reports_reports_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportSummary"][];
                 };
             };
         };

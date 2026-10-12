@@ -5,6 +5,7 @@
  * serve fixtures by intercepting these calls, or run them against the real API.
  */
 import * as React from "react";
+import { useReportQuery } from "@/lib/queries";
 import type { CommentaryResponse, Report, ReportedMetrics, Review } from "@/lib/types";
 
 export class ApiError extends Error {
@@ -17,7 +18,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   let response: Response;
   try {
     response = await fetch(`/api${path}`, {
@@ -127,7 +128,7 @@ export function inProgress(report: Report): boolean {
   return report.status === "queued" || report.status === "processing";
 }
 
-async function fetchAll(id: string): Promise<ReportData> {
+export async function fetchReport(id: string): Promise<ReportData> {
   const path = `/reports/${encodeURIComponent(id)}`;
   const report = await request<Report>(path);
   const empty: ReportedMetrics = { metrics: [], notes: [] };
@@ -149,44 +150,23 @@ async function fetchAll(id: string): Promise<ReportData> {
 }
 
 /**
- * The report, its commentary and its review queue. While stages run it polls every
- * `pollMs` (UI.md section 3: stages finish independently, so figures appear before commentary).
- * `reload` re-reads after a person's decision.
+ * The report, its commentary and its review queue, from the query cache (lib/queries.ts): a
+ * report seen or hovered before appears at once; while stages run it polls every `pollMs`
+ * (UI.md section 3). `reload` re-reads after a person's decision.
  */
 export function useReport(id: string, pollMs = 1000): { state: Loadable; reload: () => Promise<void> } {
-  const [state, setState] = React.useState<Loadable>({ status: "loading" });
-  const live = React.useRef(true);
-
-  const load = React.useCallback(async () => {
-    try {
-      const data = await fetchAll(id);
-      if (live.current) setState({ status: "ready", data });
-    } catch (error) {
-      if (!live.current) return;
-      setState((prev) =>
-        // A failed poll keeps what is on screen; only a failed first load shows the error.
-        prev.status === "ready"
-          ? prev
-          : { status: "error", error: error instanceof ApiError ? error : new ApiError(0, "unknown", String(error)) },
-      );
-    }
-  }, [id]);
-
-  React.useEffect(() => {
-    live.current = true;
-    setState({ status: "loading" });
-    void load();
-    return () => {
-      live.current = false;
-    };
-  }, [load]);
-
-  const moving = state.status === "ready" && inProgress(state.data.report);
-  React.useEffect(() => {
-    if (!moving) return;
-    const timer = window.setInterval(() => void load(), pollMs);
-    return () => window.clearInterval(timer);
-  }, [moving, load, pollMs]);
-
-  return { state, reload: load };
+  const q = useReportQuery(id, pollMs);
+  const reload = React.useCallback(async () => {
+    await q.refetch();
+  }, [q]);
+  // A failed refresh keeps what is on screen; only a failed first load shows the error.
+  const state: Loadable = q.data
+    ? { status: "ready", data: q.data }
+    : q.error
+      ? {
+          status: "error",
+          error: q.error instanceof ApiError ? q.error : new ApiError(0, "unknown", String(q.error)),
+        }
+      : { status: "loading" };
+  return { state, reload };
 }

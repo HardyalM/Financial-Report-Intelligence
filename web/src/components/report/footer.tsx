@@ -2,7 +2,7 @@
 import Link from "next/link";
 import type * as React from "react";
 
-import { BrandMark } from "@/components/app-bar";
+import { BrandMark } from "@/components/brand-mark";
 import { useReportContext } from "@/components/report/context";
 
 export function ReportFooter() {
